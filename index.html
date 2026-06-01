@@ -21,7 +21,7 @@
     body { font-family: 'Inter', sans-serif; }
     * { box-sizing: border-box; }
     button:disabled { opacity: 0.7; cursor: not-allowed; }
-    .no-pdf { html2pdf-ignore: true; }
+    .page-break { page-break-after: always; }
   </style>
 </head>
 
@@ -137,7 +137,7 @@
     </div>
   </div>
 
-  <div class="overflow-x-auto p-4 bg-slate-200/50 rounded-2xl border border-slate-300/60 hidden md:block">
+  <div class="overflow-x-auto p-4 bg-slate-200/50 rounded-2xl border border-slate-300/60">
     <p class="text-center text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">📄 මුද්‍රිත පිටුවේ පෙරදසුන / Official Print Preview Layout</p>
 
     <div id="pdf-content" class="w-[210mm] min-h-[297mm] bg-white mx-auto p-[15mm] text-slate-800 relative shadow-xl box-border">
@@ -232,7 +232,6 @@
 </main>
 
 <script>
-  // Replace with your deployed Google Apps Script Web App URL
   const GOOGLE_SCRIPT_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
   const STORAGE_KEY = "adm_finance_dashboard_v1";
 
@@ -423,6 +422,9 @@
   }
 
   async function generatePDF() {
+    const btn = document.querySelector('button[onclick="generatePDF()"]');
+    const originalText = btn ? btn.innerHTML : '';
+
     try {
       setCreatedDate();
 
@@ -432,28 +434,55 @@
         return;
       }
 
-      const className = safeFileName(document.getElementById('inputClassName').value || 'ADM_Center');
-      const monthVal = safeFileName(document.getElementById('inputMonth').value || 'Statement');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = "⏳ Generating PDF...";
+      }
+
+      await document.fonts.ready;
+      await new Promise(resolve => setTimeout(resolve, 300));
 
       const canvas = await html2canvas(element, {
         scale: 2,
         useCORS: true,
+        backgroundColor: "#ffffff",
         logging: false,
-        backgroundColor: "#ffffff"
+        scrollX: 0,
+        scrollY: 0
       });
 
       const imgData = canvas.toDataURL("image/png");
       const { jsPDF } = window.jspdf;
 
       const pdf = new jsPDF("p", "mm", "a4");
-      const pageWidth = 210;
-      const pageHeight = (canvas.height * pageWidth) / canvas.width;
+      const imgWidth = 210;
+      const pageHeight = 297;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-      pdf.addImage(imgData, "PNG", 0, 0, pageWidth, pageHeight);
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+
+      const className = safeFileName(document.getElementById('inputClassName').value || 'ADM_Center');
+      const monthVal = safeFileName(document.getElementById('inputMonth').value || 'Statement');
       pdf.save(`ADM_Statement_${className}_${monthVal}.pdf`);
     } catch (err) {
       console.error("PDF Error:", err);
-      alert("PDF download failed.");
+      alert("PDF download failed: " + (err?.message || err));
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }
     }
   }
 
@@ -509,7 +538,6 @@
     loadData();
     setCreatedDate();
     syncMonthDisplay(document.getElementById('inputMonth').value);
-    document.getElementById('inputClassName').dispatchEvent(new Event('input'));
     renderAll();
 
     document.getElementById('inputClassName').addEventListener('input', (e) => {
