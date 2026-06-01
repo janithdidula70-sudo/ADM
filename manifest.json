@@ -1,6 +1,6 @@
 {
-  "name": "ADM Higher Education Center Finance Console",
-  "short_name": "ADM Finance",
+  "name": "ADM Higher Education ",
+  "short_name": "ADM",
   "description": "Management Dashboard & Finance Report Generator for ADM Naramala",
   "start_url": "./index.html",
   "display": "standalone",
