@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADM Higher Education Center - Finance Dashboard</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1e1b4b">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ADM Finance">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/5511/5511415.png">
+
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .no-pdf { html2pdf-ignore: true; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800 antialiased pb-12">
+
+    <header class="bg-indigo-950 text-white shadow-md mb-8 py-5 px-6 border-b border-indigo-900">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="text-center sm:text-left">
+                <h1 class="text-2xl font-black tracking-wider text-indigo-400">ADM HIGHER EDUCATION CENTER</h1>
+                <p class="text-xs text-indigo-200 mt-0.5">Management Dashboard & Finance Report Generator</p>
+            </div>
+            <div class="text-center sm:text-right text-xs bg-indigo-900/50 px-4 py-2 rounded-lg border border-indigo-800">
+                <span class="font-semibold text-indigo-300">Location:</span> Negombo Rd, Naramala &nbsp;|&nbsp; <span class="font-semibold text-indigo-300">Hotline:</span> 0710658051
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6">
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-2xl p-6 shadow-xs border border-slate-200 flex items-center justify-between transition-all hover:shadow-md">
+                <div>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">මුළු ආදායම / Total Income</p>
+                    <h3 id="dashTotalIncome" class="text-2xl font-extrabold text-emerald-600 mt-1">Rs. 0.00</h3>
+                </div>
+                <div class="p-3 bg-emerald-50 rounded-xl text-emerald-600 font-bold text-xl">↑</div>
+            </div>
+            <div class="bg-white rounded-2xl p-6 shadow-xs border border-slate-200 flex items-center justify-between transition-all hover:shadow-md">
+                <div>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">මුළු වියදම / Total Expenses</p>
+                    <h3 id="dashTotalExpense" class="text-2xl font-extrabold text-rose-600 mt-1">Rs. 0.00</h3>
+                </div>
+                <div class="p-3 bg-rose-50 rounded-xl text-rose-600 font-bold text-xl">↓</div>
+            </div>
+            <div id="dashBalanceCard" class="bg-white rounded-2xl p-6 shadow-xs border border-slate-200 flex items-center justify-between transition-all hover:shadow-md">
+                <div>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">ඉතිරි මුදල / Net Balance</p>
+                    <h3 id="dashNetBalance" class="text-2xl font-extrabold text-indigo-600 mt-1">Rs. 0.00</h3>
+                </div>
+                <div id="dashBalanceBadge" class="p-3 bg-indigo-50 rounded-xl text-indigo-600 font-bold text-xl">⚖</div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 shadow-xs border border-slate-200 mb-8">
+            <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2 border-b border-slate-100 pb-2">
+                <span>⚙️</span> දත්ත ඇතුළත් කිරීම් / Configuration & Inputs
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">පංතියේ නම / Class Name:</label>
+                    <input type="text" id="inputClassName" value="Grade 11 ICT Class" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none font-medium transition-all">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">අදාළ මාසය / Target Month:</label>
+                    <input type="month" id="inputMonth" value="2026-06" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none font-medium transition-all">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-emerald-50/60 p-5 rounded-2xl border border-emerald-100">
+                    <h3 class="text-sm font-bold text-emerald-800 mb-3 flex items-center gap-1.5">🟢 ආදායම් එකතු කරන්න / Add Income</h3>
+                    <div class="flex flex-col sm:flex-row gap-2.5">
+                        <input type="text" id="incomeDesc" placeholder="විස්තරය (Description)" class="flex-1 p-2.5 bg-white border border-emerald-200 rounded-xl text-sm focus:outline-emerald-500">
+                        <input type="number" id="incomeAmount" placeholder="මුදල (Amount)" class="w-full sm:w-32 p-2.5 bg-white border border-emerald-200 rounded-xl text-sm focus:outline-emerald-500">
+                        <button onclick="addItem('income')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-xs transition-all cursor-pointer whitespace-nowrap">Add Item</button>
+                    </div>
+                    <div class="mt-4 bg-white/80 rounded-xl p-3 max-h-48 overflow-y-auto border border-emerald-100">
+                        <p class="text-[11px] font-bold text-emerald-700 mb-2 uppercase">වත්මන් ආදායම් ලැයිස්තුව</p>
+                        <ul id="dashIncomeList" class="text-xs divide-y divide-slate-100"></ul>
+                    </div>
+                </div>
+
+                <div class="bg-rose-50/60 p-5 rounded-2xl border border-rose-100">
+                    <h3 class="text-sm font-bold text-rose-800 mb-3 flex items-center gap-1.5">🔴 වියදම් එකතු කරන්න / Add Expense</h3>
+                    <div class="flex flex-col sm:flex-row gap-2.5">
+                        <input type="text" id="expenseDesc" placeholder="විස්තරය (Description)" class="flex-1 p-2.5 bg-white border border-rose-200 rounded-xl text-sm focus:outline-rose-500">
+                        <input type="number" id="expenseAmount" placeholder="මුදල (Amount)" class="w-full sm:w-32 p-2.5 bg-white border border-rose-200 rounded-xl text-sm focus:outline-rose-500">
+                        <button onclick="addItem('expense')" class="bg-rose-600 hover:bg-rose-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-xs transition-all cursor-pointer whitespace-nowrap">Add Item</button>
+                    </div>
+                    <div class="mt-4 bg-white/80 rounded-xl p-3 max-h-48 overflow-y-auto border border-rose-100">
+                        <p class="text-[11px] font-bold text-rose-700 mb-2 uppercase">වත්මන් වියදම් ලැයිස්තුව</p>
+                        <ul id="dashExpenseList" class="text-xs divide-y divide-slate-100"></ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6 pt-4 border-t border-slate-100 text-center">
+                <button onclick="generatePDF()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-10 py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all cursor-pointer inline-flex items-center gap-2">
+                    📥 PDF වාර්තාව බාගත කරගන්න (Download PDF)
+                </button>
+            </div>
+        </div>
+
+        <div class="overflow-x-auto p-4 bg-slate-200/50 rounded-2xl border border-slate-300/60 hidden md:block">
+            <p class="text-center text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">📄 මුද්‍රිත පිටුවේ පෙරදසුන / Official Print Preview Layout</p>
+            
+            <div id="pdf-content" class="w-[210mm] min-h-[297mm] bg-white mx-auto p-[15mm] text-slate-800 relative shadow-xl box-border">
+                
+                <div class="text-center border-b-4 border-indigo-900 pb-3 mb-5">
+                    <h2 class="text-[23pt] font-black tracking-wide text-slate-900 leading-none">ADM HIGHER EDUCATION CENTER</h2>
+                    <p class="text-[9.5pt] font-semibold text-slate-500 uppercase tracking-widest mt-1.5">Negombo Rd, Naramala &nbsp;|&nbsp; Contact: 0710658051</p>
+                </div>
+
+                <div class="bg-slate-100 rounded-lg p-3.5 mb-6 grid grid-cols-2 gap-4 items-center border border-slate-200/60">
+                    <div>
+                        <span class="text-[8pt] font-bold text-slate-400 uppercase tracking-wider block">Class Name</span>
+                        <span id="pdfClassName" class="text-[12pt] font-extrabold text-indigo-950 uppercase">Grade 11 ICT Class</span>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-[8pt] font-bold text-slate-400 uppercase tracking-wider block">Statement For Month / වාර්තාගත මාසය</span>
+                        <span id="pdfMonth" class="text-[11pt] font-bold text-slate-800">June 2026</span>
+                    </div>
+                </div>
+
+                <div class="text-center mb-6">
+                    <h3 class="text-[13pt] font-extrabold text-slate-900 tracking-tight">මාසික ආදායම් සහ වියදම් ගිණුම් වාර්තාව / Monthly Income & Expense Statement</h3>
+                    <p class="text-[8.5pt] text-slate-500 font-medium mt-0.5">Generated Statement Generated Automatically via Management Console</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-5 items-start">
+                    
+                    <div class="border border-slate-200 rounded-lg overflow-hidden shadow-xs">
+                        <div class="bg-emerald-700 text-white text-center font-bold py-2 text-[9.5pt] tracking-wider uppercase">
+                            ආදායම / Income Stream
+                        </div>
+                        <table class="w-full text-left text-[8.5pt] border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold">
+                                    <th class="p-2 w-8 text-center">#</th>
+                                    <th class="p-2">විස්තරය / Description</th>
+                                    <th class="p-2 text-right">මුදල / Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="incomeTableBody"></tbody>
+                        </table>
+                    </div>
+
+                    <div class="border border-slate-200 rounded-lg overflow-hidden shadow-xs">
+                        <div class="bg-rose-700 text-white text-center font-bold py-2 text-[9.5pt] tracking-wider uppercase">
+                            වියදම / Expenses Ledger
+                        </div>
+                        <table class="w-full text-left text-[8.5pt] border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold">
+                                    <th class="p-2 w-8 text-center">#</th>
+                                    <th class="p-2">විස්තරය / Description</th>
+                                    <th class="p-2 text-right">මුදල / Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="expenseTableBody"></tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+                <div class="absolute bottom-[20mm] left-[15mm] right-[15mm] border-t-2 border-slate-200 pt-5">
+                    <div class="grid grid-cols-3 gap-4 text-center mb-10">
+                        <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-200/80">
+                            <p class="text-[8pt] font-bold text-emerald-800 uppercase tracking-wide">මුළු ආදායම / Total Income</p>
+                            <p id="totalIncomeTxt" class="text-[13pt] font-black text-emerald-900 mt-0.5">Rs. 0.00</p>
+                        </div>
+                        <div class="bg-rose-50 p-3 rounded-xl border border-rose-200/80">
+                            <p class="text-[8pt] font-bold text-rose-800 uppercase tracking-wide">මුළු වියදම / Total Expenses</p>
+                            <p id="totalExpenseTxt" class="text-[13pt] font-black text-rose-900 mt-0.5">Rs. 0.00</p>
+                        </div>
+                        <div id="pdfBalanceCard" class="bg-indigo-50 p-3 rounded-xl border border-indigo-200/80">
+                            <p class="text-[8pt] font-bold text-indigo-800 uppercase tracking-wide">ඉතිරි මුදල / Net Balance</p>
+                            <p id="netBalanceTxt" class="text-[13pt] font-black text-indigo-900 mt-0.5">Rs. 0.00</p>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-end px-2 text-[8.5pt] text-slate-500 font-medium">
+                        <div class="text-left">
+                            <p class="text-[8pt] text-slate-400">වාර්තාව නිකුත් කල දිනය / Created Date:</p>
+                            <p id="pdfCreatedDate" class="font-bold text-slate-700 mt-0.5">-</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="border-t border-slate-400 w-40 pt-1 font-semibold text-slate-600">සකස් කලේ / Prepared By</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="border-t border-slate-400 w-40 pt-1 font-semibold text-slate-600">අනුමත කලේ / Authorized Sign</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        let dataData = {
+            income: [],
+            expense: []
+        };
+
+        window.addEventListener('DOMContentLoaded', () => {
+            setCreatedDate();
+            syncMonthDisplay(document.getElementById('inputMonth').value);
+        });
+
+        document.getElementById('inputClassName').addEventListener('input', (e) => {
+            document.getElementById('pdfClassName').innerText = e.target.value || 'Class Report';
+        });
+
+        document.getElementById('inputMonth').addEventListener('input', (e) => {
+            syncMonthDisplay(e.target.value);
+        });
+
+        function setCreatedDate() {
+            const today = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+            document.getElementById('pdfCreatedDate').innerText = today.toLocaleDateString('en-US', options);
+        }
+
+        function syncMonthDisplay(monthValue) {
+            if(!monthValue) return;
+            const date = new Date(monthValue + "-01");
+            const englishMonth = date.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+            document.getElementById('pdfMonth').innerText = englishMonth;
+        }
+
+        function addItem(type) {
+            const descInput = document.getElementById(`${type}Desc`);
+            const amountInput = document.getElementById(`${type}Amount`);
+            
+            const desc = descInput.value.trim();
+            const amount = parseFloat(amountInput.value);
+
+            if (!desc || isNaN(amount) || amount <= 0) {
+                alert("කරුණාකර නිවැරදි විස්තරයක් සහ මුදලක් ඇතුළත් කරන්න! / Please enter a valid description & numeric amount.");
+                return;
+            }
+
+            dataData[type].push({ id: Date.now() + Math.random(), desc, amount });
+            descInput.value = '';
+            amountInput.value = '';
+
+            updateDashboardLists();
+            updatePrintTables(type);
+            calculateTotals();
+        }
+
+        function deleteItem(type, id) {
+            dataData[type] = dataData[type].filter(item => item.id !== id);
+            updateDashboardLists();
+            updatePrintTables(type);
+            calculateTotals();
+        }
+
+        function updateDashboardLists() {
+            ['income', 'expense'].forEach(type => {
+                const listContainer = document.getElementById(`dash${type.charAt(0).toUpperCase() + type.slice(1)}List`);
+                listContainer.innerHTML = '';
+                
+                if(dataData[type].length === 0) {
+                    listContainer.innerHTML = `<li class="py-2 text-slate-400 text-center italic">No records added yet</li>`;
+                    return;
+                }
+
+                dataData[type].forEach(item => {
+                    const li = document.createElement('li');
+                    li.className = "py-2 flex justify-between items-center group";
+                    li.innerHTML = `
+                        <span class="font-medium text-slate-700">${item.desc}</span>
+                        <div class="flex items-center gap-3">
+                            <span class="font-bold ${type === 'income' ? 'text-emerald-600' : 'text-rose-600'}">Rs. ${item.amount.toFixed(2)}</span>
+                            <button onclick="deleteItem('${type}', ${item.id})" class="text-slate-400 hover:text-rose-600 cursor-pointer text-sm font-bold px-1 rounded">✖</button>
+                        </div>
+                    `;
+                    listContainer.appendChild(li);
+                });
+            });
+        }
+
+        function updatePrintTables(type) {
+            const tbody = document.getElementById(`${type}TableBody`);
+            tbody.innerHTML = '';
+
+            dataData[type].forEach((item, index) => {
+                const row = document.createElement('tr');
+                row.className = "border-b border-slate-200/70";
+                row.innerHTML = `
+                    <td class="p-2 text-center text-slate-400 font-semibold">${index + 1}</td>
+                    <td class="p-2 text-slate-800 font-medium">${item.desc}</td>
+                    <td class="p-2 text-right font-bold text-slate-900">${item.amount.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            const currentRows = dataData[type].length;
+            if(currentRows < 10) {
+                for(let i = currentRows; i < 10; i++) {
+                    const blankRow = document.createElement('tr');
+                    blankRow.className = "border-b border-slate-100 h-8";
+                    blankRow.innerHTML = `<td></td><td></td><td></td>`;
+                    tbody.appendChild(blankRow);
+                }
+            }
+        }
+
+        function calculateTotals() {
+            const totalIncome = dataData.income.reduce((sum, item) => sum + item.amount, 0);
+            const totalExpense = dataData.expense.reduce((sum, item) => sum + item.amount, 0);
+            const netBalance = totalIncome - totalExpense;
+
+            const formattedIncome = `Rs. ${totalIncome.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            const formattedExpense = `Rs. ${totalExpense.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            const formattedBalance = `Rs. ${netBalance.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+
+            document.getElementById('dashTotalIncome').innerText = formattedIncome;
+            document.getElementById('dashTotalExpense').innerText = formattedExpense;
+            document.getElementById('dashNetBalance').innerText = formattedBalance;
+
+            document.getElementById('totalIncomeTxt').innerText = formattedIncome;
+            document.getElementById('totalExpenseTxt').innerText = formattedExpense;
+            document.getElementById('netBalanceTxt').innerText = formattedBalance;
+
+            const dashCard = document.getElementById('dashBalanceCard');
+            const pdfCard = document.getElementById('pdfBalanceCard');
+            const dashBadge = document.getElementById('dashBalanceBadge');
+
+            if(netBalance < 0) {
+                dashCard.className = "bg-rose-50 rounded-2xl p-6 shadow-xs border border-rose-200 flex items-center justify-between";
+                pdfCard.className = "bg-rose-50 p-3 rounded-xl border border-rose-200/80";
+                dashBadge.className = "p-3 bg-rose-100 rounded-xl text-rose-600 font-bold text-xl";
+            } else {
+                dashCard.className = "bg-white rounded-2xl p-6 shadow-xs border border-slate-200 flex items-center justify-between";
+                pdfCard.className = "bg-indigo-50 p-3 rounded-xl border border-indigo-200/80";
+                dashBadge.className = "p-3 bg-indigo-50 rounded-xl text-indigo-600 font-bold text-xl";
+            }
+        }
+
+        updatePrintTables('income');
+        updatePrintTables('expense');
+
+        function generatePDF() {
+            setCreatedDate();
+            const element = document.getElementById('pdf-content');
+            const className = document.getElementById('inputClassName').value || 'ADM_Center';
+            const monthVal = document.getElementById('inputMonth').value || 'Statement';
+
+            const opt = {
+                margin:       [0, 0, 0, 0],
+                filename:     `ADM_Statement_${className}_${monthVal}.pdf`,
+                image:        { type: 'jpeg', quality: 1.0 },
+                html2canvas:  { scale: 3, useCORS: true, letterRendering: true, logging: false },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+
+        // --- SERVICE WORKER REGISTRATION (PWA SYSTEM) ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('ADM PWA Service Worker Registered Successfully!', reg.scope))
+                    .catch(err => console.log('Service Worker Registration Failed:', err));
+            });
+        }
+    </script>
+</body>
+</html>
