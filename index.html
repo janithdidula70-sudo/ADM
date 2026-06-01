@@ -248,31 +248,17 @@
   const GOOGLE_SCRIPT_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
   const STORAGE_KEY = "adm_finance_dashboard_v1";
 
-  let dataData = {
-    income: [],
-    expense: []
-  };
+  let dataData = { income: [], expense: [] };
 
   function safeFileName(name) {
-    return String(name || "ADM_Statement")
-      .trim()
-      .replace(/[\\/:*?"<>|]+/g, "_")
-      .replace(/\s+/g, "_")
-      .slice(0, 80);
+    return String(name || "ADM_Statement").trim().replace(/[\\/:*?"<>|]+/g, "_").replace(/\s+/g, "_").slice(0, 80);
   }
 
   function escapeHTML(str) {
-    return String(str)
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
+    return String(str).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
   }
 
-  function saveData() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(dataData));
-  }
+  function saveData() { localStorage.setItem(STORAGE_KEY, JSON.stringify(dataData)); }
 
   function loadData() {
     try {
@@ -282,20 +268,12 @@
         dataData.income = Array.isArray(parsed.income) ? parsed.income : [];
         dataData.expense = Array.isArray(parsed.expense) ? parsed.expense : [];
       }
-    } catch (e) {
-      console.error("Failed to load saved data:", e);
-    }
+    } catch (e) { console.error("Failed to load saved data:", e); }
   }
 
   function setCreatedDate() {
     const today = new Date();
-    const options = {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    };
+    const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
     document.getElementById('pdfCreatedDate').innerText = today.toLocaleDateString('en-US', options);
   }
 
@@ -309,57 +287,39 @@
   function addItem(type) {
     const descInput = document.getElementById(`${type}Desc`);
     const amountInput = document.getElementById(`${type}Amount`);
-
     const desc = descInput.value.trim();
     const amount = parseFloat(amountInput.value);
 
     if (!desc || isNaN(amount) || amount <= 0) {
-      alert("කරුණාකර නිවැරදි විස්තරයක් සහ මුදලක් ඇතුළත් කරන්න! / Please enter a valid description & numeric amount.");
+      alert("කරුණාකර නිවැරදි විස්තරයක් සහ මුදලක් ඇතුළත් කරන්න!");
       return;
     }
-
-    dataData[type].push({
-      id: crypto.randomUUID(),
-      desc,
-      amount
-    });
-
-    descInput.value = '';
-    amountInput.value = '';
-
-    saveData();
-    renderAll();
+    dataData[type].push({ id: crypto.randomUUID(), desc, amount });
+    descInput.value = ''; amountInput.value = '';
+    saveData(); renderAll();
   }
 
   function deleteItem(type, id) {
     dataData[type] = dataData[type].filter(item => String(item.id) !== String(id));
-    saveData();
-    renderAll();
+    saveData(); renderAll();
   }
 
   function updateDashboardLists() {
     ['income', 'expense'].forEach(type => {
       const listContainer = document.getElementById(`dash${type.charAt(0).toUpperCase() + type.slice(1)}List`);
       listContainer.innerHTML = '';
-
       if (dataData[type].length === 0) {
         listContainer.innerHTML = `<li class="py-2 text-zinc-600 text-center italic border-none">No records added yet</li>`;
         return;
       }
-
       dataData[type].forEach(item => {
         const li = document.createElement('li');
         li.className = "py-2 flex justify-between items-center gap-3 border-zinc-900";
         li.innerHTML = `
           <span class="font-medium text-zinc-300 truncate">${escapeHTML(item.desc)}</span>
           <div class="flex items-center gap-3 shrink-0">
-            <span class="font-bold ${type === 'income' ? 'text-emerald-400' : 'text-rose-400'}">
-              Rs. ${Number(item.amount).toFixed(2)}
-            </span>
-            <button onclick="deleteItem('${type}', '${item.id}')"
-                    class="text-zinc-600 hover:text-rose-500 cursor-pointer text-sm font-bold px-1 rounded transition-colors">
-              ✖
-            </button>
+            <span class="font-bold ${type === 'income' ? 'text-emerald-400' : 'text-rose-400'}">Rs. ${Number(item.amount).toFixed(2)}</span>
+            <button onclick="deleteItem('${type}', '${item.id}')" class="text-zinc-600 hover:text-rose-500 cursor-pointer text-sm font-bold px-1 rounded">✖</button>
           </div>
         `;
         listContainer.appendChild(li);
@@ -370,20 +330,16 @@
   function updatePrintTables(type) {
     const tbody = document.getElementById(`${type}TableBody`);
     tbody.innerHTML = '';
-
     dataData[type].forEach((item, index) => {
       const row = document.createElement('tr');
       row.className = "border-b border-slate-200/70";
       row.innerHTML = `
         <td class="p-2 text-center text-slate-400 font-semibold">${index + 1}</td>
         <td class="p-2 text-slate-800 font-medium">${escapeHTML(item.desc)}</td>
-        <td class="p-2 text-right font-bold text-slate-900">
-          ${Number(item.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-        </td>
+        <td class="p-2 text-right font-bold text-slate-900">${Number(item.amount).toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
       `;
       tbody.appendChild(row);
     });
-
     const currentRows = dataData[type].length;
     if (currentRows < 10) {
       for (let i = currentRows; i < 10; i++) {
@@ -407,248 +363,136 @@
     document.getElementById('dashTotalIncome').innerText = formattedIncome;
     document.getElementById('dashTotalExpense').innerText = formattedExpense;
     document.getElementById('dashNetBalance').innerText = formattedBalance;
-
     document.getElementById('totalIncomeTxt').innerText = formattedIncome;
     document.getElementById('totalExpenseTxt').innerText = formattedExpense;
     document.getElementById('netBalanceTxt').innerText = formattedBalance;
 
-    const dashCard = document.getElementById('dashBalanceCard');
-    const pdfCard = document.getElementById('pdfBalanceCard');
-    const dashBadge = document.getElementById('dashBalanceBadge');
-
     if (netBalance < 0) {
-      dashCard.className = "bg-zinc-950 rounded-2xl p-6 shadow-sm border border-rose-950 flex items-center justify-between transition-all hover:border-rose-900";
-      pdfCard.className = "bg-rose-50 p-3 rounded-xl border border-rose-200 text-rose-900";
-      dashBadge.className = "p-3 bg-zinc-900 border border-zinc-800 rounded-xl text-rose-400 font-bold text-xl";
+      document.getElementById('dashBalanceCard').className = "bg-zinc-950 rounded-2xl p-6 shadow-sm border border-rose-950 flex items-center justify-between transition-all hover:border-rose-900";
+      document.getElementById('pdfBalanceCard').className = "bg-rose-50 p-3 rounded-xl border border-rose-200 text-rose-900";
       document.getElementById('dashNetBalance').className = "text-2xl font-extrabold text-rose-400 mt-1";
     } else {
-      dashCard.className = "bg-zinc-950 rounded-2xl p-6 shadow-sm border border-zinc-800 flex items-center justify-between transition-all hover:border-zinc-700";
-      pdfCard.className = "bg-slate-100 p-3 rounded-xl border border-slate-300 text-slate-900";
-      dashBadge.className = "p-3 bg-zinc-900 border border-zinc-800 rounded-xl text-white font-bold text-xl";
+      document.getElementById('dashBalanceCard').className = "bg-zinc-950 rounded-2xl p-6 shadow-sm border border-zinc-800 flex items-center justify-between transition-all hover:border-zinc-700";
+      document.getElementById('pdfBalanceCard').className = "bg-slate-100 p-3 rounded-xl border border-slate-300 text-slate-900";
       document.getElementById('dashNetBalance').className = "text-2xl font-extrabold text-white mt-1";
     }
   }
 
-  function renderAll() {
-    updateDashboardLists();
-    updatePrintTables('income');
-    updatePrintTables('expense');
-    calculateTotals();
-  }
+  function renderAll() { updateDashboardLists(); updatePrintTables('income'); updatePrintTables('expense'); calculateTotals(); }
 
   async function generatePDF() {
     const btn = document.querySelector('button[onclick="generatePDF()"]');
-    const originalText = btn ? btn.innerHTML : '';
-
     try {
       setCreatedDate();
-
       const element = document.getElementById("pdf-content");
-      if (!element) {
-        alert("PDF content not found.");
-        return;
-      }
-
-      if (btn) {
-        btn.disabled = true;
-        btn.innerHTML = "⏳ Generating PDF...";
-      }
-
+      if (btn) { btn.disabled = true; btn.innerHTML = "⏳ Generating PDF..."; }
       await document.fonts.ready;
       await new Promise(resolve => setTimeout(resolve, 300));
-
-      const canvas = await html2canvas(element, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: "#ffffff",
-        logging: false,
-        scrollX: 0,
-        scrollY: 0
-      });
-
+      const canvas = await html2canvas(element, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
       const imgData = canvas.toDataURL("image/png");
-      const { jsPDF } = window.jspdf;
-
-      const pdf = new jsPDF("p", "mm", "a4");
-      const imgWidth = 210;
-      const pageHeight = 297;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-      let heightLeft = imgHeight;
-      let position = 0;
-
-      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
-
-      while (heightLeft > 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-      }
-
-      const className = safeFileName(document.getElementById('inputClassName').value || 'ADM_Center');
-      const monthVal = safeFileName(document.getElementById('inputMonth').value || 'Statement');
-      pdf.save(`ADM_Statement_${className}_${monthVal}.pdf`);
-    } catch (err) {
-      console.error("PDF Error:", err);
-      alert("PDF download failed: " + (err?.message || err));
-    } finally {
-      if (btn) {
-        btn.disabled = false;
-        btn.innerHTML = originalText;
-      }
-    }
+      const pdf = new window.jspdf.jsPDF("p", "mm", "a4");
+      pdf.addImage(imgData, "PNG", 0, 0, 210, (canvas.height * 210) / canvas.width);
+      pdf.save(`ADM_Statement_${safeFileName(document.getElementById('inputClassName').value)}_${safeFileName(document.getElementById('inputMonth').value)}.pdf`);
+    } catch (err) { alert("PDF Error: " + err.message); }
+    finally { if (btn) { btn.disabled = false; btn.innerHTML = "📥 PDF වාර්තාව (Download PDF)"; } }
   }
 
   async function generatePNG() {
     const btn = document.querySelector('button[onclick="generatePNG()"]');
-    const originalText = btn ? btn.innerHTML : '';
-
     try {
       setCreatedDate();
-
       const element = document.getElementById("pdf-content");
-      if (!element) {
-        alert("Content not found.");
-        return;
-      }
-
-      if (btn) {
-        btn.disabled = true;
-        btn.innerHTML = "⏳ Generating PNG...";
-      }
-
+      if (btn) { btn.disabled = true; btn.innerHTML = "⏳ Generating PNG..."; }
       await document.fonts.ready;
       await new Promise(resolve => setTimeout(resolve, 300));
-
-      const canvas = await html2canvas(element, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: "#ffffff",
-        logging: false,
-        scrollX: 0,
-        scrollY: 0
-      });
-
-      const imageURL = canvas.toDataURL("image/png");
-
-      const className = safeFileName(document.getElementById('inputClassName').value || 'ADM_Center');
-      const monthVal = safeFileName(document.getElementById('inputMonth').value || 'Statement');
-
+      const canvas = await html2canvas(element, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
       const downloadLink = document.createElement('a');
-      downloadLink.href = imageURL;
-      downloadLink.download = `ADM_Statement_${className}_${monthVal}.png`;
-
-      document.body.appendChild(downloadLink);
+      downloadLink.href = canvas.toDataURL("image/png");
+      downloadLink.download = `ADM_Statement_${safeFileName(document.getElementById('inputClassName').value)}_${safeFileName(document.getElementById('inputMonth').value)}.png`;
       downloadLink.click();
-      document.body.removeChild(downloadLink);
-    } catch (err) {
-      console.error("PNG Error:", err);
-      alert("PNG download failed: " + (err?.message || err));
-    } finally {
-      if (btn) {
-        btn.disabled = false;
-        btn.innerHTML = originalText;
-      }
-    }
+    } catch (err) { alert("PNG Error: " + err.message); }
+    finally { if (btn) { btn.disabled = false; btn.innerHTML = "🖼️ PNG පින්තූරයක් (Download PNG)"; } }
   }
 
   async function syncWithGoogleSheets() {
-    const className = document.getElementById('inputClassName').value.trim();
-    const month = document.getElementById('inputMonth').value;
-
     const items = [];
     dataData.income.forEach(item => items.push({ type: 'Income', desc: item.desc, amount: item.amount }));
     dataData.expense.forEach(item => items.push({ type: 'Expense', desc: item.desc, amount: item.amount }));
-
-    if (items.length === 0) {
-      alert("ඇතුලත් කිරීමට කිසිදු දත්තයක් නැත! / No data rows to sync.");
-      return;
-    }
+    if (items.length === 0) { alert("ඇතුලත් කිරීමට කිසිදු දත්තයක් නැත!"); return; }
 
     const syncBtn = document.getElementById('syncBtn');
-    const originalText = syncBtn.innerHTML;
-    syncBtn.innerHTML = "🔄 සුරකිමින් පවතී... / Syncing...";
-    syncBtn.disabled = true;
-
+    syncBtn.innerHTML = "🔄 සුරකිමින් පවතී..."; syncBtn.disabled = true;
     try {
-      if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes("PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE")) {
-        alert("Google Script URL එක දාන්න. / Paste your Apps Script Web App URL first.");
-        return;
-      }
-
-      await fetch(GOOGLE_SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: {
-          'Content-Type': 'text/plain;charset=utf-8'
-        },
-        body: JSON.stringify({
-          className,
-          month,
-          items,
-          createdAt: new Date().toISOString()
-        })
-      });
-
-      alert("දත්ත Google Sheet එකට යැව්වා! / Data sent to Google Sheet.");
-    } catch (error) {
-      console.error("Sync Error:", error);
-      alert("දත්ත ඇතුලත් කිරීම අසාර්ථකයි! / Connection failed.");
-    } finally {
-      syncBtn.innerHTML = originalText;
-      syncBtn.disabled = false;
-    }
+      if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes("PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE")) { alert("Google Script URL එක දාන්න."); return; }
+      await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ className: document.getElementById('inputClassName').value.trim(), month: document.getElementById('inputMonth').value, items, createdAt: new Date().toISOString() }) });
+      alert("දත්ත Google Sheet එකට යැව්වා!");
+    } catch (error) { alert("දත්ත ඇතුලත් කිරීම අසාර්ථකයි!"); }
+    finally { syncBtn.innerHTML = "🟢 ගූගල් ෂීට් වෙත (Sync to Google Sheet)"; syncBtn.disabled = false; }
   }
 
   window.addEventListener('DOMContentLoaded', () => {
-    loadData();
-    setCreatedDate();
-    syncMonthDisplay(document.getElementById('inputMonth').value);
-    renderAll();
-
-    document.getElementById('inputClassName').addEventListener('input', (e) => {
-      document.getElementById('pdfClassName').innerText = e.target.value || 'Class Report';
-    });
-
-    document.getElementById('inputMonth').addEventListener('input', (e) => {
-      syncMonthDisplay(e.target.value);
-    });
+    loadData(); setCreatedDate(); syncMonthDisplay(document.getElementById('inputMonth').value); renderAll();
+    document.getElementById('inputClassName').addEventListener('input', (e) => { document.getElementById('pdfClassName').innerText = e.target.value || 'Class Report'; });
+    document.getElementById('inputMonth').addEventListener('input', (e) => { syncMonthDisplay(e.target.value); });
   });
 
-  // Inline Service Worker - වෙනම sw.js එකක් නොමැතිව ක්‍රියාත්මක වේ
+  // 🚀 ඔයා දුන්න අලුත්ම v6 Service Worker Logic එක Inline Blob එකක් විදිහට පහතින් සෙට් කලා
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       const swCode = `
-        const CACHE_NAME = 'adm-finance-v1';
+        const CACHE_NAME = 'adm-finance-v6';
+        const LOGO_URL = 'https://raw.githubusercontent.com/janithdidula70-sudo/ADM/35f3a32a1de1d1ad22bcb71229bb2698add86d8b/logo.jpeg';
+
         const ASSETS = [
-          '/',
-          '/index.html',
+          './',
+          './index.html',
           'https://cdn.tailwindcss.com',
           'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',
           'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
-          'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap'
+          'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap',
+          LOGO_URL
         ];
 
         self.addEventListener('install', (e) => {
-          e.waitUntil(
-            caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
-          );
+          e.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)));
+          self.skipWaiting();
         });
 
         self.addEventListener('activate', (e) => {
-          e.waitUntil(
-            caches.keys().then((keys) => Promise.all(
-              keys.map((key) => { if (key !== CACHE_NAME) return caches.delete(key); })
-            ))
-          );
+          e.waitUntil(caches.keys().then((keys) => Promise.all(
+            keys.map((key) => { if (key !== CACHE_NAME) return caches.delete(key); })
+          )));
+          self.clients.claim();
         });
 
         self.addEventListener('fetch', (e) => {
           if (e.request.method === 'POST') return;
+
+          // GitHub Image Links සඳහා CORS මඟහැරීමට ඔයා ලියපු Logic එක
+          if (e.request.url.includes('raw.githubusercontent.com')) {
+            e.respondWith(
+              caches.match(e.request).then((cached) => {
+                if (cached) return cached;
+                return fetch(e.request, { mode: 'no-cors' }).then((response) => {
+                  return caches.open(CACHE_NAME).then((cache) => {
+                    cache.put(e.request, response.clone());
+                    return response;
+                  });
+                }).catch(() => caches.match(LOGO_URL));
+              })
+            );
+            return;
+          }
+
+          // සාමාන්‍ය සයිට් එකේ ෆයිල් ලෝඩ් වන ක්‍රමය
           e.respondWith(
-            fetch(e.request).catch(() => caches.match(e.request))
+            caches.match(e.request).then((cached) => {
+              return cached || fetch(e.request).catch(() => {
+                if (e.request.mode === 'navigate') {
+                  return caches.match('./index.html');
+                }
+              });
+            })
           );
         });
       `;
@@ -657,7 +501,7 @@
       const blobURL = URL.createObjectURL(blob);
 
       navigator.serviceWorker.register(blobURL, { scope: './' })
-        .then(reg => console.log('ADM PWA Inline Service Worker Registered With Custom Settings!', reg.scope))
+        .then(reg => console.log('ADM PWA Inline Service Worker Registered (v6 updated)!', reg.scope))
         .catch(err => console.log('Service Worker Registration Failed:', err));
     });
   }
