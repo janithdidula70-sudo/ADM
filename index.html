@@ -5,14 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ADM Higher Education Center - Finance Dashboard</title>
 
-  <link rel="manifest" href='data:application/manifest+json,{"name":"ADM Higher Education","short_name":"ADM","description":"Management Dashboard & Finance Report Generator for ADM Narammala","start_url":"./index.html","display":"standalone","background_color":"#000000","theme_color":"#000000","icons":[{"src":"https://raw.githubusercontent.com/janithdidula70-sudo/ADM/35f3a32a1de1d1ad22bcb71229bb2698add86d8b/logo.jpeg","sizes":"192x192","type":"image/jpeg","purpose":"any"},{"src":"https://raw.githubusercontent.com/janithdidula70-sudo/ADM/35f3a32a1de1d1ad22bcb71229bb2698add86d8b/logo.jpeg","sizes":"512x512","type":"image/jpeg","purpose":"any"}]}'>
-
-  <meta name="theme-color" content="#000000">
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#020617">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="ADM Finance">
-  
-  <link class="apple-touch-icon" href="https://raw.githubusercontent.com/janithdidula70-sudo/ADM/35f3a32a1de1d1ad22bcb71229bb2698add86d8b/logo.jpeg">
+  <link rel="apple-touch-icon" href="./logo.jpeg">
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -20,491 +18,602 @@
 
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-    body { font-family: 'Inter', sans-serif; }
+
+    :root {
+      --bg1: #020617;
+      --bg2: #0f172a;
+      --bg3: #111827;
+      --card: rgba(2, 6, 23, 0.72);
+      --line: rgba(148, 163, 184, 0.14);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      color: #f8fafc;
+      background:
+        radial-gradient(circle at 15% 10%, rgba(59, 130, 246, 0.28), transparent 28%),
+        radial-gradient(circle at 85% 15%, rgba(168, 85, 247, 0.20), transparent 26%),
+        radial-gradient(circle at 50% 95%, rgba(16, 185, 129, 0.16), transparent 28%),
+        linear-gradient(180deg, #020617 0%, #050816 35%, #090b14 100%);
+      background-attachment: fixed;
+    }
+
     * { box-sizing: border-box; }
-    button:disabled { opacity: 0.5; cursor: not-allowed; }
-    .page-break { page-break-after: always; }
-    
-    /* Custom Dark Scrollbar */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #000000; }
-    ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 3px; }
-    ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+    button:disabled { opacity: 0.55; cursor: not-allowed; }
+
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #020617; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+    .glass {
+      background: var(--card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--line);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+    }
+
+    .soft-border { border: 1px solid var(--line); }
+
+    .btn-glow:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 30px rgba(255,255,255,0.08);
+    }
+
+    .shine {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .shine::after {
+      content: "";
+      position: absolute;
+      inset: -40% -20%;
+      background: linear-gradient(120deg, transparent 35%, rgba(255,255,255,0.10) 50%, transparent 65%);
+      transform: translateX(-60%) rotate(8deg);
+      pointer-events: none;
+    }
+
+    .shine:hover::after {
+      animation: sweep 1.2s ease-out;
+    }
+
+    @keyframes sweep {
+      from { transform: translateX(-60%) rotate(8deg); }
+      to { transform: translateX(60%) rotate(8deg); }
+    }
   </style>
 </head>
 
-<body class="bg-black min-h-screen text-zinc-100 antialiased pb-12">
-
-<header class="bg-black text-white shadow-md mb-8 py-5 px-6 border-b border-zinc-800">
-  <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
-    <div class="text-center sm:text-left">
-      <h1 class="text-2xl font-black tracking-wider text-white">ADM HIGHER EDUCATION CENTER</h1>
-      <p class="text-xs text-zinc-400 mt-0.5">Management Dashboard & Finance Report Generator</p>
-    </div>
-    <div class="text-center sm:text-right text-xs bg-zinc-900 px-4 py-2 rounded-lg border border-zinc-800">
-      <span class="font-semibold text-zinc-400">Location:</span> Negombo Rd, Narammala &nbsp;|&nbsp;
-      <span class="font-semibold text-zinc-400">Hotline:</span> 0710658051
-    </div>
-  </div>
-</header>
-
-<main class="max-w-7xl mx-auto px-4 sm:px-6">
-
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-    <div class="bg-zinc-950 rounded-2xl p-6 shadow-sm border border-zinc-800 flex items-center justify-between transition-all hover:border-zinc-700">
-      <div>
-        <p class="text-xs font-bold text-zinc-400 uppercase tracking-wider">මුළු ආදායම / Total Income</p>
-        <h3 id="dashTotalIncome" class="text-2xl font-extrabold text-emerald-400 mt-1">Rs. 0.00</h3>
-      </div>
-      <div class="p-3 bg-zinc-900 border border-zinc-800 rounded-xl text-emerald-400 font-bold text-xl">↑</div>
-    </div>
-
-    <div class="bg-zinc-950 rounded-2xl p-6 shadow-sm border border-zinc-800 flex items-center justify-between transition-all hover:border-zinc-700">
-      <div>
-        <p class="text-xs font-bold text-zinc-400 uppercase tracking-wider">මුළු වියදම / Total Expenses</p>
-        <h3 id="dashTotalExpense" class="text-2xl font-extrabold text-rose-400 mt-1">Rs. 0.00</h3>
-      </div>
-      <div class="p-3 bg-zinc-900 border border-zinc-800 rounded-xl text-rose-400 font-bold text-xl">↓</div>
-    </div>
-
-    <div id="dashBalanceCard" class="bg-zinc-950 rounded-2xl p-6 shadow-sm border border-zinc-800 flex items-center justify-between transition-all hover:border-zinc-700">
-      <div>
-        <p class="text-xs font-bold text-zinc-400 uppercase tracking-wider">ඉතිරි මුදල / Net Balance</p>
-        <h3 id="dashNetBalance" class="text-2xl font-extrabold text-white mt-1">Rs. 0.00</h3>
-      </div>
-      <div id="dashBalanceBadge" class="p-3 bg-zinc-900 border border-zinc-800 rounded-xl text-white font-bold text-xl">⚖</div>
-    </div>
-  </div>
-
-  <div class="bg-zinc-950 rounded-2xl p-6 shadow-sm border border-zinc-800 mb-8">
-    <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2 border-b border-zinc-800 pb-2">
-      <span>⚙️</span> දත්ත ඇතුළත් කිරීම් / Configuration & Inputs
-    </h2>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-      <div>
-        <label class="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1.5">පංතියේ නම / Class Name:</label>
-        <input type="text" id="inputClassName" value="ADM Narammala"
-               class="w-full p-3 bg-black border border-zinc-800 rounded-xl text-white focus:border-white focus:ring-1 focus:ring-white outline-none font-medium transition-all">
-      </div>
-      <div>
-        <label class="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1.5">අදාළ මාසය / Target Month:</label>
-        <input type="month" id="inputMonth" value="2026-06"
-               class="w-full p-3 bg-black border border-zinc-800 rounded-xl text-white focus:border-white focus:ring-1 focus:ring-white outline-none font-medium transition-all">
-      </div>
-    </div>
-
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <div class="bg-black p-5 rounded-2xl border border-zinc-800">
-        <h3 class="text-sm font-bold text-emerald-400 mb-3 flex items-center gap-1.5">🟢 ආදායම් එකතු කරන්න / Add Income</h3>
-        <div class="flex flex-col sm:flex-row gap-2.5">
-          <input type="text" id="incomeDesc" placeholder="විස්තරය (Description)"
-                 class="flex-1 p-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-600">
-          <input type="number" id="incomeAmount" placeholder="මුදල"
-                 class="w-full sm:w-32 p-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-600">
-          <button onclick="addItem('income')"
-                  class="bg-white hover:bg-zinc-200 text-black px-5 py-2.5 rounded-xl text-sm font-bold shadow-sm transition-all cursor-pointer whitespace-nowrap">
-            Add Item
-          </button>
+<body class="pb-12">
+  <header class="sticky top-0 z-30 glass border-b border-slate-800/70">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-col lg:flex-row justify-between items-center gap-4">
+      <div class="flex items-center gap-4">
+        <div class="w-14 h-14 rounded-2xl overflow-hidden shadow-lg border border-slate-700 bg-slate-900 flex items-center justify-center">
+          <img src="./logo.jpeg" alt="ADM Logo" class="w-full h-full object-cover" crossorigin="anonymous">
         </div>
-        <div class="mt-4 bg-zinc-950 rounded-xl p-3 max-h-48 overflow-y-auto border border-zinc-800">
-          <p class="text-[11px] font-bold text-emerald-400 mb-2 uppercase tracking-wider">වත්මන් ආදායම් ලැයිස්තුව</p>
-          <ul id="dashIncomeList" class="text-xs divide-y divide-zinc-900"></ul>
+        <div class="text-center lg:text-left">
+          <h1 class="text-xl sm:text-2xl font-black tracking-[0.18em] text-white uppercase">ADM Higher Education Center</h1>
+          <p class="text-xs sm:text-sm text-slate-400 mt-1">Management Dashboard & Finance Report Generator</p>
         </div>
       </div>
 
-      <div class="bg-black p-5 rounded-2xl border border-zinc-800">
-        <h3 class="text-sm font-bold text-rose-400 mb-3 flex items-center gap-1.5">🔴 වියදම් එකතු කරන්න / Add Expense</h3>
-        <div class="flex flex-col sm:flex-row gap-2.5">
-          <input type="text" id="expenseDesc" placeholder="විස්තරය (Description)"
-                 class="flex-1 p-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-600">
-          <input type="number" id="expenseAmount" placeholder="මුදල"
-                 class="w-full sm:w-32 p-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-600">
-          <button onclick="addItem('expense')"
-                  class="bg-white hover:bg-zinc-200 text-black px-5 py-2.5 rounded-xl text-sm font-bold shadow-sm transition-all cursor-pointer whitespace-nowrap">
-            Add Item
-          </button>
-        </div>
-        <div class="mt-4 bg-zinc-950 rounded-xl p-3 max-h-48 overflow-y-auto border border-zinc-800">
-          <p class="text-[11px] font-bold text-rose-400 mb-2 uppercase tracking-wider">වත්මන් වියදම් ලැයිස්තුව</p>
-          <ul id="dashExpenseList" class="text-xs divide-y divide-zinc-900"></ul>
-        </div>
+      <div class="text-center lg:text-right text-xs sm:text-sm bg-slate-950/70 px-4 py-2.5 rounded-2xl soft-border">
+        <span class="font-semibold text-slate-400">Location:</span> Negombo Rd, Narammala &nbsp;|&nbsp;
+        <span class="font-semibold text-slate-400">Hotline:</span> 0710658051
       </div>
     </div>
+  </header>
 
-    <div class="mt-6 pt-4 border-t border-zinc-900 flex flex-col md:flex-row justify-center items-center gap-4">
-      <button onclick="generatePDF()"
-              class="w-full md:w-auto bg-zinc-900 hover:bg-zinc-800 text-white border border-zinc-700 font-bold px-6 py-3.5 rounded-xl shadow-md transition-all cursor-pointer inline-flex items-center gap-2 justify-center text-sm">
-        📥 PDF වාර්තාව (Download PDF)
-      </button>
-
-      <button onclick="generatePNG()"
-              class="w-full md:w-auto bg-zinc-900 hover:bg-zinc-800 text-white border border-zinc-700 font-bold px-6 py-3.5 rounded-xl shadow-md transition-all cursor-pointer inline-flex items-center gap-2 justify-center text-sm">
-        🖼️ PNG පින්තූරයක් (Download PNG)
-      </button>
-
-      <button id="syncBtn" onclick="syncWithGoogleSheets()"
-              class="w-full md:w-auto bg-white hover:bg-zinc-200 text-black font-bold px-6 py-3.5 rounded-xl shadow-md transition-all cursor-pointer inline-flex items-center gap-2 justify-center text-sm">
-        🟢 ගූගල් ෂීට් වෙත (Sync to Google Sheet)
-      </button>
-    </div>
-  </div>
-
-  <div class="overflow-x-auto p-4 bg-zinc-950 rounded-2xl border border-zinc-800">
-    <p class="text-center text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">📄 මුද්‍රිත පිටුවේ පෙරදසුන / Official Print Preview Layout</p>
-
-    <div id="pdf-content" class="w-[210mm] min-h-[297mm] bg-white mx-auto p-[15mm] text-slate-800 relative shadow-xl box-border">
-      <div class="text-center border-b-4 border-slate-900 pb-3 mb-5">
-        <h2 class="text-[23pt] font-black tracking-wide text-slate-900 leading-none">ADM HIGHER EDUCATION CENTER</h2>
-        <p class="text-[9.5pt] font-semibold text-slate-500 uppercase tracking-widest mt-1.5">
-          Negombo Rd, Narammala &nbsp;|&nbsp; Contact: 0710658051
-        </p>
-      </div>
-
-      <div class="bg-slate-100 rounded-lg p-3.5 mb-6 grid grid-cols-2 gap-4 items-center border border-slate-200/60">
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 mt-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div class="glass rounded-3xl p-6 shadow-lg flex items-center justify-between transition-all hover:border-slate-500/30">
         <div>
-          <span class="text-[8pt] font-bold text-slate-400 uppercase tracking-wider block">Class Name</span>
-          <span id="pdfClassName" class="text-[12pt] font-extrabold text-slate-950 uppercase">ADM Narammala </span>
+          <p class="text-[11px] font-bold text-slate-400 uppercase tracking-[0.18em]">මුළු ආදායම / Total Income</p>
+          <h3 id="dashTotalIncome" class="text-3xl font-extrabold text-emerald-400 mt-2">Rs. 0.00</h3>
         </div>
-        <div class="text-right">
-          <span class="text-[8pt] font-bold text-slate-400 uppercase tracking-wider block">Statement For Month / වාර්තාගත මාසය</span>
-          <span id="pdfMonth" class="text-[11pt] font-bold text-slate-800">June 2026</span>
+        <div class="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-2xl font-black">↑</div>
+      </div>
+
+      <div class="glass rounded-3xl p-6 shadow-lg flex items-center justify-between transition-all hover:border-slate-500/30">
+        <div>
+          <p class="text-[11px] font-bold text-slate-400 uppercase tracking-[0.18em]">මුළු වියදම / Total Expenses</p>
+          <h3 id="dashTotalExpense" class="text-3xl font-extrabold text-rose-400 mt-2">Rs. 0.00</h3>
+        </div>
+        <div class="w-14 h-14 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 text-2xl font-black">↓</div>
+      </div>
+
+      <div id="dashBalanceCard" class="glass rounded-3xl p-6 shadow-lg flex items-center justify-between transition-all hover:border-slate-500/30">
+        <div>
+          <p class="text-[11px] font-bold text-slate-400 uppercase tracking-[0.18em]">ඉතිරි මුදල / Net Balance</p>
+          <h3 id="dashNetBalance" class="text-3xl font-extrabold text-white mt-2">Rs. 0.00</h3>
+        </div>
+        <div id="dashBalanceBadge" class="w-14 h-14 rounded-2xl bg-slate-800/80 border border-slate-700 flex items-center justify-center text-white text-2xl font-black">⚖</div>
+      </div>
+    </div>
+
+    <div class="glass rounded-3xl p-6 shadow-lg mb-8">
+      <h2 class="text-lg font-bold text-white mb-5 flex items-center gap-2 border-b border-slate-800 pb-3">
+        <span>⚙️</span> දත්ත ඇතුළත් කිරීම් / Configuration & Inputs
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div>
+          <label class="block text-xs font-bold text-slate-400 uppercase tracking-[0.18em] mb-1.5">පංතියේ නම / Class Name:</label>
+          <input type="text" id="inputClassName" value="ADM Narammala"
+                 class="w-full p-3.5 bg-slate-950 border border-slate-800 rounded-2xl text-white focus:border-slate-500 focus:ring-1 focus:ring-slate-400 outline-none font-medium transition-all">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-400 uppercase tracking-[0.18em] mb-1.5">අදාළ මාසය / Target Month:</label>
+          <input type="month" id="inputMonth" value="2026-06"
+                 class="w-full p-3.5 bg-slate-950 border border-slate-800 rounded-2xl text-white focus:border-slate-500 focus:ring-1 focus:ring-slate-400 outline-none font-medium transition-all">
         </div>
       </div>
 
-      <div class="text-center mb-6">
-        <h3 class="text-[13pt] font-extrabold text-slate-900 tracking-tight">මාසික ආදායම් සහ වියදම් ගිණුම් වාර්තාව / Monthly Income & Expense Statement</h3>
-        <p class="text-[8.5pt] text-slate-500 font-medium mt-0.5">Generated Automatically via Management Console</p>
+      <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <div class="bg-slate-950/80 p-5 rounded-3xl border border-slate-800">
+          <h3 class="text-sm font-bold text-emerald-400 mb-3 flex items-center gap-2">🟢 ආදායම් එකතු කරන්න / Add Income</h3>
+          <div class="flex flex-col sm:flex-row gap-2.5">
+            <input type="text" id="incomeDesc" placeholder="විස්තරය (Description)"
+                   class="flex-1 p-3 bg-slate-900 border border-slate-800 rounded-2xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-slate-600">
+            <input type="number" id="incomeAmount" placeholder="මුදල"
+                   class="w-full sm:w-36 p-3 bg-slate-900 border border-slate-800 rounded-2xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-slate-600">
+            <button onclick="addItem('income')"
+                    class="bg-white hover:bg-slate-200 text-slate-950 px-5 py-3 rounded-2xl text-sm font-bold transition-all cursor-pointer whitespace-nowrap btn-glow">
+              Add Item
+            </button>
+          </div>
+          <div class="mt-4 bg-slate-900/70 rounded-2xl p-3 max-h-52 overflow-y-auto border border-slate-800">
+            <p class="text-[11px] font-bold text-emerald-400 mb-2 uppercase tracking-[0.18em]">වත්මන් ආදායම් ලැයිස්තුව</p>
+            <ul id="dashIncomeList" class="text-xs divide-y divide-slate-800"></ul>
+          </div>
+        </div>
+
+        <div class="bg-slate-950/80 p-5 rounded-3xl border border-slate-800">
+          <h3 class="text-sm font-bold text-rose-400 mb-3 flex items-center gap-2">🔴 වියදම් එකතු කරන්න / Add Expense</h3>
+          <div class="flex flex-col sm:flex-row gap-2.5">
+            <input type="text" id="expenseDesc" placeholder="විස්තරය (Description)"
+                   class="flex-1 p-3 bg-slate-900 border border-slate-800 rounded-2xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-slate-600">
+            <input type="number" id="expenseAmount" placeholder="මුදල"
+                   class="w-full sm:w-36 p-3 bg-slate-900 border border-slate-800 rounded-2xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-slate-600">
+            <button onclick="addItem('expense')"
+                    class="bg-white hover:bg-slate-200 text-slate-950 px-5 py-3 rounded-2xl text-sm font-bold transition-all cursor-pointer whitespace-nowrap btn-glow">
+              Add Item
+            </button>
+          </div>
+          <div class="mt-4 bg-slate-900/70 rounded-2xl p-3 max-h-52 overflow-y-auto border border-slate-800">
+            <p class="text-[11px] font-bold text-rose-400 mb-2 uppercase tracking-[0.18em]">වත්මන් වියදම් ලැයිස්තුව</p>
+            <ul id="dashExpenseList" class="text-xs divide-y divide-slate-800"></ul>
+          </div>
+        </div>
       </div>
 
-      <div class="grid grid-cols-2 gap-5 items-start">
-        <div class="border border-slate-200 rounded-lg overflow-hidden shadow-sm">
-          <div class="bg-slate-900 text-white text-center font-bold py-2 text-[9.5pt] tracking-wider uppercase">
-            ආදායම / Income Stream
-          </div>
-          <table class="w-full text-left text-[8.5pt] border-collapse">
-            <thead>
-              <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold">
-                <th class="p-2 w-8 text-center">#</th>
-                <th class="p-2">විස්තරය / Description</th>
-                <th class="p-2 text-right">මුදල / Amount</th>
-              </tr>
-            </thead>
-            <tbody id="incomeTableBody"></tbody>
-          </table>
-        </div>
+      <div class="mt-6 pt-4 border-t border-slate-800 flex flex-col md:flex-row justify-center items-center gap-4">
+        <button onclick="generatePDF()"
+                class="w-full md:w-auto bg-slate-900 hover:bg-slate-800 text-white border border-slate-700 font-bold px-6 py-3.5 rounded-2xl shadow-md transition-all cursor-pointer inline-flex items-center gap-2 justify-center text-sm btn-glow">
+          📥 PDF වාර්තාව (Download PDF)
+        </button>
 
-        <div class="border border-slate-200 rounded-lg overflow-hidden shadow-sm">
-          <div class="bg-slate-900 text-white text-center font-bold py-2 text-[9.5pt] tracking-wider uppercase">
-            වියදම / Expenses Ledger
-          </div>
-          <table class="w-full text-left text-[8.5pt] border-collapse">
-            <thead>
-              <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold">
-                <th class="p-2 w-8 text-center">#</th>
-                <th class="p-2">විස්තරය / Description</th>
-                <th class="p-2 text-right">මුදල / Amount</th>
-              </tr>
-            </thead>
-            <tbody id="expenseTableBody"></tbody>
-          </table>
-        </div>
+        <button onclick="generatePNG()"
+                class="w-full md:w-auto bg-slate-900 hover:bg-slate-800 text-white border border-slate-700 font-bold px-6 py-3.5 rounded-2xl shadow-md transition-all cursor-pointer inline-flex items-center gap-2 justify-center text-sm btn-glow">
+          🖼️ PNG පින්තූරයක් (Download PNG)
+        </button>
+
+        <button id="syncBtn" onclick="syncWithGoogleSheets()"
+                class="w-full md:w-auto bg-white hover:bg-slate-200 text-slate-950 font-bold px-6 py-3.5 rounded-2xl shadow-md transition-all cursor-pointer inline-flex items-center gap-2 justify-center text-sm btn-glow">
+          🟢 ගූගල් ෂීට් වෙත (Sync to Google Sheet)
+        </button>
       </div>
+    </div>
 
-      <div class="absolute bottom-[20mm] left-[15mm] right-[15mm] border-t-2 border-slate-200 pt-5">
-        <div class="grid grid-cols-3 gap-4 text-center mb-10">
-          <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
-            <p class="text-[8pt] font-bold text-slate-500 uppercase tracking-wide">මුළු ආදායම / Total Income</p>
-            <p id="totalIncomeTxt" class="text-[13pt] font-black text-slate-900 mt-0.5">Rs. 0.00</p>
+    <div class="overflow-x-auto p-4 glass rounded-3xl border border-slate-800">
+      <p class="text-center text-xs font-bold text-slate-400 uppercase tracking-[0.25em] mb-3">📄 මුද්‍රිත පිටුවේ පෙරදසුන / Official Print Preview Layout</p>
+
+      <div id="pdf-content" class="w-[210mm] min-h-[297mm] bg-white mx-auto p-[15mm] text-slate-800 relative shadow-xl box-border">
+        <div class="text-center border-b-4 border-slate-900 pb-3 mb-5">
+          <h2 class="text-[23pt] font-black tracking-wide text-slate-900 leading-none">ADM HIGHER EDUCATION CENTER</h2>
+          <p class="text-[9.5pt] font-semibold text-slate-500 uppercase tracking-widest mt-1.5">
+            Negombo Rd, Narammala &nbsp;|&nbsp; Contact: 0710658051
+          </p>
+        </div>
+
+        <div class="bg-slate-100 rounded-xl p-3.5 mb-6 grid grid-cols-2 gap-4 items-center border border-slate-200/70">
+          <div>
+            <span class="text-[8pt] font-bold text-slate-400 uppercase tracking-wider block">Class Name</span>
+            <span id="pdfClassName" class="text-[12pt] font-extrabold text-slate-950 uppercase">ADM Narammala</span>
           </div>
-          <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
-            <p class="text-[8pt] font-bold text-slate-500 uppercase tracking-wide">මුළු වියදම / Total Expenses</p>
-            <p id="totalExpenseTxt" class="text-[13pt] font-black text-slate-900 mt-0.5">Rs. 0.00</p>
-          </div>
-          <div id="pdfBalanceCard" class="bg-slate-100 p-3 rounded-xl border border-slate-300">
-            <p class="text-[8pt] font-bold text-slate-600 uppercase tracking-wide">ඉතිරි මුදල / Net Balance</p>
-            <p id="netBalanceTxt" class="text-[13pt] font-black text-slate-900 mt-0.5">Rs. 0.00</p>
+          <div class="text-right">
+            <span class="text-[8pt] font-bold text-slate-400 uppercase tracking-wider block">Statement For Month / වාර්තාගත මාසය</span>
+            <span id="pdfMonth" class="text-[11pt] font-bold text-slate-800">June 2026</span>
           </div>
         </div>
 
-        <div class="flex justify-between items-end px-2 text-[8.5pt] text-slate-500 font-medium">
-          <div class="text-left">
-            <p class="text-[8pt] text-slate-400">වාර්තාව නිකුත් කල දිනය / Created Date:</p>
-            <p id="pdfCreatedDate" class="font-bold text-slate-700 mt-0.5">-</p>
+        <div class="text-center mb-6">
+          <h3 class="text-[13pt] font-extrabold text-slate-900 tracking-tight">මාසික ආදායම් සහ වියදම් ගිණුම් වාර්තාව / Monthly Income & Expense Statement</h3>
+          <p class="text-[8.5pt] text-slate-500 font-medium mt-0.5">Generated Automatically via Management Console</p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-5 items-start">
+          <div class="border border-slate-200 rounded-lg overflow-hidden shadow-sm">
+            <div class="bg-slate-900 text-white text-center font-bold py-2 text-[9.5pt] tracking-wider uppercase">
+              ආදායම / Income Stream
+            </div>
+            <table class="w-full text-left text-[8.5pt] border-collapse">
+              <thead>
+                <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold">
+                  <th class="p-2 w-8 text-center">#</th>
+                  <th class="p-2">විස්තරය / Description</th>
+                  <th class="p-2 text-right">මුදල / Amount</th>
+                </tr>
+              </thead>
+              <tbody id="incomeTableBody"></tbody>
+            </table>
           </div>
-          <div class="text-center">
-            <div class="border-t border-slate-400 w-40 pt-1 font-semibold text-slate-600">සකස් කලේ / Prepared By</div>
+
+          <div class="border border-slate-200 rounded-lg overflow-hidden shadow-sm">
+            <div class="bg-slate-900 text-white text-center font-bold py-2 text-[9.5pt] tracking-wider uppercase">
+              වියදම / Expenses Ledger
+            </div>
+            <table class="w-full text-left text-[8.5pt] border-collapse">
+              <thead>
+                <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold">
+                  <th class="p-2 w-8 text-center">#</th>
+                  <th class="p-2">විස්තරය / Description</th>
+                  <th class="p-2 text-right">මුදල / Amount</th>
+                </tr>
+              </thead>
+              <tbody id="expenseTableBody"></tbody>
+            </table>
           </div>
-          <div class="text-center">
-            <div class="border-t border-slate-400 w-40 pt-1 font-semibold text-slate-600">අනුමත කලේ / Authorized Sign</div>
+        </div>
+
+        <div class="absolute bottom-[20mm] left-[15mm] right-[15mm] border-t-2 border-slate-200 pt-5">
+          <div class="grid grid-cols-3 gap-4 text-center mb-10">
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+              <p class="text-[8pt] font-bold text-slate-500 uppercase tracking-wide">මුළු ආදායම / Total Income</p>
+              <p id="totalIncomeTxt" class="text-[13pt] font-black text-slate-900 mt-0.5">Rs. 0.00</p>
+            </div>
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+              <p class="text-[8pt] font-bold text-slate-500 uppercase tracking-wide">මුළු වියදම / Total Expenses</p>
+              <p id="totalExpenseTxt" class="text-[13pt] font-black text-slate-900 mt-0.5">Rs. 0.00</p>
+            </div>
+            <div id="pdfBalanceCard" class="bg-slate-100 p-3 rounded-xl border border-slate-300">
+              <p class="text-[8pt] font-bold text-slate-600 uppercase tracking-wide">ඉතිරි මුදල / Net Balance</p>
+              <p id="netBalanceTxt" class="text-[13pt] font-black text-slate-900 mt-0.5">Rs. 0.00</p>
+            </div>
+          </div>
+
+          <div class="flex justify-between items-end px-2 text-[8.5pt] text-slate-500 font-medium">
+            <div class="text-left">
+              <p class="text-[8pt] text-slate-400">වාර්තාව නිකුත් කල දිනය / Created Date:</p>
+              <p id="pdfCreatedDate" class="font-bold text-slate-700 mt-0.5">-</p>
+            </div>
+            <div class="text-center">
+              <div class="border-t border-slate-400 w-40 pt-1 font-semibold text-slate-600">සකස් කලේ / Prepared By</div>
+            </div>
+            <div class="text-center">
+              <div class="border-t border-slate-400 w-40 pt-1 font-semibold text-slate-600">අනුමත කලේ / Authorized Sign</div>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-</main>
+  </main>
 
-<script>
-  const GOOGLE_SCRIPT_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
-  const STORAGE_KEY = "adm_finance_dashboard_v1";
+  <script>
+    const GOOGLE_SCRIPT_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
+    const STORAGE_KEY = "adm_finance_dashboard_v2";
 
-  let dataData = { income: [], expense: [] };
+    let dataData = { income: [], expense: [] };
 
-  function safeFileName(name) {
-    return String(name || "ADM_Statement").trim().replace(/[\\/:*?"<>|]+/g, "_").replace(/\s+/g, "_").slice(0, 80);
-  }
+    function generateId() {
+      if (window.crypto && typeof crypto.randomUUID === "function") return crypto.randomUUID();
+      return "id_" + Date.now() + "_" + Math.random().toString(16).slice(2);
+    }
 
-  function escapeHTML(str) {
-    return String(str).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
-  }
+    function safeFileName(name) {
+      return String(name || "ADM_Statement")
+        .trim()
+        .replace(/[\\/:*?"<>|]+/g, "_")
+        .replace(/\s+/g, "_")
+        .slice(0, 80);
+    }
 
-  function saveData() { localStorage.setItem(STORAGE_KEY, JSON.stringify(dataData)); }
+    function escapeHTML(str) {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
 
-  function loadData() {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
+    function saveData() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(dataData));
+    }
+
+    function loadData() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (!saved) return;
         const parsed = JSON.parse(saved);
         dataData.income = Array.isArray(parsed.income) ? parsed.income : [];
         dataData.expense = Array.isArray(parsed.expense) ? parsed.expense : [];
+      } catch (e) {
+        console.error("Failed to load saved data:", e);
       }
-    } catch (e) { console.error("Failed to load saved data:", e); }
-  }
-
-  function setCreatedDate() {
-    const today = new Date();
-    const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-    document.getElementById('pdfCreatedDate').innerText = today.toLocaleDateString('en-US', options);
-  }
-
-  function syncMonthDisplay(monthValue) {
-    if (!monthValue) return;
-    const date = new Date(monthValue + "-01");
-    const englishMonth = date.toLocaleString('en-US', { month: 'long', year: 'numeric' });
-    document.getElementById('pdfMonth').innerText = englishMonth;
-  }
-
-  function addItem(type) {
-    const descInput = document.getElementById(`${type}Desc`);
-    const amountInput = document.getElementById(`${type}Amount`);
-    const desc = descInput.value.trim();
-    const amount = parseFloat(amountInput.value);
-
-    if (!desc || isNaN(amount) || amount <= 0) {
-      alert("කරුණාකර නිවැරදි විස්තරයක් සහ මුදලක් ඇතුළත් කරන්න!");
-      return;
     }
-    dataData[type].push({ id: crypto.randomUUID(), desc, amount });
-    descInput.value = ''; amountInput.value = '';
-    saveData(); renderAll();
-  }
 
-  function deleteItem(type, id) {
-    dataData[type] = dataData[type].filter(item => String(item.id) !== String(id));
-    saveData(); renderAll();
-  }
+    function setCreatedDate() {
+      const today = new Date();
+      const options = {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      };
+      document.getElementById("pdfCreatedDate").innerText = today.toLocaleDateString("en-US", options);
+    }
 
-  function updateDashboardLists() {
-    ['income', 'expense'].forEach(type => {
-      const listContainer = document.getElementById(`dash${type.charAt(0).toUpperCase() + type.slice(1)}List`);
-      listContainer.innerHTML = '';
-      if (dataData[type].length === 0) {
-        listContainer.innerHTML = `<li class="py-2 text-zinc-600 text-center italic border-none">No records added yet</li>`;
+    function syncMonthDisplay(monthValue) {
+      if (!monthValue) return;
+      const date = new Date(monthValue + "-01");
+      const englishMonth = date.toLocaleString("en-US", { month: "long", year: "numeric" });
+      document.getElementById("pdfMonth").innerText = englishMonth;
+    }
+
+    function addItem(type) {
+      const descInput = document.getElementById(`${type}Desc`);
+      const amountInput = document.getElementById(`${type}Amount`);
+      const desc = descInput.value.trim();
+      const amount = parseFloat(amountInput.value);
+
+      if (!desc || Number.isNaN(amount) || amount <= 0) {
+        alert("කරුණාකර නිවැරදි විස්තරයක් සහ මුදලක් ඇතුළත් කරන්න!");
         return;
       }
-      dataData[type].forEach(item => {
-        const li = document.createElement('li');
-        li.className = "py-2 flex justify-between items-center gap-3 border-zinc-900";
-        li.innerHTML = `
-          <span class="font-medium text-zinc-300 truncate">${escapeHTML(item.desc)}</span>
-          <div class="flex items-center gap-3 shrink-0">
-            <span class="font-bold ${type === 'income' ? 'text-emerald-400' : 'text-rose-400'}">Rs. ${Number(item.amount).toFixed(2)}</span>
-            <button onclick="deleteItem('${type}', '${item.id}')" class="text-zinc-600 hover:text-rose-500 cursor-pointer text-sm font-bold px-1 rounded">✖</button>
-          </div>
-        `;
-        listContainer.appendChild(li);
-      });
-    });
-  }
 
-  function updatePrintTables(type) {
-    const tbody = document.getElementById(`${type}TableBody`);
-    tbody.innerHTML = '';
-    dataData[type].forEach((item, index) => {
-      const row = document.createElement('tr');
-      row.className = "border-b border-slate-200/70";
-      row.innerHTML = `
-        <td class="p-2 text-center text-slate-400 font-semibold">${index + 1}</td>
-        <td class="p-2 text-slate-800 font-medium">${escapeHTML(item.desc)}</td>
-        <td class="p-2 text-right font-bold text-slate-900">${Number(item.amount).toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
-      `;
-      tbody.appendChild(row);
-    });
-    const currentRows = dataData[type].length;
-    if (currentRows < 10) {
-      for (let i = currentRows; i < 10; i++) {
-        const blankRow = document.createElement('tr');
-        blankRow.className = "border-b border-slate-100 h-8";
-        blankRow.innerHTML = `<td></td><td></td><td></td>`;
-        tbody.appendChild(blankRow);
+      dataData[type].push({
+        id: generateId(),
+        desc,
+        amount
+      });
+
+      descInput.value = "";
+      amountInput.value = "";
+      saveData();
+      renderAll();
+    }
+
+    function deleteItem(type, id) {
+      dataData[type] = dataData[type].filter(item => String(item.id) !== String(id));
+      saveData();
+      renderAll();
+    }
+
+    function updateDashboardLists() {
+      ["income", "expense"].forEach(type => {
+        const listContainer = document.getElementById(`dash${type.charAt(0).toUpperCase() + type.slice(1)}List`);
+        listContainer.innerHTML = "";
+
+        if (dataData[type].length === 0) {
+          listContainer.innerHTML = `<li class="py-3 text-slate-500 text-center italic border-none">No records added yet</li>`;
+          return;
+        }
+
+        dataData[type].forEach(item => {
+          const li = document.createElement("li");
+          li.className = "py-2.5 flex justify-between items-center gap-3 border-slate-800";
+          li.innerHTML = `
+            <span class="font-medium text-slate-200 truncate">${escapeHTML(item.desc)}</span>
+            <div class="flex items-center gap-3 shrink-0">
+              <span class="font-bold ${type === "income" ? "text-emerald-400" : "text-rose-400"}">Rs. ${Number(item.amount).toFixed(2)}</span>
+              <button onclick="deleteItem('${type}', '${item.id}')"
+                      class="text-slate-500 hover:text-rose-400 cursor-pointer text-sm font-bold px-1 rounded">
+                ✖
+              </button>
+            </div>
+          `;
+          listContainer.appendChild(li);
+        });
+      });
+    }
+
+    function updatePrintTables(type) {
+      const tbody = document.getElementById(`${type}TableBody`);
+      tbody.innerHTML = "";
+
+      dataData[type].forEach((item, index) => {
+        const row = document.createElement("tr");
+        row.className = "border-b border-slate-200/70";
+        row.innerHTML = `
+          <td class="p-2 text-center text-slate-400 font-semibold">${index + 1}</td>
+          <td class="p-2 text-slate-800 font-medium">${escapeHTML(item.desc)}</td>
+          <td class="p-2 text-right font-bold text-slate-900">${Number(item.amount).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      const currentRows = dataData[type].length;
+      if (currentRows < 10) {
+        for (let i = currentRows; i < 10; i++) {
+          const blankRow = document.createElement("tr");
+          blankRow.className = "border-b border-slate-100 h-8";
+          blankRow.innerHTML = `<td></td><td></td><td></td>`;
+          tbody.appendChild(blankRow);
+        }
       }
     }
-  }
 
-  function calculateTotals() {
-    const totalIncome = dataData.income.reduce((sum, item) => sum + Number(item.amount || 0), 0);
-    const totalExpense = dataData.expense.reduce((sum, item) => sum + Number(item.amount || 0), 0);
-    const netBalance = totalIncome - totalExpense;
+    function calculateTotals() {
+      const totalIncome = dataData.income.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+      const totalExpense = dataData.expense.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+      const netBalance = totalIncome - totalExpense;
 
-    const formattedIncome = `Rs. ${totalIncome.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
-    const formattedExpense = `Rs. ${totalExpense.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
-    const formattedBalance = `Rs. ${netBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+      const formattedIncome = `Rs. ${totalIncome.toLocaleString("en-US", { minimumFractionDigits: 2 })}`;
+      const formattedExpense = `Rs. ${totalExpense.toLocaleString("en-US", { minimumFractionDigits: 2 })}`;
+      const formattedBalance = `Rs. ${netBalance.toLocaleString("en-US", { minimumFractionDigits: 2 })}`;
 
-    document.getElementById('dashTotalIncome').innerText = formattedIncome;
-    document.getElementById('dashTotalExpense').innerText = formattedExpense;
-    document.getElementById('dashNetBalance').innerText = formattedBalance;
-    document.getElementById('totalIncomeTxt').innerText = formattedIncome;
-    document.getElementById('totalExpenseTxt').innerText = formattedExpense;
-    document.getElementById('netBalanceTxt').innerText = formattedBalance;
+      document.getElementById("dashTotalIncome").innerText = formattedIncome;
+      document.getElementById("dashTotalExpense").innerText = formattedExpense;
+      document.getElementById("dashNetBalance").innerText = formattedBalance;
 
-    if (netBalance < 0) {
-      document.getElementById('dashBalanceCard').className = "bg-zinc-950 rounded-2xl p-6 shadow-sm border border-rose-950 flex items-center justify-between transition-all hover:border-rose-900";
-      document.getElementById('pdfBalanceCard').className = "bg-rose-50 p-3 rounded-xl border border-rose-200 text-rose-900";
-      document.getElementById('dashNetBalance').className = "text-2xl font-extrabold text-rose-400 mt-1";
-    } else {
-      document.getElementById('dashBalanceCard').className = "bg-zinc-950 rounded-2xl p-6 shadow-sm border border-zinc-800 flex items-center justify-between transition-all hover:border-zinc-700";
-      document.getElementById('pdfBalanceCard').className = "bg-slate-100 p-3 rounded-xl border border-slate-300 text-slate-900";
-      document.getElementById('dashNetBalance').className = "text-2xl font-extrabold text-white mt-1";
+      document.getElementById("totalIncomeTxt").innerText = formattedIncome;
+      document.getElementById("totalExpenseTxt").innerText = formattedExpense;
+      document.getElementById("netBalanceTxt").innerText = formattedBalance;
+
+      if (netBalance < 0) {
+        document.getElementById("dashBalanceCard").className = "glass rounded-3xl p-6 shadow-lg flex items-center justify-between transition-all hover:border-rose-900/50 border-rose-950/60";
+        document.getElementById("pdfBalanceCard").className = "bg-rose-50 p-3 rounded-xl border border-rose-200 text-rose-900";
+        document.getElementById("dashNetBalance").className = "text-3xl font-extrabold text-rose-400 mt-2";
+      } else {
+        document.getElementById("dashBalanceCard").className = "glass rounded-3xl p-6 shadow-lg flex items-center justify-between transition-all hover:border-slate-500/30";
+        document.getElementById("pdfBalanceCard").className = "bg-slate-100 p-3 rounded-xl border border-slate-300 text-slate-900";
+        document.getElementById("dashNetBalance").className = "text-3xl font-extrabold text-white mt-2";
+      }
     }
-  }
 
-  function renderAll() { updateDashboardLists(); updatePrintTables('income'); updatePrintTables('expense'); calculateTotals(); }
+    function renderAll() {
+      updateDashboardLists();
+      updatePrintTables("income");
+      updatePrintTables("expense");
+      calculateTotals();
+    }
 
-  async function generatePDF() {
-    const btn = document.querySelector('button[onclick="generatePDF()"]');
-    try {
+    async function generatePDF() {
+      const btn = document.querySelector('button[onclick="generatePDF()"]');
+      try {
+        setCreatedDate();
+        const element = document.getElementById("pdf-content");
+        if (btn) {
+          btn.disabled = true;
+          btn.innerHTML = "⏳ Generating PDF...";
+        }
+
+        await document.fonts.ready;
+        await new Promise(resolve => setTimeout(resolve, 250));
+
+        const canvas = await html2canvas(element, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: "#ffffff"
+        });
+
+        const imgData = canvas.toDataURL("image/png");
+        const pdf = new window.jspdf.jsPDF("p", "mm", "a4");
+        const imgWidth = 210;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
+        pdf.save(`ADM_Statement_${safeFileName(document.getElementById("inputClassName").value)}_${safeFileName(document.getElementById("inputMonth").value)}.pdf`);
+      } catch (err) {
+        alert("PDF Error: " + err.message);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = "📥 PDF වාර්තාව (Download PDF)";
+        }
+      }
+    }
+
+    async function generatePNG() {
+      const btn = document.querySelector('button[onclick="generatePNG()"]');
+      try {
+        setCreatedDate();
+        const element = document.getElementById("pdf-content");
+        if (btn) {
+          btn.disabled = true;
+          btn.innerHTML = "⏳ Generating PNG...";
+        }
+
+        await document.fonts.ready;
+        await new Promise(resolve => setTimeout(resolve, 250));
+
+        const canvas = await html2canvas(element, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: "#ffffff"
+        });
+
+        const downloadLink = document.createElement("a");
+        downloadLink.href = canvas.toDataURL("image/png");
+        downloadLink.download = `ADM_Statement_${safeFileName(document.getElementById("inputClassName").value)}_${safeFileName(document.getElementById("inputMonth").value)}.png`;
+        downloadLink.click();
+      } catch (err) {
+        alert("PNG Error: " + err.message);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = "🖼️ PNG පින්තූරයක් (Download PNG)";
+        }
+      }
+    }
+
+    async function syncWithGoogleSheets() {
+      const items = [];
+      dataData.income.forEach(item => items.push({ type: "Income", desc: item.desc, amount: item.amount }));
+      dataData.expense.forEach(item => items.push({ type: "Expense", desc: item.desc, amount: item.amount }));
+
+      if (items.length === 0) {
+        alert("ඇතුලත් කිරීමට කිසිදු දත්තයක් නැත!");
+        return;
+      }
+
+      const syncBtn = document.getElementById("syncBtn");
+      syncBtn.innerHTML = "🔄 සුරකිමින් පවතී...";
+      syncBtn.disabled = true;
+
+      try {
+        if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes("PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE")) {
+          alert("Google Script URL එක දාන්න.");
+          return;
+        }
+
+        await fetch(GOOGLE_SCRIPT_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            className: document.getElementById("inputClassName").value.trim(),
+            month: document.getElementById("inputMonth").value,
+            items,
+            createdAt: new Date().toISOString()
+          })
+        });
+
+        alert("දත්ත Google Sheet එකට යැව්වා!");
+      } catch (error) {
+        alert("දත්ත ඇතුලත් කිරීම අසාර්ථකයි!");
+      } finally {
+        syncBtn.innerHTML = "🟢 ගූගල් ෂීට් වෙත (Sync to Google Sheet)";
+        syncBtn.disabled = false;
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      loadData();
       setCreatedDate();
-      const element = document.getElementById("pdf-content");
-      if (btn) { btn.disabled = true; btn.innerHTML = "⏳ Generating PDF..."; }
-      await document.fonts.ready;
-      await new Promise(resolve => setTimeout(resolve, 300));
-      const canvas = await html2canvas(element, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new window.jspdf.jsPDF("p", "mm", "a4");
-      pdf.addImage(imgData, "PNG", 0, 0, 210, (canvas.height * 210) / canvas.width);
-      pdf.save(`ADM_Statement_${safeFileName(document.getElementById('inputClassName').value)}_${safeFileName(document.getElementById('inputMonth').value)}.pdf`);
-    } catch (err) { alert("PDF Error: " + err.message); }
-    finally { if (btn) { btn.disabled = false; btn.innerHTML = "📥 PDF වාර්තාව (Download PDF)"; } }
-  }
+      syncMonthDisplay(document.getElementById("inputMonth").value);
+      renderAll();
 
-  async function generatePNG() {
-    const btn = document.querySelector('button[onclick="generatePNG()"]');
-    try {
-      setCreatedDate();
-      const element = document.getElementById("pdf-content");
-      if (btn) { btn.disabled = true; btn.innerHTML = "⏳ Generating PNG..."; }
-      await document.fonts.ready;
-      await new Promise(resolve => setTimeout(resolve, 300));
-      const canvas = await html2canvas(element, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
-      const downloadLink = document.createElement('a');
-      downloadLink.href = canvas.toDataURL("image/png");
-      downloadLink.download = `ADM_Statement_${safeFileName(document.getElementById('inputClassName').value)}_${safeFileName(document.getElementById('inputMonth').value)}.png`;
-      downloadLink.click();
-    } catch (err) { alert("PNG Error: " + err.message); }
-    finally { if (btn) { btn.disabled = false; btn.innerHTML = "🖼️ PNG පින්තූරයක් (Download PNG)"; } }
-  }
+      document.getElementById("inputClassName").addEventListener("input", (e) => {
+        document.getElementById("pdfClassName").innerText = e.target.value || "Class Report";
+      });
 
-  async function syncWithGoogleSheets() {
-    const items = [];
-    dataData.income.forEach(item => items.push({ type: 'Income', desc: item.desc, amount: item.amount }));
-    dataData.expense.forEach(item => items.push({ type: 'Expense', desc: item.desc, amount: item.amount }));
-    if (items.length === 0) { alert("ඇතුලත් කිරීමට කිසිදු දත්තයක් නැත!"); return; }
+      document.getElementById("inputMonth").addEventListener("input", (e) => {
+        syncMonthDisplay(e.target.value);
+      });
 
-    const syncBtn = document.getElementById('syncBtn');
-    syncBtn.innerHTML = "🔄 සුරකිමින් පවතී..."; syncBtn.disabled = true;
-    try {
-      if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes("PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE")) { alert("Google Script URL එක දාන්න."); return; }
-      await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ className: document.getElementById('inputClassName').value.trim(), month: document.getElementById('inputMonth').value, items, createdAt: new Date().toISOString() }) });
-      alert("දත්ත Google Sheet එකට යැව්වා!");
-    } catch (error) { alert("දත්ත ඇතුලත් කිරීම අසාර්ථකයි!"); }
-    finally { syncBtn.innerHTML = "🟢 ගූගල් ෂීට් වෙත (Sync to Google Sheet)"; syncBtn.disabled = false; }
-  }
-
-  window.addEventListener('DOMContentLoaded', () => {
-    loadData(); setCreatedDate(); syncMonthDisplay(document.getElementById('inputMonth').value); renderAll();
-    document.getElementById('inputClassName').addEventListener('input', (e) => { document.getElementById('pdfClassName').innerText = e.target.value || 'Class Report'; });
-    document.getElementById('inputMonth').addEventListener('input', (e) => { syncMonthDisplay(e.target.value); });
-  });
-
-  // 🚀 ඔයා දුන්න අලුත්ම v6 Service Worker Logic එක Inline Blob එකක් විදිහට පහතින් සෙට් කලා
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      const swCode = `
-        const CACHE_NAME = 'adm-finance-v6';
-        const LOGO_URL = 'https://raw.githubusercontent.com/janithdidula70-sudo/ADM/35f3a32a1de1d1ad22bcb71229bb2698add86d8b/logo.jpeg';
-
-        const ASSETS = [
-          './',
-          './index.html',
-          'https://cdn.tailwindcss.com',
-          'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',
-          'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
-          'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap',
-          LOGO_URL
-        ];
-
-        self.addEventListener('install', (e) => {
-          e.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)));
-          self.skipWaiting();
-        });
-
-        self.addEventListener('activate', (e) => {
-          e.waitUntil(caches.keys().then((keys) => Promise.all(
-            keys.map((key) => { if (key !== CACHE_NAME) return caches.delete(key); })
-          )));
-          self.clients.claim();
-        });
-
-        self.addEventListener('fetch', (e) => {
-          if (e.request.method === 'POST') return;
-
-          // GitHub Image Links සඳහා CORS මඟහැරීමට ඔයා ලියපු Logic එක
-          if (e.request.url.includes('raw.githubusercontent.com')) {
-            e.respondWith(
-              caches.match(e.request).then((cached) => {
-                if (cached) return cached;
-                return fetch(e.request, { mode: 'no-cors' }).then((response) => {
-                  return caches.open(CACHE_NAME).then((cache) => {
-                    cache.put(e.request, response.clone());
-                    return response;
-                  });
-                }).catch(() => caches.match(LOGO_URL));
-              })
-            );
-            return;
-          }
-
-          // සාමාන්‍ය සයිට් එකේ ෆයිල් ලෝඩ් වන ක්‍රමය
-          e.respondWith(
-            caches.match(e.request).then((cached) => {
-              return cached || fetch(e.request).catch(() => {
-                if (e.request.mode === 'navigate') {
-                  return caches.match('./index.html');
-                }
-              });
-            })
-          );
-        });
-      `;
-
-      const blob = new Blob([swCode], { type: 'application/javascript' });
-      const blobURL = URL.createObjectURL(blob);
-
-      navigator.serviceWorker.register(blobURL, { scope: './' })
-        .then(reg => console.log('ADM PWA Inline Service Worker Registered (v6 updated)!', reg.scope))
-        .catch(err => console.log('Service Worker Registration Failed:', err));
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("./sw.js")
+          .then(reg => console.log("PWA Service Worker registered:", reg.scope))
+          .catch(err => console.log("Service Worker registration failed:", err));
+      }
     });
-  }
-</script>
+  </script>
 </body>
 </html>
