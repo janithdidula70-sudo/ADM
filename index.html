@@ -12,7 +12,8 @@
   <meta name="apple-mobile-web-app-title" content="ADM Finance">
   <link class="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/5511/5511415.png">
 
-  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
@@ -43,7 +44,7 @@
 <main class="max-w-7xl mx-auto px-4 sm:px-6">
 
   <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-    <div class="bg-white rounded-2xl p-6 shadow-xs border border-slate-200 flex items-center justify-between transition-all hover:shadow-md">
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex items-center justify-between transition-all hover:shadow-md">
       <div>
         <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">මුළු ආදායම / Total Income</p>
         <h3 id="dashTotalIncome" class="text-2xl font-extrabold text-emerald-600 mt-1">Rs. 0.00</h3>
@@ -51,7 +52,7 @@
       <div class="p-3 bg-emerald-50 rounded-xl text-emerald-600 font-bold text-xl">↑</div>
     </div>
 
-    <div class="bg-white rounded-2xl p-6 shadow-xs border border-slate-200 flex items-center justify-between transition-all hover:shadow-md">
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex items-center justify-between transition-all hover:shadow-md">
       <div>
         <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">මුළු වියදම / Total Expenses</p>
         <h3 id="dashTotalExpense" class="text-2xl font-extrabold text-rose-600 mt-1">Rs. 0.00</h3>
@@ -59,7 +60,7 @@
       <div class="p-3 bg-rose-50 rounded-xl text-rose-600 font-bold text-xl">↓</div>
     </div>
 
-    <div id="dashBalanceCard" class="bg-white rounded-2xl p-6 shadow-xs border border-slate-200 flex items-center justify-between transition-all hover:shadow-md">
+    <div id="dashBalanceCard" class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex items-center justify-between transition-all hover:shadow-md">
       <div>
         <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">ඉතිරි මුදල / Net Balance</p>
         <h3 id="dashNetBalance" class="text-2xl font-extrabold text-indigo-600 mt-1">Rs. 0.00</h3>
@@ -68,7 +69,7 @@
     </div>
   </div>
 
-  <div class="bg-white rounded-2xl p-6 shadow-xs border border-slate-200 mb-8">
+  <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 mb-8">
     <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2 border-b border-slate-100 pb-2">
       <span>⚙️</span> දත්ත ඇතුළත් කිරීම් / Configuration & Inputs
     </h2>
@@ -95,7 +96,7 @@
           <input type="number" id="incomeAmount" placeholder="මුදල (Amount)"
                  class="w-full sm:w-32 p-2.5 bg-white border border-emerald-200 rounded-xl text-sm focus:outline-emerald-500">
           <button onclick="addItem('income')"
-                  class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-xs transition-all cursor-pointer whitespace-nowrap">
+                  class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-sm transition-all cursor-pointer whitespace-nowrap">
             Add Item
           </button>
         </div>
@@ -113,7 +114,7 @@
           <input type="number" id="expenseAmount" placeholder="මුදල (Amount)"
                  class="w-full sm:w-32 p-2.5 bg-white border border-rose-200 rounded-xl text-sm focus:outline-rose-500">
           <button onclick="addItem('expense')"
-                  class="bg-rose-600 hover:bg-rose-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-xs transition-all cursor-pointer whitespace-nowrap">
+                  class="bg-rose-600 hover:bg-rose-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-sm transition-all cursor-pointer whitespace-nowrap">
             Add Item
           </button>
         </div>
@@ -170,7 +171,7 @@
       </div>
 
       <div class="grid grid-cols-2 gap-5 items-start">
-        <div class="border border-slate-200 rounded-lg overflow-hidden shadow-xs">
+        <div class="border border-slate-200 rounded-lg overflow-hidden shadow-sm">
           <div class="bg-emerald-700 text-white text-center font-bold py-2 text-[9.5pt] tracking-wider uppercase">
             ආදායම / Income Stream
           </div>
@@ -186,7 +187,7 @@
           </table>
         </div>
 
-        <div class="border border-slate-200 rounded-lg overflow-hidden shadow-xs">
+        <div class="border border-slate-200 rounded-lg overflow-hidden shadow-sm">
           <div class="bg-rose-700 text-white text-center font-bold py-2 text-[9.5pt] tracking-wider uppercase">
             වියදම / Expenses Ledger
           </div>
@@ -409,11 +410,11 @@
     const dashBadge = document.getElementById('dashBalanceBadge');
 
     if (netBalance < 0) {
-      dashCard.className = "bg-rose-50 rounded-2xl p-6 shadow-xs border border-rose-200 flex items-center justify-between transition-all hover:shadow-md";
+      dashCard.className = "bg-rose-50 rounded-2xl p-6 shadow-sm border border-rose-200 flex items-center justify-between transition-all hover:shadow-md";
       pdfCard.className = "bg-rose-50 p-3 rounded-xl border border-rose-200/80";
       dashBadge.className = "p-3 bg-rose-100 rounded-xl text-rose-600 font-bold text-xl";
     } else {
-      dashCard.className = "bg-white rounded-2xl p-6 shadow-xs border border-slate-200 flex items-center justify-between transition-all hover:shadow-md";
+      dashCard.className = "bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex items-center justify-between transition-all hover:shadow-md";
       pdfCard.className = "bg-indigo-50 p-3 rounded-xl border border-indigo-200/80";
       dashBadge.className = "p-3 bg-indigo-50 rounded-xl text-indigo-600 font-bold text-xl";
     }
@@ -491,7 +492,6 @@
     }
   }
 
-  // අලුතින් ඇතුළත් කරන ලද PNG Generation Logic එක
   async function generatePNG() {
     const btn = document.querySelector('button[onclick="generatePNG()"]');
     const originalText = btn ? btn.innerHTML : '';
@@ -510,13 +510,11 @@
         btn.innerHTML = "⏳ Generating PNG...";
       }
 
-      // Fonts load වනතුරු සහ layout එක ස්ථාවර වනතුරු පොඩි වෙලාවක් ඉන්නවා
       await document.fonts.ready;
       await new Promise(resolve => setTimeout(resolve, 300));
 
-      // Print preview එක image එකක් බවට හරවනවා
       const canvas = await html2canvas(element, {
-        scale: 2, // Quality එක හොඳට තියාගන්න (Resolution)
+        scale: 2,
         useCORS: true,
         backgroundColor: "#ffffff",
         logging: false,
@@ -529,7 +527,6 @@
       const className = safeFileName(document.getElementById('inputClassName').value || 'ADM_Center');
       const monthVal = safeFileName(document.getElementById('inputMonth').value || 'Statement');
 
-      // Image එක download කරවන්න link එකක් හදනවා
       const downloadLink = document.createElement('a');
       downloadLink.href = imageURL;
       downloadLink.download = `ADM_Statement_${className}_${monthVal}.png`;
