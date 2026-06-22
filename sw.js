@@ -1,4 +1,4 @@
-const CACHE_NAME = "adm-class-manager-v3";
+const CACHE_NAME = "adm-class-manager-v4"
 const APP_SHELL = [
   "./",
   "./index.html",
