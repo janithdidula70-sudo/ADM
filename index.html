@@ -439,7 +439,9 @@
 
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbx57oarncmYMNntp7LS1L05osoc0z-q5Zr2cN0E-60mDjb7U7MUM0_OiVmiLrdjnZTsNA/exec";
-"h
+
+    // ✅ FIX 1: Removed stray "h string that caused SyntaxError
+    // ✅ FIX 2: Renamed $ to el() to avoid conflicts
     let teachers = [];
     let classes = [];
     let allStudents = [];
@@ -447,51 +449,50 @@
     let deferredPrompt = null;
     let selectedStudent = null;
 
-    const $ = (id) => document.getElementById(id);
+    // ✅ FIX 2: Renamed from $ to el to avoid potential jQuery/global conflicts
+    function el(id) {
+      return document.getElementById(id);
+    }
 
     function money(n) {
       return Number(n || 0).toLocaleString("en-LK");
     }
 
     function esc(s) {
-      return String(s ?? "").replace(/[&<>"']/g, m => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#39;"
-      }[m]));
+      return String(s ?? "").replace(/[&<>"']/g, function(m) {
+        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m];
+      });
     }
 
     function showError(message) {
-      const box = $("errorBox");
+      const box = el("errorBox");
       box.style.display = "block";
       box.textContent = message;
     }
 
     function clearError() {
-      const box = $("errorBox");
+      const box = el("errorBox");
       box.style.display = "none";
       box.textContent = "";
     }
 
     function showPage(id, btn) {
-      document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-      $(id).classList.add("active");
-
-      document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".page").forEach(function(p) { p.classList.remove("active"); });
+      el(id).classList.add("active");
+      document.querySelectorAll(".nav-btn").forEach(function(b) { b.classList.remove("active"); });
       if (btn) btn.classList.add("active");
     }
 
-    document.querySelectorAll(".nav-btn").forEach(btn => {
-      btn.addEventListener("click", () => showPage(btn.dataset.page, btn));
+    document.querySelectorAll(".nav-btn").forEach(function(btn) {
+      btn.addEventListener("click", function() { showPage(btn.dataset.page, btn); });
     });
 
-    async function api(action, payload = {}) {
+    async function api(action, payload) {
+      payload = payload || {};
       const res = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ action, ...payload })
+        body: JSON.stringify(Object.assign({ action: action }, payload))
       });
 
       const text = await res.text();
@@ -507,37 +508,38 @@
       return data;
     }
 
-    function setMsg(id, text, ok = true) {
-      $(id).innerHTML = ok
-        ? `<span class="ok">${esc(text)}</span>`
-        : `<span class="err">${esc(text)}</span>`;
+    function setMsg(id, text, ok) {
+      if (ok === undefined) ok = true;
+      el(id).innerHTML = ok
+        ? '<span class="ok">' + esc(text) + '</span>'
+        : '<span class="err">' + esc(text) + '</span>';
     }
 
     function clearTeacherForm() {
-      $("teacherName").value = "";
-      $("teacherPhone").value = "";
-      $("teacherSubject").value = "";
+      el("teacherName").value = "";
+      el("teacherPhone").value = "";
+      el("teacherSubject").value = "";
     }
 
     function clearClassForm() {
-      $("className").value = "";
-      $("classGrade").value = "";
-      $("classFee").value = "";
+      el("className").value = "";
+      el("classGrade").value = "";
+      el("classFee").value = "";
     }
 
     function clearStudentForm() {
-      $("studentName").value = "";
-      $("studentPhone").value = "";
-      $("studentAddress").value = "";
+      el("studentName").value = "";
+      el("studentPhone").value = "";
+      el("studentAddress").value = "";
     }
 
     async function addTeacher() {
       try {
         clearError();
         const result = await api("addTeacher", {
-          name: $("teacherName").value.trim(),
-          phone: $("teacherPhone").value.trim(),
-          subject: $("teacherSubject").value.trim()
+          name: el("teacherName").value.trim(),
+          phone: el("teacherPhone").value.trim(),
+          subject: el("teacherSubject").value.trim()
         });
         setMsg("teacherMsg", result.message, true);
         clearTeacherForm();
@@ -552,10 +554,10 @@
       try {
         clearError();
         const result = await api("addClass", {
-          className: $("className").value.trim(),
-          grade: $("classGrade").value.trim(),
-          teacherID: $("classTeacherSelect").value,
-          feeAmount: $("classFee").value
+          className: el("className").value.trim(),
+          grade: el("classGrade").value.trim(),
+          teacherID: el("classTeacherSelect").value,
+          feeAmount: el("classFee").value
         });
         setMsg("classMsg", result.message, true);
         clearClassForm();
@@ -570,10 +572,10 @@
       try {
         clearError();
         const result = await api("addStudent", {
-          name: $("studentName").value.trim(),
-          phone: $("studentPhone").value.trim(),
-          address: $("studentAddress").value.trim(),
-          classID: $("studentClassSelect").value
+          name: el("studentName").value.trim(),
+          phone: el("studentPhone").value.trim(),
+          address: el("studentAddress").value.trim(),
+          classID: el("studentClassSelect").value
         });
         setMsg("studentMsg", result.message, true);
         clearStudentForm();
@@ -586,52 +588,55 @@
 
     function renderDashboard() {
       const s = dashboard.summary || {};
-      $("studentCount").textContent = s.studentCount ?? 0;
-      $("teacherCount").textContent = s.teacherCount ?? 0;
-      $("classCount").textContent = s.classCount ?? 0;
-      $("presentCount").textContent = s.presentCount ?? 0;
-      $("todayCollection").textContent = money(s.todayCollection ?? 0);
-      $("monthCollection").textContent = money(s.monthCollection ?? 0);
-      $("absentCount").textContent = s.absentCount ?? 0;
+      el("studentCount").textContent = s.studentCount != null ? s.studentCount : 0;
+      el("teacherCount").textContent = s.teacherCount != null ? s.teacherCount : 0;
+      el("classCount").textContent = s.classCount != null ? s.classCount : 0;
+      el("presentCount").textContent = s.presentCount != null ? s.presentCount : 0;
+      el("todayCollection").textContent = money(s.todayCollection != null ? s.todayCollection : 0);
+      el("monthCollection").textContent = money(s.monthCollection != null ? s.monthCollection : 0);
+      el("absentCount").textContent = s.absentCount != null ? s.absentCount : 0;
     }
 
     function renderTeacherSelects() {
-      $("classTeacherSelect").innerHTML = teachers.length
-        ? teachers.map(t => `<option value="${esc(t.ID)}">${esc(t.Name)} (${esc(t.Subject || "Teacher")})</option>`).join("")
-        : `<option value="">No teachers yet</option>`;
+      el("classTeacherSelect").innerHTML = teachers.length
+        ? teachers.map(function(t) {
+            return '<option value="' + esc(t.ID) + '">' + esc(t.Name) + ' (' + esc(t.Subject || "Teacher") + ')</option>';
+          }).join("")
+        : '<option value="">No teachers yet</option>';
     }
 
     function renderClassSelects() {
-      $("studentClassSelect").innerHTML = classes.length
-        ? `<option value="">Select class</option>` + classes.map(c => {
-            return `<option value="${esc(c.ID)}">${esc(c.ClassName)} (${esc(c.Grade)}) • ${esc(c.TeacherName)} • LKR ${money(c.FeeAmount)}</option>`;
+      el("studentClassSelect").innerHTML = classes.length
+        ? '<option value="">Select class</option>' + classes.map(function(c) {
+            return '<option value="' + esc(c.ID) + '">' + esc(c.ClassName) + ' (' + esc(c.Grade) + ') \u2022 ' + esc(c.TeacherName) + ' \u2022 LKR ' + money(c.FeeAmount) + '</option>';
           }).join("")
-        : `<option value="">No classes yet</option>`;
+        : '<option value="">No classes yet</option>';
 
       renderActionStudentSelect(allStudents);
     }
 
-    function renderActionStudentSelect(list = allStudents) {
-      $("studentSelect").innerHTML = list.length
-        ? `<option value="">Select student</option>` + list.map(s => {
-            return `<option value="${esc(s.ID)}" data-fee="${esc(s.FeeAmount || 0)}">${esc(s.Name)} • ${esc(s.ClassName || "")}</option>`;
+    function renderActionStudentSelect(list) {
+      list = list || allStudents;
+      el("studentSelect").innerHTML = list.length
+        ? '<option value="">Select student</option>' + list.map(function(s) {
+            return '<option value="' + esc(s.ID) + '" data-fee="' + esc(s.FeeAmount || 0) + '">' + esc(s.Name) + ' \u2022 ' + esc(s.ClassName || "") + '</option>';
           }).join("")
-        : `<option value="">No students found</option>`;
+        : '<option value="">No students found</option>';
     }
 
     function searchStudentForAction() {
-      const q = $("studentSearch").value.trim().toLowerCase();
+      const q = el("studentSearch").value.trim().toLowerCase();
 
-      const filtered = allStudents.filter(s => {
-        const text = `${s.ID} ${s.Name} ${s.Phone} ${s.Address} ${s.ClassName} ${s.TeacherName}`.toLowerCase();
+      const filtered = allStudents.filter(function(s) {
+        const text = (s.ID + " " + s.Name + " " + s.Phone + " " + s.Address + " " + s.ClassName + " " + s.TeacherName).toLowerCase();
         return !q || text.includes(q);
       });
 
       renderActionStudentSelect(filtered);
-      $("studentStatus").textContent = filtered.length ? `${filtered.length} match(es) found` : "No matching student";
+      el("studentStatus").textContent = filtered.length ? filtered.length + " match(es) found" : "No matching student";
 
       if (filtered.length === 1) {
-        $("studentSelect").value = filtered[0].ID;
+        el("studentSelect").value = filtered[0].ID;
         onStudentSelected();
       } else {
         selectedStudent = null;
@@ -639,141 +644,150 @@
     }
 
     async function onStudentSelected() {
-      const id = $("studentSelect").value;
-      selectedStudent = allStudents.find(x => String(x.ID) === String(id)) || null;
+      const id = el("studentSelect").value;
+      selectedStudent = allStudents.find(function(x) { return String(x.ID) === String(id); }) || null;
 
       if (!selectedStudent) {
-        $("studentStatus").textContent = "";
-        $("amount").value = "";
+        el("studentStatus").textContent = "";
+        el("amount").value = "";
         return;
       }
 
-      $("amount").value = selectedStudent.FeeAmount || "";
+      el("amount").value = selectedStudent.FeeAmount || "";
       await refreshStudentStatus(id);
     }
 
     function onPaymentTypeChange() {
-      if (selectedStudent && $("paymentType").value === "Class Fee") {
-        $("amount").value = selectedStudent.FeeAmount || "";
+      if (selectedStudent && el("paymentType").value === "Class Fee") {
+        el("amount").value = selectedStudent.FeeAmount || "";
       }
     }
 
     async function refreshStudentStatus(studentId) {
       try {
-        const data = await api("checkStudentStatus", { studentId });
+        const data = await api("checkStudentStatus", { studentId: studentId });
 
-        $("studentStatus").innerHTML = `
-          <span class="badge ${data.attendanceToday ? "green" : "gray"}">
-            ${data.attendanceToday ? "Attendance already marked today" : "Attendance not marked today"}
-          </span>
-          <span class="badge ${data.balance <= 0 ? "green" : "orange"}">
-            ${data.balance <= 0 ? "Fully paid" : "Balance: LKR " + money(data.balance)}
-          </span>
-        `;
+        el("studentStatus").innerHTML =
+          '<span class="badge ' + (data.attendanceToday ? "green" : "gray") + '">' +
+            (data.attendanceToday ? "Attendance already marked today" : "Attendance not marked today") +
+          '</span>' +
+          '<span class="badge ' + (data.balance <= 0 ? "green" : "orange") + '">' +
+            (data.balance <= 0 ? "Fully paid" : "Balance: LKR " + money(data.balance)) +
+          '</span>';
       } catch (err) {
-        $("studentStatus").textContent = err.message;
+        el("studentStatus").textContent = err.message;
       }
     }
 
     function prefillPayment() {
-      const opt = $("studentSelect").options[$("studentSelect").selectedIndex];
+      const opt = el("studentSelect").options[el("studentSelect").selectedIndex];
       if (!opt || !opt.value) return;
-      selectedStudent = allStudents.find(x => String(x.ID) === String(opt.value)) || null;
-      $("amount").value = opt.dataset.fee || "";
+      selectedStudent = allStudents.find(function(x) { return String(x.ID) === String(opt.value); }) || null;
+      el("amount").value = opt.dataset.fee || "";
       refreshStudentStatus(opt.value);
     }
 
     function renderTeachersTable() {
-      $("teachersTable").innerHTML = teachers.length ? teachers.map(t => `
-        <tr>
-          <td>${esc(t.ID)}</td>
-          <td>${esc(t.Name)}</td>
-          <td>${esc(t.Phone)}</td>
-          <td>${esc(t.Subject || "")}</td>
-          <td><span class="badge green">${esc(t.Status || "Active")}</span></td>
-        </tr>
-      `).join("") : `<tr><td colspan="5" class="muted">No teachers yet</td></tr>`;
+      el("teachersTable").innerHTML = teachers.length ? teachers.map(function(t) {
+        return '<tr>' +
+          '<td>' + esc(t.ID) + '</td>' +
+          '<td>' + esc(t.Name) + '</td>' +
+          '<td>' + esc(t.Phone) + '</td>' +
+          '<td>' + esc(t.Subject || "") + '</td>' +
+          '<td><span class="badge green">' + esc(t.Status || "Active") + '</span></td>' +
+          '</tr>';
+      }).join("") : '<tr><td colspan="5" class="muted">No teachers yet</td></tr>';
     }
 
     function renderClassesTable() {
-      $("classesTable").innerHTML = classes.length ? classes.map(c => `
-        <tr>
-          <td>${esc(c.ID)}</td>
-          <td>${esc(c.ClassName)}</td>
-          <td>${esc(c.Grade)}</td>
-          <td>${esc(c.TeacherName)}</td>
-          <td>LKR ${money(c.FeeAmount)}</td>
-          <td><span class="badge green">${esc(c.Status || "Active")}</span></td>
-        </tr>
-      `).join("") : `<tr><td colspan="6" class="muted">No classes yet</td></tr>`;
+      el("classesTable").innerHTML = classes.length ? classes.map(function(c) {
+        return '<tr>' +
+          '<td>' + esc(c.ID) + '</td>' +
+          '<td>' + esc(c.ClassName) + '</td>' +
+          '<td>' + esc(c.Grade) + '</td>' +
+          '<td>' + esc(c.TeacherName) + '</td>' +
+          '<td>LKR ' + money(c.FeeAmount) + '</td>' +
+          '<td><span class="badge green">' + esc(c.Status || "Active") + '</span></td>' +
+          '</tr>';
+      }).join("") : '<tr><td colspan="6" class="muted">No classes yet</td></tr>';
     }
 
     function renderStudentList() {
-      const q = $("search").value.trim().toLowerCase();
-      const filtered = allStudents.filter(s => {
-        const text = `${s.ID} ${s.Name} ${s.Phone} ${s.Address} ${s.ClassName} ${s.TeacherName}`.toLowerCase();
+      const q = el("search").value.trim().toLowerCase();
+      const filtered = allStudents.filter(function(s) {
+        const text = (s.ID + " " + s.Name + " " + s.Phone + " " + s.Address + " " + s.ClassName + " " + s.TeacherName).toLowerCase();
         return !q || text.includes(q);
       });
 
-      $("studentList").innerHTML = filtered.length ? filtered.map(s => {
+      el("studentList").innerHTML = filtered.length ? filtered.map(function(s) {
         const present = dashboard.presentIdsToday && dashboard.presentIdsToday.includes(String(s.ID));
-        return `
-          <div class="student">
-            <div style="min-width:0">
-              <div style="font-weight:800">${esc(s.Name)}</div>
-              <div class="muted">${esc(s.Phone)} ${s.Address ? "• " + esc(s.Address) : ""}</div>
-              <div style="margin-top:6px">
-                <span class="badge ${present ? "green" : "gray"}">${present ? "Present Today" : "Not Marked"}</span>
-                <span class="badge purple">${esc(s.ClassName || "")}</span>
-                <span class="badge orange">${esc(s.TeacherName || "")}</span>
-                <span class="badge">LKR ${money(s.FeeAmount || 0)}</span>
-              </div>
-            </div>
-            <div style="text-align:right;flex-shrink:0">
-              <div class="muted" style="font-size:12px">${esc(s.ID)}</div>
-              <button class="primary" style="margin-top:10px" onclick="useStudent('${esc(s.ID)}')">Use</button>
-            </div>
-          </div>
-        `;
-      }).join("") : `<div class="student"><span class="muted">No students found</span></div>`;
+        return '<div class="student">' +
+          '<div style="min-width:0">' +
+            '<div style="font-weight:800">' + esc(s.Name) + '</div>' +
+            '<div class="muted">' + esc(s.Phone) + (s.Address ? " \u2022 " + esc(s.Address) : "") + '</div>' +
+            '<div style="margin-top:6px">' +
+              '<span class="badge ' + (present ? "green" : "gray") + '">' + (present ? "Present Today" : "Not Marked") + '</span>' +
+              '<span class="badge purple">' + esc(s.ClassName || "") + '</span>' +
+              '<span class="badge orange">' + esc(s.TeacherName || "") + '</span>' +
+              '<span class="badge">LKR ' + money(s.FeeAmount || 0) + '</span>' +
+            '</div>' +
+          '</div>' +
+          '<div style="text-align:right;flex-shrink:0">' +
+            '<div class="muted" style="font-size:12px">' + esc(s.ID) + '</div>' +
+            '<button class="primary" style="margin-top:10px" onclick="useStudent(\'' + esc(s.ID) + '\')">Use</button>' +
+          '</div>' +
+        '</div>';
+      }).join("") : '<div class="student"><span class="muted">No students found</span></div>';
+    }
+
+    // ✅ FIX 3: Robust timestamp formatting - handles both ISO and Google Sheets date strings
+    function formatTime(ts) {
+      if (!ts) return "";
+      try {
+        const d = new Date(ts);
+        if (isNaN(d.getTime())) return String(ts).slice(0, 16);
+        return d.toLocaleTimeString("en-LK", { hour: "2-digit", minute: "2-digit", hour12: true });
+      } catch (e) {
+        return String(ts).slice(0, 16);
+      }
     }
 
     function renderTables() {
-      $("attendanceTable").innerHTML = dashboard.todayAttendance.length ? dashboard.todayAttendance.map(r => `
-        <tr>
-          <td>${esc(String(r.Timestamp || "").slice(11,16))}</td>
-          <td>${esc(r.Name)}</td>
-          <td>${esc(r.ClassName || "")}</td>
-          <td>${esc(r.TeacherName || "")}</td>
-          <td><span class="badge green">${esc(r.Status || "Present")}</span></td>
-        </tr>
-      `).join("") : `<tr><td colspan="5" class="muted">No attendance today</td></tr>`;
+      el("attendanceTable").innerHTML = dashboard.todayAttendance.length ? dashboard.todayAttendance.map(function(r) {
+        return '<tr>' +
+          '<td>' + esc(formatTime(r.Timestamp)) + '</td>' +
+          '<td>' + esc(r.Name) + '</td>' +
+          '<td>' + esc(r.ClassName || "") + '</td>' +
+          '<td>' + esc(r.TeacherName || "") + '</td>' +
+          '<td><span class="badge green">' + esc(r.Status || "Present") + '</span></td>' +
+          '</tr>';
+      }).join("") : '<tr><td colspan="5" class="muted">No attendance today</td></tr>';
 
-      $("paymentTable").innerHTML = dashboard.todayPayments.length ? dashboard.todayPayments.map(r => `
-        <tr>
-          <td>${esc(String(r.Timestamp || "").slice(11,16))}</td>
-          <td>${esc(r.Name)}</td>
-          <td>${esc(r.ClassName || "")}</td>
-          <td>LKR ${money(r.Amount)}</td>
-          <td>${esc(r.PaymentType || "")}</td>
-          <td>${esc(r.Note || "")}</td>
-        </tr>
-      `).join("") : `<tr><td colspan="6" class="muted">No payments today</td></tr>`;
+      el("paymentTable").innerHTML = dashboard.todayPayments.length ? dashboard.todayPayments.map(function(r) {
+        return '<tr>' +
+          '<td>' + esc(formatTime(r.Timestamp)) + '</td>' +
+          '<td>' + esc(r.Name) + '</td>' +
+          '<td>' + esc(r.ClassName || "") + '</td>' +
+          '<td>LKR ' + money(r.Amount) + '</td>' +
+          '<td>' + esc(r.PaymentType || "") + '</td>' +
+          '<td>' + esc(r.Note || "") + '</td>' +
+          '</tr>';
+      }).join("") : '<tr><td colspan="6" class="muted">No payments today</td></tr>';
     }
 
     function useStudent(id) {
-      $("studentSearch").value = "";
+      el("studentSearch").value = "";
       renderActionStudentSelect(allStudents);
-      $("studentSelect").value = id;
+      el("studentSelect").value = id;
       prefillPayment();
       showPage("actionsPage", document.querySelector('.nav-btn[data-page="actionsPage"]'));
-      $("studentSelect").scrollIntoView({ behavior: "smooth", block: "center" });
+      el("studentSelect").scrollIntoView({ behavior: "smooth", block: "center" });
     }
 
     async function markSelectedAttendance() {
       try {
         clearError();
-        const sel = $("studentSelect");
+        const sel = el("studentSelect");
         const opt = sel.options[sel.selectedIndex];
         if (!opt || !opt.value) return setMsg("actionMsg", "Select a student first", false);
 
@@ -793,12 +807,12 @@
     async function savePayment() {
       try {
         clearError();
-        const sel = $("studentSelect");
+        const sel = el("studentSelect");
         const opt = sel.options[sel.selectedIndex];
         if (!opt || !opt.value) return setMsg("actionMsg", "Select a student first", false);
 
-        const paymentType = $("paymentType").value;
-        const amount = Number($("amount").value || 0);
+        const paymentType = el("paymentType").value;
+        const amount = Number(el("amount").value || 0);
 
         if (amount <= 0) return setMsg("actionMsg", "Enter a valid amount", false);
 
@@ -809,14 +823,14 @@
 
         const result = await api("addPayment", {
           studentId: opt.value,
-          amount,
-          paymentType,
-          note: $("note").value.trim()
+          amount: amount,
+          paymentType: paymentType,
+          note: el("note").value.trim()
         });
 
         setMsg("actionMsg", result.message, true);
-        $("amount").value = "";
-        $("note").value = "";
+        el("amount").value = "";
+        el("note").value = "";
         await reloadAll();
         await refreshStudentStatus(opt.value);
       } catch (err) {
@@ -840,11 +854,11 @@
       renderStudentList();
       renderTables();
 
-      const selectedId = $("studentSelect").value;
+      const selectedId = el("studentSelect").value;
       if (selectedId) refreshStudentStatus(selectedId);
     }
 
-    window.addEventListener("load", async () => {
+    window.addEventListener("load", async function() {
       try {
         await reloadAll();
       } catch (err) {
@@ -859,14 +873,14 @@
       }
     });
 
-    window.addEventListener("beforeinstallprompt", e => {
+    window.addEventListener("beforeinstallprompt", function(e) {
       e.preventDefault();
       deferredPrompt = e;
-      $("installBtn").classList.remove("hidden");
-      $("installBtn").onclick = async () => {
+      el("installBtn").classList.remove("hidden");
+      el("installBtn").onclick = async function() {
         deferredPrompt.prompt();
         await deferredPrompt.userChoice;
-        $("installBtn").classList.add("hidden");
+        el("installBtn").classList.add("hidden");
         deferredPrompt = null;
       };
     });
