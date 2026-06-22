@@ -4,16 +4,241 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>ADM Class Manager</title>
+
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#0f172a" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <link rel="stylesheet" href="style.css" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+  <style>
+    :root{
+      --bg:#f8fafc;
+      --card:#ffffff;
+      --text:#0f172a;
+      --muted:#64748b;
+      --line:#e2e8f0;
+      --primary:#2563eb;
+      --primary2:#1d4ed8;
+      --success:#16a34a;
+      --danger:#dc2626;
+      --shadow:0 10px 30px rgba(15,23,42,.08);
+      --radius:22px;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:linear-gradient(180deg,#eff6ff 0%,var(--bg) 24%,#fff 100%);
+      color:var(--text);
+    }
+
+    .wrap{max-width:1400px;margin:0 auto;padding:18px}
+
+    .topbar{
+      display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between;
+      margin-bottom:18px;
+    }
+
+    .brand{
+      display:flex;align-items:center;gap:12px;
+      padding:16px 18px;background:rgba(255,255,255,.78);
+      backdrop-filter:blur(8px);
+      border:1px solid rgba(226,232,240,.9);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+    }
+
+    .brand h1{font-size:20px;line-height:1.1;margin:0}
+    .brand p{margin:2px 0 0;color:var(--muted);font-size:13px}
+    .logo{
+      width:44px;height:44px;border-radius:14px;
+      object-fit:cover;background:#e2e8f0;flex-shrink:0;
+      border:1px solid var(--line);
+    }
+
+    .pill{
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:999px;
+      padding:10px 14px;
+      box-shadow:var(--shadow);
+      cursor:pointer;
+      font-weight:700;
+    }
+
+    .hidden{display:none}
+
+    .nav{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin:14px 0 4px;
+    }
+
+    .nav-btn{
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:999px;
+      padding:10px 14px;
+      font-weight:700;
+      cursor:pointer;
+      box-shadow:var(--shadow);
+    }
+
+    .nav-btn.active{
+      background:#0f172a;
+      color:#fff;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(12,1fr);
+      gap:16px;
+    }
+
+    .page{display:none}
+    .page.active{display:block}
+    .inner{margin-top:12px}
+
+    .card{
+      background:var(--card);
+      border:1px solid rgba(226,232,240,.9);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:18px;
+    }
+
+    .stats{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
+    .stat{
+      padding:18px;border-radius:20px;background:linear-gradient(180deg,#fff,#f8fafc);
+      border:1px solid var(--line);
+    }
+    .stat .k{color:var(--muted);font-size:13px}
+    .stat .v{font-size:28px;font-weight:800;margin-top:8px}
+
+    .two-cols{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    .mini{
+      padding:18px;border-radius:20px;border:1px solid var(--line);background:#fff;
+    }
+    .mini .k{color:var(--muted);font-size:13px}
+    .mini .v{font-size:28px;font-weight:800;margin-top:8px}
+
+    .col-3{grid-column:span 3}
+    .col-4{grid-column:span 4}
+    .col-8{grid-column:span 8}
+    .col-9{grid-column:span 9}
+    .col-12{grid-column:1/-1}
+
+    @media (max-width:1100px){
+      .stats{grid-template-columns:repeat(2,1fr)}
+      .col-3,.col-4,.col-8,.col-9{grid-column:1/-1}
+    }
+
+    h2,h3{margin:0 0 12px}
+    label{display:block;font-size:13px;font-weight:700;margin:10px 0 6px}
+
+    input,select,textarea{
+      width:100%;
+      padding:13px 14px;
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:#fff;
+      color:var(--text);
+      outline:none;
+    }
+
+    textarea{min-height:90px;resize:vertical}
+    .btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+
+    button{
+      border:none;
+      border-radius:16px;
+      padding:12px 16px;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    .primary{background:var(--primary);color:#fff}
+    .primary:hover{background:var(--primary2)}
+    .secondary{background:#e2e8f0;color:#0f172a}
+    .success{background:var(--success);color:#fff}
+
+    .msg{font-size:12px;color:var(--muted);margin-top:8px}
+    .ok{color:var(--success);font-weight:700}
+    .err{color:var(--danger);font-weight:700}
+
+    .table-wrap{
+      max-height:340px;
+      overflow:auto;
+      border:1px solid var(--line);
+      border-radius:18px;
+      background:#fff;
+    }
+    .list-wrap{max-height:430px}
+    table{width:100%;border-collapse:collapse}
+    th,td{
+      padding:10px 8px;
+      border-bottom:1px solid #eef2f7;
+      text-align:left;
+      font-size:13px;
+    }
+    th{
+      color:#334155;
+      background:#f8fafc;
+      position:sticky;
+      top:0;
+      z-index:1;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:700;
+      background:#eff6ff;
+      color:#1d4ed8;
+      margin-right:6px;
+      margin-top:6px;
+    }
+    .badge.green{background:#dcfce7;color:#166534}
+    .badge.gray{background:#f1f5f9;color:#475569}
+    .badge.orange{background:#ffedd5;color:#c2410c}
+    .badge.purple{background:#f3e8ff;color:#7e22ce}
+
+    .student{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+      padding:12px;
+      border-bottom:1px solid #eef2f7;
+    }
+    .student:last-child{border-bottom:none}
+    .muted{color:var(--muted)}
+    .error-box{
+      margin-top:12px;
+      padding:12px 14px;
+      border-radius:14px;
+      background:#fef2f2;
+      color:#991b1b;
+      border:1px solid #fecaca;
+      display:none;
+      white-space:pre-wrap;
+      font-size:13px;
+    }
+  </style>
 </head>
+
 <body>
   <div class="wrap">
     <header class="topbar">
       <div class="brand">
-        <div class="logo">🏫</div>
+        <img src="logo/logo.png" alt="ADM Logo" class="logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+        <div class="logo" style="display:none;align-items:center;justify-content:center;">🏫</div>
         <div>
           <h1>ADM Class Manager</h1>
           <p>Teachers • Classes • Students • Attendance • Payments</p>
@@ -29,6 +254,8 @@
       <button class="nav-btn" data-page="studentsPage">Students</button>
       <button class="nav-btn" data-page="actionsPage">Attendance / Payments</button>
     </nav>
+
+    <div id="errorBox" class="error-box"></div>
 
     <main class="grid">
       <section id="dashboardPage" class="page active col-12">
@@ -191,6 +418,358 @@
     </main>
   </div>
 
-  <script src="app.js"></script>
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbymEtnSf9_Jn9o7Wcr3-2YNOUA17RH23vvYEUjzd1icddd6I3HZwd9lky63tTRgkE8e_A/exec";
+
+    let teachers = [];
+    let classes = [];
+    let allStudents = [];
+    let dashboard = { summary: {}, todayAttendance: [], todayPayments: [], presentIdsToday: [] };
+    let deferredPrompt = null;
+
+    const $ = (id) => document.getElementById(id);
+
+    function money(n) {
+      return Number(n || 0).toLocaleString("en-LK");
+    }
+
+    function esc(s) {
+      return String(s ?? "").replace(/[&<>"']/g, m => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      }[m]));
+    }
+
+    function showError(message) {
+      const box = $("errorBox");
+      box.style.display = "block";
+      box.textContent = message;
+    }
+
+    function clearError() {
+      const box = $("errorBox");
+      box.style.display = "none";
+      box.textContent = "";
+    }
+
+    function showPage(id, btn) {
+      document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+      $(id).classList.add("active");
+
+      document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+      if (btn) btn.classList.add("active");
+    }
+
+    document.querySelectorAll(".nav-btn").forEach(btn => {
+      btn.addEventListener("click", () => showPage(btn.dataset.page, btn));
+    });
+
+    async function api(action, payload = {}) {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ action, ...payload })
+      });
+
+      const text = await res.text();
+
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (err) {
+        throw new Error(
+          "Server returned non-JSON response. Check Web App deployment / permissions.\n\nFirst 200 chars:\n" +
+          text.slice(0, 200)
+        );
+      }
+
+      if (!data.ok) throw new Error(data.message || "Request failed");
+      return data;
+    }
+
+    function setMsg(id, text, ok = true) {
+      $(id).innerHTML = ok
+        ? `<span class="ok">${esc(text)}</span>`
+        : `<span class="err">${esc(text)}</span>`;
+    }
+
+    function clearTeacherForm() {
+      $("teacherName").value = "";
+      $("teacherPhone").value = "";
+      $("teacherSubject").value = "";
+    }
+
+    function clearClassForm() {
+      $("className").value = "";
+      $("classGrade").value = "";
+      $("classFee").value = "";
+    }
+
+    function clearStudentForm() {
+      $("studentName").value = "";
+      $("studentPhone").value = "";
+      $("studentAddress").value = "";
+    }
+
+    async function addTeacher() {
+      try {
+        clearError();
+        const result = await api("addTeacher", {
+          name: $("teacherName").value.trim(),
+          phone: $("teacherPhone").value.trim(),
+          subject: $("teacherSubject").value.trim()
+        });
+        setMsg("teacherMsg", result.message, true);
+        clearTeacherForm();
+        await reloadAll();
+      } catch (err) {
+        setMsg("teacherMsg", err.message, false);
+        showError(err.message);
+      }
+    }
+
+    async function addClass() {
+      try {
+        clearError();
+        const result = await api("addClass", {
+          className: $("className").value.trim(),
+          grade: $("classGrade").value.trim(),
+          teacherID: $("classTeacherSelect").value,
+          feeAmount: $("classFee").value
+        });
+        setMsg("classMsg", result.message, true);
+        clearClassForm();
+        await reloadAll();
+      } catch (err) {
+        setMsg("classMsg", err.message, false);
+        showError(err.message);
+      }
+    }
+
+    async function addStudent() {
+      try {
+        clearError();
+        const result = await api("addStudent", {
+          name: $("studentName").value.trim(),
+          phone: $("studentPhone").value.trim(),
+          address: $("studentAddress").value.trim(),
+          classID: $("studentClassSelect").value
+        });
+        setMsg("studentMsg", result.message, true);
+        clearStudentForm();
+        await reloadAll();
+      } catch (err) {
+        setMsg("studentMsg", err.message, false);
+        showError(err.message);
+      }
+    }
+
+    async function markSelectedAttendance() {
+      try {
+        clearError();
+        const sel = $("studentSelect");
+        const opt = sel.options[sel.selectedIndex];
+        if (!opt || !opt.value) return setMsg("actionMsg", "Select a student first", false);
+
+        const result = await api("markAttendance", {
+          studentId: opt.value
+        });
+        setMsg("actionMsg", result.message, true);
+        await reloadAll();
+      } catch (err) {
+        setMsg("actionMsg", err.message, false);
+        showError(err.message);
+      }
+    }
+
+    async function savePayment() {
+      try {
+        clearError();
+        const sel = $("studentSelect");
+        const opt = sel.options[sel.selectedIndex];
+        if (!opt || !opt.value) return setMsg("actionMsg", "Select a student first", false);
+
+        const result = await api("addPayment", {
+          studentId: opt.value,
+          amount: $("amount").value,
+          note: $("note").value.trim()
+        });
+        setMsg("actionMsg", result.message, true);
+        $("amount").value = "";
+        $("note").value = "";
+        await reloadAll();
+      } catch (err) {
+        setMsg("actionMsg", err.message, false);
+        showError(err.message);
+      }
+    }
+
+    function renderDashboard() {
+      const s = dashboard.summary || {};
+      $("studentCount").textContent = s.studentCount ?? 0;
+      $("teacherCount").textContent = s.teacherCount ?? 0;
+      $("classCount").textContent = s.classCount ?? 0;
+      $("presentCount").textContent = s.presentCount ?? 0;
+      $("todayCollection").textContent = money(s.todayCollection ?? 0);
+      $("monthCollection").textContent = money(s.monthCollection ?? 0);
+      $("absentCount").textContent = s.absentCount ?? 0;
+    }
+
+    function renderTeacherSelects() {
+      $("classTeacherSelect").innerHTML = teachers.length
+        ? teachers.map(t => `<option value="${esc(t.ID)}">${esc(t.Name)} (${esc(t.Subject || "Teacher")})</option>`).join("")
+        : `<option value="">No teachers yet</option>`;
+    }
+
+    function renderClassSelects() {
+      $("studentClassSelect").innerHTML = classes.length
+        ? `<option value="">Select class</option>` + classes.map(c => {
+            return `<option value="${esc(c.ID)}">${esc(c.ClassName)} (${esc(c.Grade)}) • ${esc(c.TeacherName)} • LKR ${money(c.FeeAmount)}</option>`;
+          }).join("")
+        : `<option value="">No classes yet</option>`;
+
+      $("studentSelect").innerHTML = allStudents.length
+        ? `<option value="">Select student</option>` + allStudents.map(s => {
+            return `<option value="${esc(s.ID)}" data-fee="${esc(s.FeeAmount || 0)}">${esc(s.Name)} • ${esc(s.ClassName)}</option>`;
+          }).join("")
+        : `<option value="">No students yet</option>`;
+    }
+
+    function prefillPayment() {
+      const opt = $("studentSelect").options[$("studentSelect").selectedIndex];
+      if (!opt || !opt.value) return;
+      $("amount").value = opt.dataset.fee || "";
+    }
+
+    function renderTeachersTable() {
+      $("teachersTable").innerHTML = teachers.length ? teachers.map(t => `
+        <tr>
+          <td>${esc(t.ID)}</td>
+          <td>${esc(t.Name)}</td>
+          <td>${esc(t.Phone)}</td>
+          <td>${esc(t.Subject || "")}</td>
+          <td><span class="badge green">${esc(t.Status || "Active")}</span></td>
+        </tr>
+      `).join("") : `<tr><td colspan="5" class="muted">No teachers yet</td></tr>`;
+    }
+
+    function renderClassesTable() {
+      $("classesTable").innerHTML = classes.length ? classes.map(c => `
+        <tr>
+          <td>${esc(c.ID)}</td>
+          <td>${esc(c.ClassName)}</td>
+          <td>${esc(c.Grade)}</td>
+          <td>${esc(c.TeacherName)}</td>
+          <td>LKR ${money(c.FeeAmount)}</td>
+          <td><span class="badge green">${esc(c.Status || "Active")}</span></td>
+        </tr>
+      `).join("") : `<tr><td colspan="6" class="muted">No classes yet</td></tr>`;
+    }
+
+    function renderStudentList() {
+      const q = $("search").value.trim().toLowerCase();
+      const filtered = allStudents.filter(s => {
+        const text = `${s.ID} ${s.Name} ${s.Phone} ${s.Address} ${s.ClassName} ${s.TeacherName}`.toLowerCase();
+        return !q || text.includes(q);
+      });
+
+      $("studentList").innerHTML = filtered.length ? filtered.map(s => {
+        const present = dashboard.presentIdsToday && dashboard.presentIdsToday.includes(String(s.ID));
+        return `
+          <div class="student">
+            <div style="min-width:0">
+              <div style="font-weight:800">${esc(s.Name)}</div>
+              <div class="muted">${esc(s.Phone)} ${s.Address ? "• " + esc(s.Address) : ""}</div>
+              <div style="margin-top:6px">
+                <span class="badge ${present ? "green" : "gray"}">${present ? "Present Today" : "Not Marked"}</span>
+                <span class="badge purple">${esc(s.ClassName || "")}</span>
+                <span class="badge orange">${esc(s.TeacherName || "")}</span>
+                <span class="badge">LKR ${money(s.FeeAmount || 0)}</span>
+              </div>
+            </div>
+            <div style="text-align:right;flex-shrink:0">
+              <div class="muted" style="font-size:12px">${esc(s.ID)}</div>
+              <button class="primary" style="margin-top:10px" onclick="useStudent('${esc(s.ID)}')">Use</button>
+            </div>
+          </div>
+        `;
+      }).join("") : `<div class="student"><span class="muted">No students found</span></div>`;
+    }
+
+    function renderTables() {
+      $("attendanceTable").innerHTML = dashboard.todayAttendance.length ? dashboard.todayAttendance.map(r => `
+        <tr>
+          <td>${esc(String(r.Timestamp || "").slice(11,16))}</td>
+          <td>${esc(r.Name)}</td>
+          <td>${esc(r.ClassName || "")}</td>
+          <td>${esc(r.TeacherName || "")}</td>
+          <td><span class="badge green">${esc(r.Status || "Present")}</span></td>
+        </tr>
+      `).join("") : `<tr><td colspan="5" class="muted">No attendance today</td></tr>`;
+
+      $("paymentTable").innerHTML = dashboard.todayPayments.length ? dashboard.todayPayments.map(r => `
+        <tr>
+          <td>${esc(String(r.Timestamp || "").slice(11,16))}</td>
+          <td>${esc(r.Name)}</td>
+          <td>${esc(r.ClassName || "")}</td>
+          <td>LKR ${money(r.Amount)}</td>
+          <td>${esc(r.Note || "")}</td>
+        </tr>
+      `).join("") : `<tr><td colspan="5" class="muted">No payments today</td></tr>`;
+    }
+
+    function useStudent(id) {
+      $("studentSelect").value = id;
+      prefillPayment();
+      showPage("actionsPage", document.querySelector('.nav-btn[data-page="actionsPage"]'));
+      $("studentSelect").scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    async function reloadAll() {
+      const data = await api("getDashboard");
+      dashboard = data;
+      teachers = data.teachers || [];
+      classes = data.classes || [];
+      allStudents = data.students || [];
+
+      renderDashboard();
+      renderTeacherSelects();
+      renderClassSelects();
+      renderTeachersTable();
+      renderClassesTable();
+      renderStudentList();
+      renderTables();
+    }
+
+    window.addEventListener("load", async () => {
+      try {
+        await reloadAll();
+      } catch (err) {
+        setMsg("actionMsg", err.message, false);
+        showError(err.message);
+      }
+
+      if ("serviceWorker" in navigator) {
+        try {
+          await navigator.serviceWorker.register("sw.js");
+        } catch (e) {}
+      }
+    });
+
+    window.addEventListener("beforeinstallprompt", e => {
+      e.preventDefault();
+      deferredPrompt = e;
+      $("installBtn").classList.remove("hidden");
+      $("installBtn").onclick = async () => {
+        deferredPrompt.prompt();
+        await deferredPrompt.userChoice;
+        $("installBtn").classList.add("hidden");
+        deferredPrompt = null;
+      };
+    });
+  </script>
 </body>
 </html>
