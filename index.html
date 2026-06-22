@@ -4,12 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>ADM Class Manager</title>
-
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#0f172a" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-
   <style>
     :root{
       --bg:#f8fafc;
@@ -24,7 +22,6 @@
       --shadow:0 10px 30px rgba(15,23,42,.08);
       --radius:22px;
     }
-
     *{box-sizing:border-box}
     body{
       margin:0;
@@ -32,14 +29,11 @@
       background:linear-gradient(180deg,#eff6ff 0%,var(--bg) 24%,#fff 100%);
       color:var(--text);
     }
-
     .wrap{max-width:1400px;margin:0 auto;padding:18px}
-
     .topbar{
       display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between;
       margin-bottom:18px;
     }
-
     .brand{
       display:flex;align-items:center;gap:12px;
       padding:16px 18px;background:rgba(255,255,255,.78);
@@ -48,7 +42,6 @@
       border-radius:var(--radius);
       box-shadow:var(--shadow);
     }
-
     .brand h1{font-size:20px;line-height:1.1;margin:0}
     .brand p{margin:2px 0 0;color:var(--muted);font-size:13px}
     .logo{
@@ -56,7 +49,6 @@
       object-fit:cover;background:#e2e8f0;flex-shrink:0;
       border:1px solid var(--line);
     }
-
     .pill{
       border:1px solid var(--line);
       background:#fff;
@@ -66,16 +58,13 @@
       cursor:pointer;
       font-weight:700;
     }
-
     .hidden{display:none}
-
     .nav{
       display:flex;
       flex-wrap:wrap;
       gap:10px;
       margin:14px 0 4px;
     }
-
     .nav-btn{
       border:1px solid var(--line);
       background:#fff;
@@ -85,22 +74,18 @@
       cursor:pointer;
       box-shadow:var(--shadow);
     }
-
     .nav-btn.active{
       background:#0f172a;
       color:#fff;
     }
-
     .grid{
       display:grid;
       grid-template-columns:repeat(12,1fr);
       gap:16px;
     }
-
     .page{display:none}
     .page.active{display:block}
     .inner{margin-top:12px}
-
     .card{
       background:var(--card);
       border:1px solid rgba(226,232,240,.9);
@@ -108,7 +93,6 @@
       box-shadow:var(--shadow);
       padding:18px;
     }
-
     .stats{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
     .stat{
       padding:18px;border-radius:20px;background:linear-gradient(180deg,#fff,#f8fafc);
@@ -116,28 +100,23 @@
     }
     .stat .k{color:var(--muted);font-size:13px}
     .stat .v{font-size:28px;font-weight:800;margin-top:8px}
-
     .two-cols{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
     .mini{
       padding:18px;border-radius:20px;border:1px solid var(--line);background:#fff;
     }
     .mini .k{color:var(--muted);font-size:13px}
     .mini .v{font-size:28px;font-weight:800;margin-top:8px}
-
     .col-3{grid-column:span 3}
     .col-4{grid-column:span 4}
     .col-8{grid-column:span 8}
     .col-9{grid-column:span 9}
     .col-12{grid-column:1/-1}
-
     @media (max-width:1100px){
       .stats{grid-template-columns:repeat(2,1fr)}
       .col-3,.col-4,.col-8,.col-9{grid-column:1/-1}
     }
-
     h2,h3{margin:0 0 12px}
     label{display:block;font-size:13px;font-weight:700;margin:10px 0 6px}
-
     input,select,textarea{
       width:100%;
       padding:13px 14px;
@@ -147,10 +126,8 @@
       color:var(--text);
       outline:none;
     }
-
     textarea{min-height:90px;resize:vertical}
     .btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
-
     button{
       border:none;
       border-radius:16px;
@@ -158,16 +135,13 @@
       font-weight:700;
       cursor:pointer;
     }
-
     .primary{background:var(--primary);color:#fff}
     .primary:hover{background:var(--primary2)}
     .secondary{background:#e2e8f0;color:#0f172a}
     .success{background:var(--success);color:#fff}
-
     .msg{font-size:12px;color:var(--muted);margin-top:8px}
     .ok{color:var(--success);font-weight:700}
     .err{color:var(--danger);font-weight:700}
-
     .table-wrap{
       max-height:340px;
       overflow:auto;
@@ -190,7 +164,6 @@
       top:0;
       z-index:1;
     }
-
     .badge{
       display:inline-flex;
       align-items:center;
@@ -208,7 +181,6 @@
     .badge.gray{background:#f1f5f9;color:#475569}
     .badge.orange{background:#ffedd5;color:#c2410c}
     .badge.purple{background:#f3e8ff;color:#7e22ce}
-
     .student{
       display:flex;
       justify-content:space-between;
@@ -232,7 +204,6 @@
     }
   </style>
 </head>
-
 <body>
   <div class="wrap">
     <header class="topbar">
@@ -266,7 +237,6 @@
           <div class="stat"><div class="k">Present Today</div><div class="v" id="presentCount">0</div></div>
           <div class="stat"><div class="k">Today Collection</div><div class="v" id="todayCollection">0</div></div>
         </div>
-
         <div class="card" style="margin-top:16px">
           <h2>This Month</h2>
           <div class="two-cols">
@@ -298,7 +268,6 @@
             </div>
             <div id="teacherMsg" class="msg"></div>
           </div>
-
           <div class="card col-8">
             <h2>Teachers List</h2>
             <div class="table-wrap">
@@ -331,7 +300,6 @@
             </div>
             <div id="classMsg" class="msg"></div>
           </div>
-
           <div class="card col-8">
             <h2>Classes List</h2>
             <div class="table-wrap">
@@ -364,7 +332,6 @@
             </div>
             <div id="studentMsg" class="msg"></div>
           </div>
-
           <div class="card col-8">
             <h2>Students</h2>
             <input id="search" placeholder="Search student..." oninput="renderStudentList()" />
@@ -379,19 +346,30 @@
         <div class="grid inner">
           <div class="card col-3">
             <h2>Quick Actions</h2>
+            <label>Search Student</label>
+            <input id="studentSearch" placeholder="Type student name..." oninput="searchStudentForAction()" />
             <label>Student</label>
-            <select id="studentSelect" onchange="prefillPayment()"></select>
+            <select id="studentSelect" onchange="onStudentSelected()"></select>
+            <div id="studentStatus" class="msg"></div>
+
+            <label>Payment Type</label>
+            <select id="paymentType">
+              <option value="Class Fee">Class Fee</option>
+              <option value="Advance">Advance</option>
+              <option value="Extra">Extra</option>
+            </select>
+
             <label>Payment Amount</label>
             <input id="amount" type="number" min="0" step="1" placeholder="1700" />
             <label>Note</label>
-            <input id="note" placeholder="Class fee / extra" />
+            <input id="note" placeholder="Class fee / advance / extra" />
+
             <div class="btns">
               <button class="success" onclick="savePayment()">Save Payment</button>
               <button class="primary" onclick="markSelectedAttendance()">Mark Present</button>
             </div>
             <div id="actionMsg" class="msg"></div>
           </div>
-
           <div class="card col-9">
             <h2>Today's Attendance</h2>
             <div class="table-wrap" style="margin-bottom:16px">
@@ -402,7 +380,6 @@
                 <tbody id="attendanceTable"></tbody>
               </table>
             </div>
-
             <h2>Today's Payments</h2>
             <div class="table-wrap">
               <table>
@@ -426,6 +403,7 @@
     let allStudents = [];
     let dashboard = { summary: {}, todayAttendance: [], todayPayments: [], presentIdsToday: [] };
     let deferredPrompt = null;
+    let selectedStudent = null;
 
     const $ = (id) => document.getElementById(id);
 
@@ -458,7 +436,6 @@
     function showPage(id, btn) {
       document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
       $(id).classList.add("active");
-
       document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
       if (btn) btn.classList.add("active");
     }
@@ -473,9 +450,7 @@
         headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify({ action, ...payload })
       });
-
       const text = await res.text();
-
       let data;
       try {
         data = JSON.parse(text);
@@ -485,7 +460,6 @@
           text.slice(0, 200)
         );
       }
-
       if (!data.ok) throw new Error(data.message || "Request failed");
       return data;
     }
@@ -567,46 +541,6 @@
       }
     }
 
-    async function markSelectedAttendance() {
-      try {
-        clearError();
-        const sel = $("studentSelect");
-        const opt = sel.options[sel.selectedIndex];
-        if (!opt || !opt.value) return setMsg("actionMsg", "Select a student first", false);
-
-        const result = await api("markAttendance", {
-          studentId: opt.value
-        });
-        setMsg("actionMsg", result.message, true);
-        await reloadAll();
-      } catch (err) {
-        setMsg("actionMsg", err.message, false);
-        showError(err.message);
-      }
-    }
-
-    async function savePayment() {
-      try {
-        clearError();
-        const sel = $("studentSelect");
-        const opt = sel.options[sel.selectedIndex];
-        if (!opt || !opt.value) return setMsg("actionMsg", "Select a student first", false);
-
-        const result = await api("addPayment", {
-          studentId: opt.value,
-          amount: $("amount").value,
-          note: $("note").value.trim()
-        });
-        setMsg("actionMsg", result.message, true);
-        $("amount").value = "";
-        $("note").value = "";
-        await reloadAll();
-      } catch (err) {
-        setMsg("actionMsg", err.message, false);
-        showError(err.message);
-      }
-    }
-
     function renderDashboard() {
       const s = dashboard.summary || {};
       $("studentCount").textContent = s.studentCount ?? 0;
@@ -630,18 +564,63 @@
             return `<option value="${esc(c.ID)}">${esc(c.ClassName)} (${esc(c.Grade)}) • ${esc(c.TeacherName)} • LKR ${money(c.FeeAmount)}</option>`;
           }).join("")
         : `<option value="">No classes yet</option>`;
+      renderActionStudentSelect(allStudents);
+    }
 
-      $("studentSelect").innerHTML = allStudents.length
-        ? `<option value="">Select student</option>` + allStudents.map(s => {
-            return `<option value="${esc(s.ID)}" data-fee="${esc(s.FeeAmount || 0)}">${esc(s.Name)} • ${esc(s.ClassName)}</option>`;
+    function renderActionStudentSelect(list = allStudents) {
+      $("studentSelect").innerHTML = list.length
+        ? `<option value="">Select student</option>` + list.map(s => {
+            return `<option value="${esc(s.ID)}" data-fee="${esc(s.FeeAmount || 0)}">${esc(s.Name)} • ${esc(s.ClassName || "")}</option>`;
           }).join("")
-        : `<option value="">No students yet</option>`;
+        : `<option value="">No students found</option>`;
+    }
+
+    function searchStudentForAction() {
+      const q = $("studentSearch").value.trim().toLowerCase();
+      const filtered = allStudents.filter(s => {
+        const text = `${s.ID} ${s.Name} ${s.Phone} ${s.Address} ${s.ClassName} ${s.TeacherName}`.toLowerCase();
+        return !q || text.includes(q);
+      });
+      renderActionStudentSelect(filtered);
+      $("studentStatus").textContent = filtered.length ? `${filtered.length} match(es) found` : "No matching student";
+      if (filtered.length === 1) {
+        $("studentSelect").value = filtered[0].ID;
+        onStudentSelected();
+      }
+    }
+
+    async function onStudentSelected() {
+      const id = $("studentSelect").value;
+      selectedStudent = allStudents.find(x => String(x.ID) === String(id)) || null;
+      if (!selectedStudent) {
+        $("studentStatus").textContent = "";
+        return;
+      }
+      $("amount").value = selectedStudent.FeeAmount || "";
+      await refreshStudentStatus(id);
+    }
+
+    async function refreshStudentStatus(studentId) {
+      try {
+        const data = await api("checkStudentStatus", { studentId });
+        $("studentStatus").innerHTML = `
+          <span class="badge ${data.attendanceToday ? "green" : "gray"}">
+            ${data.attendanceToday ? "Attendance already marked today" : "Attendance not marked today"}
+          </span>
+          <span class="badge ${data.balance <= 0 ? "green" : "orange"}">
+            ${data.balance <= 0 ? "Fully paid" : "Balance: LKR " + money(data.balance)}
+          </span>
+        `;
+      } catch (err) {
+        $("studentStatus").textContent = err.message;
+      }
     }
 
     function prefillPayment() {
       const opt = $("studentSelect").options[$("studentSelect").selectedIndex];
       if (!opt || !opt.value) return;
       $("amount").value = opt.dataset.fee || "";
+      refreshStudentStatus(opt.value);
     }
 
     function renderTeachersTable() {
@@ -722,10 +701,60 @@
     }
 
     function useStudent(id) {
+      $("studentSearch").value = "";
+      renderActionStudentSelect(allStudents);
       $("studentSelect").value = id;
       prefillPayment();
       showPage("actionsPage", document.querySelector('.nav-btn[data-page="actionsPage"]'));
       $("studentSelect").scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    async function markSelectedAttendance() {
+      try {
+        clearError();
+        const sel = $("studentSelect");
+        const opt = sel.options[sel.selectedIndex];
+        if (!opt || !opt.value) return setMsg("actionMsg", "Select a student first", false);
+
+        const result = await api("markAttendance", {
+          studentId: opt.value
+        });
+        setMsg("actionMsg", result.message, true);
+        await reloadAll();
+        await refreshStudentStatus(opt.value);
+      } catch (err) {
+        setMsg("actionMsg", err.message, false);
+        showError(err.message);
+      }
+    }
+
+    async function savePayment() {
+      try {
+        clearError();
+        const sel = $("studentSelect");
+        const opt = sel.options[sel.selectedIndex];
+        if (!opt || !opt.value) return setMsg("actionMsg", "Select a student first", false);
+
+        const status = await api("checkStudentStatus", { studentId: opt.value });
+        if (Number(status.balance) <= 0 && $("paymentType").value === "Class Fee") {
+          return setMsg("actionMsg", "This student is already fully paid.", false);
+        }
+
+        const result = await api("addPayment", {
+          studentId: opt.value,
+          amount: $("amount").value,
+          paymentType: $("paymentType").value,
+          note: $("note").value.trim()
+        });
+        setMsg("actionMsg", result.message, true);
+        $("amount").value = "";
+        $("note").value = "";
+        await reloadAll();
+        await refreshStudentStatus(opt.value);
+      } catch (err) {
+        setMsg("actionMsg", err.message, false);
+        showError(err.message);
+      }
     }
 
     async function reloadAll() {
@@ -734,7 +763,6 @@
       teachers = data.teachers || [];
       classes = data.classes || [];
       allStudents = data.students || [];
-
       renderDashboard();
       renderTeacherSelects();
       renderClassSelects();
@@ -753,9 +781,7 @@
       }
 
       if ("serviceWorker" in navigator) {
-        try {
-          await navigator.serviceWorker.register("sw.js");
-        } catch (e) {}
+        try { await navigator.serviceWorker.register("sw.js"); } catch (e) {}
       }
     });
 
