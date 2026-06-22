@@ -436,454 +436,446 @@
       </section>
     </main>
   </div>
+<script>
+  const API_URL = "PASTE_YOUR_LATEST_EXEC_URL_HERE";
 
-  <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbx57oarncmYMNntp7LS1L05osoc0z-q5Zr2cN0E-60mDjb7U7MUM0_OiVmiLrdjnZTsNA/exec";
+  let teachers = [];
+  let classes = [];
+  let allStudents = [];
+  let dashboard = { summary: {}, todayAttendance: [], todayPayments: [], presentIdsToday: [] };
+  let deferredPrompt = null;
+  let selectedStudent = null;
 
-    // ✅ FIX 1: Removed stray "h string that caused SyntaxError
-    // ✅ FIX 2: Renamed $ to el() to avoid conflicts
-    let teachers = [];
-    let classes = [];
-    let allStudents = [];
-    let dashboard = { summary: {}, todayAttendance: [], todayPayments: [], presentIdsToday: [] };
-    let deferredPrompt = null;
-    let selectedStudent = null;
+  function el(id) {
+    return document.getElementById(id);
+  }
 
-    // ✅ FIX 2: Renamed from $ to el to avoid potential jQuery/global conflicts
-    function el(id) {
-      return document.getElementById(id);
-    }
+  function money(n) {
+    return Number(n || 0).toLocaleString("en-LK");
+  }
 
-    function money(n) {
-      return Number(n || 0).toLocaleString("en-LK");
-    }
+  function esc(s) {
+    return String(s ?? "").replace(/[&<>"']/g, function (m) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m];
+    });
+  }
 
-    function esc(s) {
-      return String(s ?? "").replace(/[&<>"']/g, function(m) {
-        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m];
-      });
-    }
+  function showError(message) {
+    const box = el("errorBox");
+    box.style.display = "block";
+    box.textContent = message;
+  }
 
-    function showError(message) {
-      const box = el("errorBox");
-      box.style.display = "block";
-      box.textContent = message;
-    }
+  function clearError() {
+    const box = el("errorBox");
+    box.style.display = "none";
+    box.textContent = "";
+  }
 
-    function clearError() {
-      const box = el("errorBox");
-      box.style.display = "none";
-      box.textContent = "";
-    }
+  function setMsg(id, text, ok) {
+    if (ok === undefined) ok = true;
+    el(id).innerHTML = ok
+      ? '<span class="ok">' + esc(text) + '</span>'
+      : '<span class="err">' + esc(text) + '</span>';
+  }
 
-    function showPage(id, btn) {
-      document.querySelectorAll(".page").forEach(function(p) { p.classList.remove("active"); });
-      el(id).classList.add("active");
-      document.querySelectorAll(".nav-btn").forEach(function(b) { b.classList.remove("active"); });
-      if (btn) btn.classList.add("active");
-    }
+  function showPage(id, btn) {
+    document.querySelectorAll(".page").forEach(function (p) { p.classList.remove("active"); });
+    el(id).classList.add("active");
+    document.querySelectorAll(".nav-btn").forEach(function (b) { b.classList.remove("active"); });
+    if (btn) btn.classList.add("active");
+  }
 
-    document.querySelectorAll(".nav-btn").forEach(function(btn) {
-      btn.addEventListener("click", function() { showPage(btn.dataset.page, btn); });
+  document.querySelectorAll(".nav-btn").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      showPage(btn.dataset.page, btn);
+    });
+  });
+
+  async function api(action, payload) {
+    payload = payload || {};
+    const res = await fetch(API_URL, {
+      method: "POST",
+      cache: "no-store",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(Object.assign({ action: action }, payload))
     });
 
-    async function api(action, payload) {
-      payload = payload || {};
-      const res = await fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify(Object.assign({ action: action }, payload))
+    const text = await res.text();
+
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch (err) {
+      throw new Error("Server returned non-JSON response. Check Apps Script deployment.\nFirst 200 chars:\n" + text.slice(0, 200));
+    }
+
+    if (!data.ok) throw new Error(data.message || "Request failed");
+    return data;
+  }
+
+  function clearTeacherForm() {
+    el("teacherName").value = "";
+    el("teacherPhone").value = "";
+    el("teacherSubject").value = "";
+  }
+
+  function clearClassForm() {
+    el("className").value = "";
+    el("classGrade").value = "";
+    el("classFee").value = "";
+  }
+
+  function clearStudentForm() {
+    el("studentName").value = "";
+    el("studentPhone").value = "";
+    el("studentAddress").value = "";
+  }
+
+  async function addTeacher() {
+    try {
+      clearError();
+      const result = await api("addTeacher", {
+        name: el("teacherName").value.trim(),
+        phone: el("teacherPhone").value.trim(),
+        subject: el("teacherSubject").value.trim()
       });
-
-      const text = await res.text();
-
-      let data;
-      try {
-        data = JSON.parse(text);
-      } catch (err) {
-        throw new Error("Server returned non-JSON response. Check Apps Script deployment.\nFirst 200 chars:\n" + text.slice(0, 200));
-      }
-
-      if (!data.ok) throw new Error(data.message || "Request failed");
-      return data;
+      setMsg("teacherMsg", result.message, true);
+      clearTeacherForm();
+      await reloadAll();
+    } catch (err) {
+      setMsg("teacherMsg", err.message, false);
+      showError(err.message);
     }
+  }
 
-    function setMsg(id, text, ok) {
-      if (ok === undefined) ok = true;
-      el(id).innerHTML = ok
-        ? '<span class="ok">' + esc(text) + '</span>'
-        : '<span class="err">' + esc(text) + '</span>';
-    }
-
-    function clearTeacherForm() {
-      el("teacherName").value = "";
-      el("teacherPhone").value = "";
-      el("teacherSubject").value = "";
-    }
-
-    function clearClassForm() {
-      el("className").value = "";
-      el("classGrade").value = "";
-      el("classFee").value = "";
-    }
-
-    function clearStudentForm() {
-      el("studentName").value = "";
-      el("studentPhone").value = "";
-      el("studentAddress").value = "";
-    }
-
-    async function addTeacher() {
-      try {
-        clearError();
-        const result = await api("addTeacher", {
-          name: el("teacherName").value.trim(),
-          phone: el("teacherPhone").value.trim(),
-          subject: el("teacherSubject").value.trim()
-        });
-        setMsg("teacherMsg", result.message, true);
-        clearTeacherForm();
-        await reloadAll();
-      } catch (err) {
-        setMsg("teacherMsg", err.message, false);
-        showError(err.message);
-      }
-    }
-
-    async function addClass() {
-      try {
-        clearError();
-        const result = await api("addClass", {
-          className: el("className").value.trim(),
-          grade: el("classGrade").value.trim(),
-          teacherID: el("classTeacherSelect").value,
-          feeAmount: el("classFee").value
-        });
-        setMsg("classMsg", result.message, true);
-        clearClassForm();
-        await reloadAll();
-      } catch (err) {
-        setMsg("classMsg", err.message, false);
-        showError(err.message);
-      }
-    }
-
-    async function addStudent() {
-      try {
-        clearError();
-        const result = await api("addStudent", {
-          name: el("studentName").value.trim(),
-          phone: el("studentPhone").value.trim(),
-          address: el("studentAddress").value.trim(),
-          classID: el("studentClassSelect").value
-        });
-        setMsg("studentMsg", result.message, true);
-        clearStudentForm();
-        await reloadAll();
-      } catch (err) {
-        setMsg("studentMsg", err.message, false);
-        showError(err.message);
-      }
-    }
-
-    function renderDashboard() {
-      const s = dashboard.summary || {};
-      el("studentCount").textContent = s.studentCount != null ? s.studentCount : 0;
-      el("teacherCount").textContent = s.teacherCount != null ? s.teacherCount : 0;
-      el("classCount").textContent = s.classCount != null ? s.classCount : 0;
-      el("presentCount").textContent = s.presentCount != null ? s.presentCount : 0;
-      el("todayCollection").textContent = money(s.todayCollection != null ? s.todayCollection : 0);
-      el("monthCollection").textContent = money(s.monthCollection != null ? s.monthCollection : 0);
-      el("absentCount").textContent = s.absentCount != null ? s.absentCount : 0;
-    }
-
-    function renderTeacherSelects() {
-      el("classTeacherSelect").innerHTML = teachers.length
-        ? teachers.map(function(t) {
-            return '<option value="' + esc(t.ID) + '">' + esc(t.Name) + ' (' + esc(t.Subject || "Teacher") + ')</option>';
-          }).join("")
-        : '<option value="">No teachers yet</option>';
-    }
-
-    function renderClassSelects() {
-      el("studentClassSelect").innerHTML = classes.length
-        ? '<option value="">Select class</option>' + classes.map(function(c) {
-            return '<option value="' + esc(c.ID) + '">' + esc(c.ClassName) + ' (' + esc(c.Grade) + ') \u2022 ' + esc(c.TeacherName) + ' \u2022 LKR ' + money(c.FeeAmount) + '</option>';
-          }).join("")
-        : '<option value="">No classes yet</option>';
-
-      renderActionStudentSelect(allStudents);
-    }
-
-    function renderActionStudentSelect(list) {
-      list = list || allStudents;
-      el("studentSelect").innerHTML = list.length
-        ? '<option value="">Select student</option>' + list.map(function(s) {
-            return '<option value="' + esc(s.ID) + '" data-fee="' + esc(s.FeeAmount || 0) + '">' + esc(s.Name) + ' \u2022 ' + esc(s.ClassName || "") + '</option>';
-          }).join("")
-        : '<option value="">No students found</option>';
-    }
-
-    function searchStudentForAction() {
-      const q = el("studentSearch").value.trim().toLowerCase();
-
-      const filtered = allStudents.filter(function(s) {
-        const text = (s.ID + " " + s.Name + " " + s.Phone + " " + s.Address + " " + s.ClassName + " " + s.TeacherName).toLowerCase();
-        return !q || text.includes(q);
+  async function addClass() {
+    try {
+      clearError();
+      const result = await api("addClass", {
+        className: el("className").value.trim(),
+        grade: el("classGrade").value.trim(),
+        teacherID: el("classTeacherSelect").value,
+        feeAmount: el("classFee").value
       });
+      setMsg("classMsg", result.message, true);
+      clearClassForm();
+      await reloadAll();
+    } catch (err) {
+      setMsg("classMsg", err.message, false);
+      showError(err.message);
+    }
+  }
 
-      renderActionStudentSelect(filtered);
-      el("studentStatus").textContent = filtered.length ? filtered.length + " match(es) found" : "No matching student";
+  async function addStudent() {
+    try {
+      clearError();
+      const result = await api("addStudent", {
+        name: el("studentName").value.trim(),
+        phone: el("studentPhone").value.trim(),
+        address: el("studentAddress").value.trim(),
+        classID: el("studentClassSelect").value
+      });
+      setMsg("studentMsg", result.message, true);
+      clearStudentForm();
+      await reloadAll();
+    } catch (err) {
+      setMsg("studentMsg", err.message, false);
+      showError(err.message);
+    }
+  }
 
-      if (filtered.length === 1) {
-        el("studentSelect").value = filtered[0].ID;
-        onStudentSelected();
-      } else {
-        selectedStudent = null;
-      }
+  function renderDashboard() {
+    const s = dashboard.summary || {};
+    el("studentCount").textContent = s.studentCount != null ? s.studentCount : 0;
+    el("teacherCount").textContent = s.teacherCount != null ? s.teacherCount : 0;
+    el("classCount").textContent = s.classCount != null ? s.classCount : 0;
+    el("presentCount").textContent = s.presentCount != null ? s.presentCount : 0;
+    el("todayCollection").textContent = money(s.todayCollection != null ? s.todayCollection : 0);
+    el("monthCollection").textContent = money(s.monthCollection != null ? s.monthCollection : 0);
+    el("absentCount").textContent = s.absentCount != null ? s.absentCount : 0;
+  }
+
+  function renderTeacherSelects() {
+    el("classTeacherSelect").innerHTML = teachers.length
+      ? teachers.map(function (t) {
+          return '<option value="' + esc(t.ID) + '">' + esc(t.Name) + " (" + esc(t.Subject || "Teacher") + ")</option>";
+        }).join("")
+      : '<option value="">No teachers yet</option>';
+  }
+
+  function renderClassSelects() {
+    el("studentClassSelect").innerHTML = classes.length
+      ? '<option value="">Select class</option>' + classes.map(function (c) {
+          return '<option value="' + esc(c.ID) + '">' +
+            esc(c.ClassName) + " (" + esc(c.Grade) + ") • " +
+            esc(c.TeacherName) + " • LKR " + money(c.FeeAmount) +
+            '</option>';
+        }).join("")
+      : '<option value="">No classes yet</option>';
+
+    renderActionStudentSelect(allStudents);
+  }
+
+  function renderActionStudentSelect(list) {
+    list = list || allStudents;
+    el("studentSelect").innerHTML = list.length
+      ? '<option value="">Select student</option>' + list.map(function (s) {
+          return '<option value="' + esc(s.ID) + '" data-fee="' + esc(s.FeeAmount || 0) + '">' +
+            esc(s.Name) + " • " + esc(s.ClassName || "") +
+            '</option>';
+        }).join("")
+      : '<option value="">No students found</option>';
+  }
+
+  function searchStudentForAction() {
+    const q = el("studentSearch").value.trim().toLowerCase();
+
+    const filtered = allStudents.filter(function (s) {
+      const text = (s.ID + " " + s.Name + " " + s.Phone + " " + s.Address + " " + s.ClassName + " " + s.TeacherName).toLowerCase();
+      return !q || text.includes(q);
+    });
+
+    renderActionStudentSelect(filtered);
+    el("studentStatus").textContent = filtered.length ? filtered.length + " match(es) found" : "No matching student";
+
+    if (filtered.length === 1) {
+      el("studentSelect").value = filtered[0].ID;
+      onStudentSelected();
+    } else {
+      selectedStudent = null;
+    }
+  }
+
+  async function safeRefreshStudentStatus(studentId) {
+    try {
+      const data = await api("checkStudentStatus", { studentId: studentId });
+
+      el("studentStatus").innerHTML =
+        '<span class="badge ' + (data.attendanceToday ? "green" : "gray") + '">' +
+          (data.attendanceToday ? "Attendance already marked today" : "Attendance not marked today") +
+        '</span>' +
+        '<span class="badge ' + (data.balance <= 0 ? "green" : "orange") + '">' +
+          (data.balance <= 0 ? "Fully paid" : "Balance: LKR " + money(data.balance)) +
+        '</span>';
+    } catch (err) {
+      el("studentStatus").innerHTML = '<span class="badge gray">Status unavailable</span>';
+    }
+  }
+
+  async function onStudentSelected() {
+    const id = el("studentSelect").value;
+    selectedStudent = allStudents.find(function (x) { return String(x.ID) === String(id); }) || null;
+
+    if (!selectedStudent) {
+      el("studentStatus").textContent = "";
+      el("amount").value = "";
+      return;
     }
 
-    async function onStudentSelected() {
-      const id = el("studentSelect").value;
-      selectedStudent = allStudents.find(function(x) { return String(x.ID) === String(id); }) || null;
+    el("amount").value = selectedStudent.FeeAmount || "";
+    await safeRefreshStudentStatus(id);
+  }
 
-      if (!selectedStudent) {
-        el("studentStatus").textContent = "";
-        el("amount").value = "";
-        return;
-      }
-
+  function onPaymentTypeChange() {
+    if (selectedStudent && el("paymentType").value === "Class Fee") {
       el("amount").value = selectedStudent.FeeAmount || "";
-      await refreshStudentStatus(id);
     }
+  }
 
-    function onPaymentTypeChange() {
-      if (selectedStudent && el("paymentType").value === "Class Fee") {
-        el("amount").value = selectedStudent.FeeAmount || "";
-      }
+  function renderTeachersTable() {
+    el("teachersTable").innerHTML = teachers.length ? teachers.map(function (t) {
+      return '<tr>' +
+        '<td>' + esc(t.ID) + '</td>' +
+        '<td>' + esc(t.Name) + '</td>' +
+        '<td>' + esc(t.Phone) + '</td>' +
+        '<td>' + esc(t.Subject || "") + '</td>' +
+        '<td><span class="badge green">' + esc(t.Status || "Active") + '</span></td>' +
+        '</tr>';
+    }).join("") : '<tr><td colspan="5" class="muted">No teachers yet</td></tr>';
+  }
+
+  function renderClassesTable() {
+    el("classesTable").innerHTML = classes.length ? classes.map(function (c) {
+      return '<tr>' +
+        '<td>' + esc(c.ID) + '</td>' +
+        '<td>' + esc(c.ClassName) + '</td>' +
+        '<td>' + esc(c.Grade) + '</td>' +
+        '<td>' + esc(c.TeacherName) + '</td>' +
+        '<td>LKR ' + money(c.FeeAmount) + '</td>' +
+        '<td><span class="badge green">' + esc(c.Status || "Active") + '</span></td>' +
+        '</tr>';
+    }).join("") : '<tr><td colspan="6" class="muted">No classes yet</td></tr>';
+  }
+
+  function renderStudentList() {
+    const q = el("search").value.trim().toLowerCase();
+    const filtered = allStudents.filter(function (s) {
+      const text = (s.ID + " " + s.Name + " " + s.Phone + " " + s.Address + " " + s.ClassName + " " + s.TeacherName).toLowerCase();
+      return !q || text.includes(q);
+    });
+
+    el("studentList").innerHTML = filtered.length ? filtered.map(function (s) {
+      const present = dashboard.presentIdsToday && dashboard.presentIdsToday.includes(String(s.ID));
+      return '<div class="student">' +
+        '<div style="min-width:0">' +
+          '<div style="font-weight:800">' + esc(s.Name) + '</div>' +
+          '<div class="muted">' + esc(s.Phone) + (s.Address ? " • " + esc(s.Address) : "") + '</div>' +
+          '<div style="margin-top:6px">' +
+            '<span class="badge ' + (present ? "green" : "gray") + '">' + (present ? "Present Today" : "Not Marked") + '</span>' +
+            '<span class="badge purple">' + esc(s.ClassName || "") + '</span>' +
+            '<span class="badge orange">' + esc(s.TeacherName || "") + '</span>' +
+            '<span class="badge">LKR ' + money(s.FeeAmount || 0) + '</span>' +
+          '</div>' +
+        '</div>' +
+        '<div style="text-align:right;flex-shrink:0">' +
+          '<div class="muted" style="font-size:12px">' + esc(s.ID) + '</div>' +
+          '<button class="primary" style="margin-top:10px" onclick="useStudent(\'' + esc(s.ID) + '\')">Use</button>' +
+        '</div>' +
+      '</div>';
+    }).join("") : '<div class="student"><span class="muted">No students found</span></div>';
+  }
+
+  function formatTime(ts) {
+    if (!ts) return "";
+    try {
+      const d = new Date(ts);
+      if (isNaN(d.getTime())) return String(ts).slice(0, 16);
+      return d.toLocaleTimeString("en-LK", { hour: "2-digit", minute: "2-digit", hour12: true });
+    } catch (e) {
+      return String(ts).slice(0, 16);
     }
+  }
 
-    async function refreshStudentStatus(studentId) {
-      try {
-        const data = await api("checkStudentStatus", { studentId: studentId });
+  function renderTables() {
+    el("attendanceTable").innerHTML = dashboard.todayAttendance.length ? dashboard.todayAttendance.map(function (r) {
+      return '<tr>' +
+        '<td>' + esc(formatTime(r.Timestamp)) + '</td>' +
+        '<td>' + esc(r.Name) + '</td>' +
+        '<td>' + esc(r.ClassName || "") + '</td>' +
+        '<td>' + esc(r.TeacherName || "") + '</td>' +
+        '<td><span class="badge green">' + esc(r.Status || "Present") + '</span></td>' +
+        '</tr>';
+    }).join("") : '<tr><td colspan="5" class="muted">No attendance today</td></tr>';
 
-        el("studentStatus").innerHTML =
-          '<span class="badge ' + (data.attendanceToday ? "green" : "gray") + '">' +
-            (data.attendanceToday ? "Attendance already marked today" : "Attendance not marked today") +
-          '</span>' +
-          '<span class="badge ' + (data.balance <= 0 ? "green" : "orange") + '">' +
-            (data.balance <= 0 ? "Fully paid" : "Balance: LKR " + money(data.balance)) +
-          '</span>';
-      } catch (err) {
-        el("studentStatus").textContent = err.message;
-      }
-    }
+    el("paymentTable").innerHTML = dashboard.todayPayments.length ? dashboard.todayPayments.map(function (r) {
+      return '<tr>' +
+        '<td>' + esc(formatTime(r.Timestamp)) + '</td>' +
+        '<td>' + esc(r.Name) + '</td>' +
+        '<td>' + esc(r.ClassName || "") + '</td>' +
+        '<td>LKR ' + money(r.Amount) + '</td>' +
+        '<td>' + esc(r.PaymentType || "") + '</td>' +
+        '<td>' + esc(r.Note || "") + '</td>' +
+        '</tr>';
+    }).join("") : '<tr><td colspan="6" class="muted">No payments today</td></tr>';
+  }
 
-    function prefillPayment() {
-      const opt = el("studentSelect").options[el("studentSelect").selectedIndex];
-      if (!opt || !opt.value) return;
-      selectedStudent = allStudents.find(function(x) { return String(x.ID) === String(opt.value); }) || null;
-      el("amount").value = opt.dataset.fee || "";
-      refreshStudentStatus(opt.value);
-    }
+  function useStudent(id) {
+    el("studentSearch").value = "";
+    renderActionStudentSelect(allStudents);
+    el("studentSelect").value = id;
+    onStudentSelected();
+    showPage("actionsPage", document.querySelector('.nav-btn[data-page="actionsPage"]'));
+    el("studentSelect").scrollIntoView({ behavior: "smooth", block: "center" });
+  }
 
-    function renderTeachersTable() {
-      el("teachersTable").innerHTML = teachers.length ? teachers.map(function(t) {
-        return '<tr>' +
-          '<td>' + esc(t.ID) + '</td>' +
-          '<td>' + esc(t.Name) + '</td>' +
-          '<td>' + esc(t.Phone) + '</td>' +
-          '<td>' + esc(t.Subject || "") + '</td>' +
-          '<td><span class="badge green">' + esc(t.Status || "Active") + '</span></td>' +
-          '</tr>';
-      }).join("") : '<tr><td colspan="5" class="muted">No teachers yet</td></tr>';
-    }
+  async function markSelectedAttendance() {
+    try {
+      clearError();
+      const sel = el("studentSelect");
+      const opt = sel.options[sel.selectedIndex];
+      if (!opt || !opt.value) return setMsg("actionMsg", "Select a student first", false);
 
-    function renderClassesTable() {
-      el("classesTable").innerHTML = classes.length ? classes.map(function(c) {
-        return '<tr>' +
-          '<td>' + esc(c.ID) + '</td>' +
-          '<td>' + esc(c.ClassName) + '</td>' +
-          '<td>' + esc(c.Grade) + '</td>' +
-          '<td>' + esc(c.TeacherName) + '</td>' +
-          '<td>LKR ' + money(c.FeeAmount) + '</td>' +
-          '<td><span class="badge green">' + esc(c.Status || "Active") + '</span></td>' +
-          '</tr>';
-      }).join("") : '<tr><td colspan="6" class="muted">No classes yet</td></tr>';
-    }
-
-    function renderStudentList() {
-      const q = el("search").value.trim().toLowerCase();
-      const filtered = allStudents.filter(function(s) {
-        const text = (s.ID + " " + s.Name + " " + s.Phone + " " + s.Address + " " + s.ClassName + " " + s.TeacherName).toLowerCase();
-        return !q || text.includes(q);
+      const result = await api("markAttendance", {
+        studentId: opt.value
       });
 
-      el("studentList").innerHTML = filtered.length ? filtered.map(function(s) {
-        const present = dashboard.presentIdsToday && dashboard.presentIdsToday.includes(String(s.ID));
-        return '<div class="student">' +
-          '<div style="min-width:0">' +
-            '<div style="font-weight:800">' + esc(s.Name) + '</div>' +
-            '<div class="muted">' + esc(s.Phone) + (s.Address ? " \u2022 " + esc(s.Address) : "") + '</div>' +
-            '<div style="margin-top:6px">' +
-              '<span class="badge ' + (present ? "green" : "gray") + '">' + (present ? "Present Today" : "Not Marked") + '</span>' +
-              '<span class="badge purple">' + esc(s.ClassName || "") + '</span>' +
-              '<span class="badge orange">' + esc(s.TeacherName || "") + '</span>' +
-              '<span class="badge">LKR ' + money(s.FeeAmount || 0) + '</span>' +
-            '</div>' +
-          '</div>' +
-          '<div style="text-align:right;flex-shrink:0">' +
-            '<div class="muted" style="font-size:12px">' + esc(s.ID) + '</div>' +
-            '<button class="primary" style="margin-top:10px" onclick="useStudent(\'' + esc(s.ID) + '\')">Use</button>' +
-          '</div>' +
-        '</div>';
-      }).join("") : '<div class="student"><span class="muted">No students found</span></div>';
+      setMsg("actionMsg", result.message, true);
+      await reloadAll();
+      await safeRefreshStudentStatus(opt.value);
+    } catch (err) {
+      setMsg("actionMsg", err.message, false);
+      showError(err.message);
+    }
+  }
+
+  async function savePayment() {
+    try {
+      clearError();
+      const sel = el("studentSelect");
+      const opt = sel.options[sel.selectedIndex];
+      if (!opt || !opt.value) return setMsg("actionMsg", "Select a student first", false);
+
+      const paymentType = el("paymentType").value;
+      const amount = Number(el("amount").value || 0);
+
+      if (amount <= 0) return setMsg("actionMsg", "Enter a valid amount", false);
+
+      const result = await api("addPayment", {
+        studentId: opt.value,
+        amount: amount,
+        paymentType: paymentType,
+        note: el("note").value.trim()
+      });
+
+      setMsg("actionMsg", result.message, true);
+      el("amount").value = "";
+      el("note").value = "";
+      await reloadAll();
+      await safeRefreshStudentStatus(opt.value);
+    } catch (err) {
+      setMsg("actionMsg", err.message, false);
+      showError(err.message);
+    }
+  }
+
+  async function reloadAll() {
+    const data = await api("getDashboard");
+    dashboard = data || { summary: {}, todayAttendance: [], todayPayments: [], presentIdsToday: [] };
+    teachers = dashboard.teachers || [];
+    classes = dashboard.classes || [];
+    allStudents = dashboard.students || [];
+
+    renderDashboard();
+    renderTeacherSelects();
+    renderClassSelects();
+    renderTeachersTable();
+    renderClassesTable();
+    renderStudentList();
+    renderTables();
+
+    const selectedId = el("studentSelect").value;
+    if (selectedId) {
+      safeRefreshStudentStatus(selectedId);
+    }
+  }
+
+  window.addEventListener("load", async function () {
+    try {
+      await reloadAll();
+    } catch (err) {
+      setMsg("actionMsg", err.message, false);
+      showError(err.message);
     }
 
-    // ✅ FIX 3: Robust timestamp formatting - handles both ISO and Google Sheets date strings
-    function formatTime(ts) {
-      if (!ts) return "";
+    if ("serviceWorker" in navigator) {
       try {
-        const d = new Date(ts);
-        if (isNaN(d.getTime())) return String(ts).slice(0, 16);
-        return d.toLocaleTimeString("en-LK", { hour: "2-digit", minute: "2-digit", hour12: true });
-      } catch (e) {
-        return String(ts).slice(0, 16);
-      }
+        await navigator.serviceWorker.register("sw.js");
+      } catch (e) {}
     }
+  });
 
-    function renderTables() {
-      el("attendanceTable").innerHTML = dashboard.todayAttendance.length ? dashboard.todayAttendance.map(function(r) {
-        return '<tr>' +
-          '<td>' + esc(formatTime(r.Timestamp)) + '</td>' +
-          '<td>' + esc(r.Name) + '</td>' +
-          '<td>' + esc(r.ClassName || "") + '</td>' +
-          '<td>' + esc(r.TeacherName || "") + '</td>' +
-          '<td><span class="badge green">' + esc(r.Status || "Present") + '</span></td>' +
-          '</tr>';
-      }).join("") : '<tr><td colspan="5" class="muted">No attendance today</td></tr>';
-
-      el("paymentTable").innerHTML = dashboard.todayPayments.length ? dashboard.todayPayments.map(function(r) {
-        return '<tr>' +
-          '<td>' + esc(formatTime(r.Timestamp)) + '</td>' +
-          '<td>' + esc(r.Name) + '</td>' +
-          '<td>' + esc(r.ClassName || "") + '</td>' +
-          '<td>LKR ' + money(r.Amount) + '</td>' +
-          '<td>' + esc(r.PaymentType || "") + '</td>' +
-          '<td>' + esc(r.Note || "") + '</td>' +
-          '</tr>';
-      }).join("") : '<tr><td colspan="6" class="muted">No payments today</td></tr>';
-    }
-
-    function useStudent(id) {
-      el("studentSearch").value = "";
-      renderActionStudentSelect(allStudents);
-      el("studentSelect").value = id;
-      prefillPayment();
-      showPage("actionsPage", document.querySelector('.nav-btn[data-page="actionsPage"]'));
-      el("studentSelect").scrollIntoView({ behavior: "smooth", block: "center" });
-    }
-
-    async function markSelectedAttendance() {
-      try {
-        clearError();
-        const sel = el("studentSelect");
-        const opt = sel.options[sel.selectedIndex];
-        if (!opt || !opt.value) return setMsg("actionMsg", "Select a student first", false);
-
-        const result = await api("markAttendance", {
-          studentId: opt.value
-        });
-
-        setMsg("actionMsg", result.message, true);
-        await reloadAll();
-        await refreshStudentStatus(opt.value);
-      } catch (err) {
-        setMsg("actionMsg", err.message, false);
-        showError(err.message);
-      }
-    }
-
-    async function savePayment() {
-      try {
-        clearError();
-        const sel = el("studentSelect");
-        const opt = sel.options[sel.selectedIndex];
-        if (!opt || !opt.value) return setMsg("actionMsg", "Select a student first", false);
-
-        const paymentType = el("paymentType").value;
-        const amount = Number(el("amount").value || 0);
-
-        if (amount <= 0) return setMsg("actionMsg", "Enter a valid amount", false);
-
-        const status = await api("checkStudentStatus", { studentId: opt.value });
-        if (paymentType === "Class Fee" && Number(status.balance) <= 0) {
-          return setMsg("actionMsg", "This student is already fully paid.", false);
-        }
-
-        const result = await api("addPayment", {
-          studentId: opt.value,
-          amount: amount,
-          paymentType: paymentType,
-          note: el("note").value.trim()
-        });
-
-        setMsg("actionMsg", result.message, true);
-        el("amount").value = "";
-        el("note").value = "";
-        await reloadAll();
-        await refreshStudentStatus(opt.value);
-      } catch (err) {
-        setMsg("actionMsg", err.message, false);
-        showError(err.message);
-      }
-    }
-
-    async function reloadAll() {
-      const data = await api("getDashboard");
-      dashboard = data;
-      teachers = data.teachers || [];
-      classes = data.classes || [];
-      allStudents = data.students || [];
-
-      renderDashboard();
-      renderTeacherSelects();
-      renderClassSelects();
-      renderTeachersTable();
-      renderClassesTable();
-      renderStudentList();
-      renderTables();
-
-      const selectedId = el("studentSelect").value;
-      if (selectedId) refreshStudentStatus(selectedId);
-    }
-
-    window.addEventListener("load", async function() {
-      try {
-        await reloadAll();
-      } catch (err) {
-        setMsg("actionMsg", err.message, false);
-        showError(err.message);
-      }
-
-      if ("serviceWorker" in navigator) {
-        try {
-          await navigator.serviceWorker.register("sw.js");
-        } catch (e) {}
-      }
-    });
-
-    window.addEventListener("beforeinstallprompt", function(e) {
-      e.preventDefault();
-      deferredPrompt = e;
-      el("installBtn").classList.remove("hidden");
-      el("installBtn").onclick = async function() {
-        deferredPrompt.prompt();
-        await deferredPrompt.userChoice;
-        el("installBtn").classList.add("hidden");
-        deferredPrompt = null;
-      };
-    });
-  </script>
+  window.addEventListener("beforeinstallprompt", function (e) {
+    e.preventDefault();
+    deferredPrompt = e;
+    el("installBtn").classList.remove("hidden");
+    el("installBtn").onclick = async function () {
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      el("installBtn").classList.add("hidden");
+      deferredPrompt = null;
+    };
+  });
+</script>
 </body>
 </html>
