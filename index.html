@@ -1061,10 +1061,17 @@
         </div>
         <div style="text-align:right;flex-shrink:0">
           <div class="muted" style="font-size:12px">${esc(s.ID)}</div>
-          <button class="primary no-print" style="margin-top:10px" onclick="useStudent('${esc(s.ID)}')">Use</button>
+          <button class="primary no-print" style="margin-top:10px" data-use-student="${esc(s.ID)}">Use</button>
         </div>
       </div>
     `).join("") : '<div class="student"><span class="muted">No students found</span></div>';
+  }
+
+
+  function bindStudentUseButtons() {
+    document.querySelectorAll('[data-use-student]').forEach((btn) => {
+      btn.onclick = () => useStudent(btn.dataset.useStudent);
+    });
   }
 
   function formatTime(ts) {
@@ -1357,6 +1364,19 @@
   el("payTeacherSelect").addEventListener("change", () => {
     if (el("payTeacherSelect").value) loadTeacherPaysheet().catch((err) => showError(err.message));
   });
+
+  window.refreshNow = refreshNow;
+  window.showPage = showPage;
+  window.addTeacher = addTeacher;
+  window.addClass = addClass;
+  window.addStudent = addStudent;
+  window.savePayment = savePayment;
+  window.markSelectedAttendance = markSelectedAttendance;
+  window.loadMonthlyReport = loadMonthlyReport;
+  window.saveExpense = saveExpense;
+  window.loadTeacherPaysheet = loadTeacherPaysheet;
+  window.printReport = printReport;
+  window.useStudent = useStudent;
 </script>
 </body>
 </html>
