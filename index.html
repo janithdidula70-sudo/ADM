@@ -1,3 +1,4 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,8 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>ADM Class Manager</title>
 
-  <link rel="icon" type="image/png" href="logo/logo.png" />
-  <link rel="apple-touch-icon" href="logo/logo.png" />
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#0f172a" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -14,93 +13,62 @@
 
   <style>
     :root{
-      --bg1:#050816;
-      --bg2:#0f172a;
-      --bg3:#111827;
-      --card:rgba(255,255,255,.08);
-      --card-strong:rgba(255,255,255,.14);
-      --text:#f8fafc;
-      --muted:#cbd5e1;
-      --line:rgba(255,255,255,.12);
-      --primary:#38bdf8;
-      --primary2:#22d3ee;
-      --success:#22c55e;
-      --danger:#ef4444;
-      --warning:#f59e0b;
-      --shadow:0 24px 60px rgba(0,0,0,.28);
-      --radius:24px;
+      --bg:#f8fafc;
+      --card:#ffffff;
+      --text:#0f172a;
+      --muted:#64748b;
+      --line:#e2e8f0;
+      --primary:#2563eb;
+      --primary2:#1d4ed8;
+      --success:#16a34a;
+      --danger:#dc2626;
+      --warning:#d97706;
+      --shadow:0 10px 30px rgba(15,23,42,.08);
+      --radius:22px;
     }
 
     *{box-sizing:border-box}
-    html{scroll-behavior:smooth}
     body{
       margin:0;
       font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:linear-gradient(180deg,#eff6ff 0%,var(--bg) 24%,#fff 100%);
       color:var(--text);
-      background:
-        radial-gradient(circle at 10% 10%, rgba(56,189,248,.22), transparent 22%),
-        radial-gradient(circle at 90% 18%, rgba(34,197,94,.18), transparent 18%),
-        radial-gradient(circle at 20% 90%, rgba(168,85,247,.14), transparent 20%),
-        linear-gradient(135deg,var(--bg1),var(--bg2) 48%,var(--bg3));
-      min-height:100vh;
     }
 
-    body::before{
-      content:"";
-      position:fixed;
-      inset:0;
-      pointer-events:none;
-      background:
-        linear-gradient(120deg, rgba(255,255,255,.04) 0%, transparent 35%, rgba(255,255,255,.03) 65%, transparent 100%);
-      mix-blend-mode:screen;
-      opacity:.8;
-    }
-
-    .wrap{max-width:1500px;margin:0 auto;padding:18px;position:relative;z-index:1}
+    .wrap{max-width:1400px;margin:0 auto;padding:18px}
 
     .topbar{
-      display:flex;gap:14px;flex-wrap:wrap;align-items:center;justify-content:space-between;
+      display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between;
       margin-bottom:18px;
     }
 
     .brand{
-      display:flex;align-items:center;gap:14px;
-      padding:16px 18px;
-      background:rgba(255,255,255,.08);
-      backdrop-filter:blur(18px);
-      border:1px solid var(--line);
+      display:flex;align-items:center;gap:12px;
+      padding:16px 18px;background:rgba(255,255,255,.78);
+      backdrop-filter:blur(8px);
+      border:1px solid rgba(226,232,240,.9);
       border-radius:var(--radius);
       box-shadow:var(--shadow);
     }
 
-    .brand h1{font-size:22px;line-height:1.05;margin:0}
-    .brand p{margin:4px 0 0;color:var(--muted);font-size:13px}
-    .brand-badge{
-      display:inline-flex;align-items:center;gap:8px;
-      padding:6px 10px;border-radius:999px;
-      background:rgba(255,255,255,.10);
-      border:1px solid var(--line);
-      color:var(--muted);
-      font-size:12px;
-      margin-top:8px;
-    }
+    .brand h1{font-size:20px;line-height:1.1;margin:0}
+    .brand p{margin:2px 0 0;color:var(--muted);font-size:13px}
 
     .logo{
-      width:48px;height:48px;border-radius:16px;
-      object-fit:cover;background:rgba(255,255,255,.12);
-      flex-shrink:0;border:1px solid var(--line);display:block;
+      width:44px;height:44px;border-radius:14px;
+      object-fit:cover;background:#e2e8f0;flex-shrink:0;
+      border:1px solid var(--line);
+      display:block;
     }
 
     .pill{
       border:1px solid var(--line);
-      background:rgba(255,255,255,.08);
-      color:var(--text);
+      background:#fff;
       border-radius:999px;
-      padding:11px 16px;
+      padding:10px 14px;
       box-shadow:var(--shadow);
       cursor:pointer;
-      font-weight:800;
-      backdrop-filter:blur(16px);
+      font-weight:700;
     }
 
     .hidden{display:none}
@@ -109,138 +77,122 @@
       display:flex;
       flex-wrap:wrap;
       gap:10px;
-      margin:14px 0 8px;
+      margin:14px 0 4px;
     }
 
     .nav-btn{
       border:1px solid var(--line);
-      background:rgba(255,255,255,.08);
-      color:var(--text);
+      background:#fff;
       border-radius:999px;
       padding:10px 14px;
-      font-weight:800;
+      font-weight:700;
       cursor:pointer;
       box-shadow:var(--shadow);
-      backdrop-filter:blur(14px);
     }
 
     .nav-btn.active{
-      background:linear-gradient(135deg,#0f172a,#1e293b);
-      border-color:rgba(255,255,255,.18);
+      background:#0f172a;
       color:#fff;
     }
 
-    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(12,1fr);
+      gap:16px;
+    }
+
     .page{display:none}
     .page.active{display:block}
     .inner{margin-top:12px}
 
     .card{
       background:var(--card);
-      border:1px solid var(--line);
+      border:1px solid rgba(226,232,240,.9);
       border-radius:var(--radius);
       box-shadow:var(--shadow);
       padding:18px;
-      backdrop-filter:blur(18px);
-    }
-
-    .hero{
-      padding:20px;
-      border-radius:28px;
-      background:
-        linear-gradient(135deg, rgba(56,189,248,.16), rgba(168,85,247,.12)),
-        rgba(255,255,255,.06);
-      border:1px solid var(--line);
-      box-shadow:var(--shadow);
     }
 
     .stats{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
     .stat{
-      padding:18px;border-radius:22px;
-      background:linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,.06));
+      padding:18px;border-radius:20px;background:linear-gradient(180deg,#fff,#f8fafc);
       border:1px solid var(--line);
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
     }
     .stat .k{color:var(--muted);font-size:13px}
-    .stat .v{font-size:28px;font-weight:900;margin-top:8px;letter-spacing:-.02em}
+    .stat .v{font-size:28px;font-weight:800;margin-top:8px}
 
     .two-cols{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
     .mini{
-      padding:18px;border-radius:22px;
-      background:rgba(255,255,255,.08);
-      border:1px solid var(--line);
+      padding:18px;border-radius:20px;border:1px solid var(--line);background:#fff;
     }
     .mini .k{color:var(--muted);font-size:13px}
-    .mini .v{font-size:28px;font-weight:900;margin-top:8px}
+    .mini .v{font-size:28px;font-weight:800;margin-top:8px}
 
     .col-3{grid-column:span 3}
     .col-4{grid-column:span 4}
-    .col-5{grid-column:span 5}
-    .col-7{grid-column:span 7}
     .col-8{grid-column:span 8}
     .col-9{grid-column:span 9}
     .col-12{grid-column:1/-1}
 
-    @media (max-width:1200px){
+    @media (max-width:1100px){
       .stats{grid-template-columns:repeat(2,1fr)}
-      .col-3,.col-4,.col-5,.col-7,.col-8,.col-9{grid-column:1/-1}
+      .col-3,.col-4,.col-8,.col-9{grid-column:1/-1}
     }
 
     h2,h3{margin:0 0 12px}
-    h2{letter-spacing:-.02em}
-    label{display:block;font-size:13px;font-weight:800;margin:10px 0 6px;color:#e2e8f0}
+    label{display:block;font-size:13px;font-weight:700;margin:10px 0 6px}
 
     input,select,textarea{
       width:100%;
       padding:13px 14px;
       border:1px solid var(--line);
       border-radius:16px;
-      background:rgba(255,255,255,.92);
-      color:#0f172a;
+      background:#fff;
+      color:var(--text);
       outline:none;
     }
-    textarea{min-height:94px;resize:vertical}
 
+    textarea{min-height:90px;resize:vertical}
     .btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+
     button{
       border:none;
       border-radius:16px;
       padding:12px 16px;
-      font-weight:800;
+      font-weight:700;
       cursor:pointer;
     }
-    .primary{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#00202b}
+
+    .primary{background:var(--primary);color:#fff}
+    .primary:hover{background:var(--primary2)}
     .secondary{background:#e2e8f0;color:#0f172a}
-    .success{background:linear-gradient(135deg,#86efac,#22c55e);color:#052e16}
-    .danger{background:linear-gradient(135deg,#fca5a5,#ef4444);color:#450a0a}
+    .success{background:var(--success);color:#fff}
 
     .msg{font-size:12px;color:var(--muted);margin-top:8px}
-    .ok{color:#86efac;font-weight:800}
-    .err{color:#fecaca;font-weight:800}
+    .ok{color:var(--success);font-weight:700}
+    .err{color:var(--danger);font-weight:700}
 
     .table-wrap{
       max-height:340px;
       overflow:auto;
       border:1px solid var(--line);
       border-radius:18px;
-      background:rgba(255,255,255,.08);
+      background:#fff;
     }
     .list-wrap{max-height:430px}
     table{width:100%;border-collapse:collapse}
     th,td{
       padding:10px 8px;
-      border-bottom:1px solid rgba(255,255,255,.08);
+      border-bottom:1px solid #eef2f7;
       text-align:left;
       font-size:13px;
-      color:#f8fafc;
     }
     th{
-      color:#cbd5e1;
-      background:rgba(255,255,255,.06);
+      color:#334155;
+      background:#f8fafc;
       position:sticky;
       top:0;
       z-index:1;
-      backdrop-filter:blur(8px);
     }
 
     .badge{
@@ -250,19 +202,16 @@
       padding:6px 10px;
       border-radius:999px;
       font-size:12px;
-      font-weight:800;
-      background:rgba(255,255,255,.10);
-      color:#dbeafe;
+      font-weight:700;
+      background:#eff6ff;
+      color:#1d4ed8;
       margin-right:6px;
       margin-top:6px;
-      border:1px solid rgba(255,255,255,.12);
     }
-    .badge.green{background:rgba(34,197,94,.18);color:#bbf7d0}
-    .badge.gray{background:rgba(148,163,184,.18);color:#e2e8f0}
-    .badge.orange{background:rgba(245,158,11,.16);color:#fde68a}
-    .badge.purple{background:rgba(168,85,247,.16);color:#e9d5ff}
-    .badge.red{background:rgba(239,68,68,.16);color:#fecaca}
-    .badge.blue{background:rgba(56,189,248,.16);color:#cffafe}
+    .badge.green{background:#dcfce7;color:#166534}
+    .badge.gray{background:#f1f5f9;color:#475569}
+    .badge.orange{background:#ffedd5;color:#c2410c}
+    .badge.purple{background:#f3e8ff;color:#7e22ce}
 
     .student{
       display:flex;
@@ -270,7 +219,7 @@
       gap:12px;
       align-items:center;
       padding:12px;
-      border-bottom:1px solid rgba(255,255,255,.08);
+      border-bottom:1px solid #eef2f7;
     }
     .student:last-child{border-bottom:none}
     .muted{color:var(--muted)}
@@ -278,102 +227,31 @@
       margin-top:12px;
       padding:12px 14px;
       border-radius:14px;
-      background:rgba(239,68,68,.12);
-      color:#fecaca;
-      border:1px solid rgba(239,68,68,.25);
+      background:#fef2f2;
+      color:#991b1b;
+      border:1px solid #fecaca;
       display:none;
       white-space:pre-wrap;
       font-size:13px;
     }
-
-    .section-head{
-      display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
-      margin-bottom:12px
+  @media print {
+    body * {
+      visibility: hidden !important;
     }
-
-    .subcard{
-      border-radius:20px;
-      background:rgba(255,255,255,.06);
-      border:1px solid var(--line);
-      padding:14px;
+    #reportPage, #reportPage * {
+      visibility: visible !important;
     }
-
-    .print-shell{
-      background:#fff;
-      color:#000;
-      border-radius:24px;
-      padding:20px;
-      border:1px solid #ddd;
-      box-shadow:none;
+    #reportPage {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      background: #fff;
     }
-
-    .print-brand{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      border-bottom:2px solid #000;
-      padding-bottom:12px;
-      margin-bottom:12px;
+    .no-print {
+      display: none !important;
     }
-
-    .print-brand img{width:56px;height:56px;border-radius:14px;object-fit:cover}
-    .print-title{font-size:26px;font-weight:900;letter-spacing:-.02em;margin:0}
-    .print-sub{margin:4px 0 0;font-size:13px;color:#333}
-    .print-meta{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:10px;font-size:13px}
-    .print-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:16px}
-    .print-stat{
-      border:1px solid #000;
-      padding:12px;border-radius:14px
-    }
-    .print-stat .k{font-size:11px;font-weight:700}
-    .print-stat .v{font-size:18px;font-weight:900;margin-top:6px}
-
-    .print-table{
-      width:100%;
-      border-collapse:collapse;
-      margin-top:8px;
-    }
-    .print-table th,.print-table td{
-      border:1px solid #000;
-      color:#000;
-      background:#fff;
-      padding:8px;
-      font-size:12px;
-      vertical-align:top;
-    }
-    .print-table th{position:static;background:#f4f4f4}
-
-    .pay-sheet{
-      display:grid;
-      grid-template-columns:1.2fr .8fr;
-      gap:16px;
-    }
-
-    .info-line{
-      display:flex;justify-content:space-between;gap:10px;
-      padding:8px 0;border-bottom:1px dotted #cbd5e1;font-size:13px
-    }
-
-    @media print {
-      body{background:#fff !important;color:#000 !important}
-      body::before{display:none !important}
-      .no-print{display:none !important}
-      .page{display:none !important}
-      #reportPage{display:block !important}
-      #reportPage *{visibility:visible !important}
-      #reportPrintArea,#teacherPrintArea{
-        display:block !important;
-        background:#fff !important;
-        color:#000 !important;
-        box-shadow:none !important;
-      }
-      .print-shell,.card,.subcard{background:#fff !important;color:#000 !important;box-shadow:none !important;border-color:#000 !important}
-      .print-shell *,.print-shell th,.print-shell td{color:#000 !important}
-      .print-shell .muted{color:#333 !important}
-      .print-shell .badge{border:1px solid #000 !important;background:#fff !important;color:#000 !important}
-      .print-hide-on-print{display:none !important}
-      .print-table th,.print-table td{color:#000 !important}
-    }
+  }
   </style>
 </head>
 <body>
@@ -384,14 +262,13 @@
         <div class="logo" style="display:none;align-items:center;justify-content:center;">🏫</div>
         <div>
           <h1>ADM Class Manager</h1>
-          <p>Teachers • Classes • Students • Attendance • Payments • Reports</p>
-          <div class="brand-badge">Black & White PDF • Teacher Paysheets • Monthly Income</div>
+          <p>Teachers • Classes • Students • Attendance • Payments</p>
         </div>
       </div>
-      <button id="installBtn" class="pill hidden no-print">Install App</button>
+      <button id="installBtn" class="pill hidden">Install App</button>
     </header>
 
-    <nav class="nav no-print">
+    <nav class="nav">
       <button class="nav-btn active" data-page="dashboardPage">Dashboard</button>
       <button class="nav-btn" data-page="teachersPage">Teachers</button>
       <button class="nav-btn" data-page="classesPage">Classes</button>
@@ -400,47 +277,29 @@
       <button class="nav-btn" data-page="reportPage">Reports</button>
     </nav>
 
-    <div id="errorBox" class="error-box no-print"></div>
+    <div id="errorBox" class="error-box"></div>
 
     <main class="grid">
       <section id="dashboardPage" class="page active col-12">
-        <div class="hero">
-          <div class="section-head">
-            <div>
-              <h2>Dashboard</h2>
-              <div class="muted">Monthly payment status, attendance overview, and quick school finance summary.</div>
-            </div>
-            <div class="btns no-print">
-              <button class="secondary" onclick="refreshNow()">Refresh</button>
-              <button class="primary" onclick="showPage('reportPage', document.querySelector('.nav-btn[data-page=\'reportPage\']'))">Open Reports</button>
-            </div>
-          </div>
+        <div class="stats">
+          <div class="stat"><div class="k">Students</div><div class="v" id="studentCount">0</div></div>
+          <div class="stat"><div class="k">Teachers</div><div class="v" id="teacherCount">0</div></div>
+          <div class="stat"><div class="k">Classes</div><div class="v" id="classCount">0</div></div>
+          <div class="stat"><div class="k">Present Today</div><div class="v" id="presentCount">0</div></div>
+          <div class="stat"><div class="k">Today Collection</div><div class="v" id="todayCollection">0</div></div>
+        </div>
 
-          <div class="stats">
-            <div class="stat"><div class="k">Students</div><div class="v" id="studentCount">0</div></div>
-            <div class="stat"><div class="k">Teachers</div><div class="v" id="teacherCount">0</div></div>
-            <div class="stat"><div class="k">Classes</div><div class="v" id="classCount">0</div></div>
-            <div class="stat"><div class="k">Present Today</div><div class="v" id="presentCount">0</div></div>
-            <div class="stat"><div class="k">Today Collection</div><div class="v" id="todayCollection">0</div></div>
-          </div>
-
-          <div class="two-cols" style="margin-top:16px">
+        <div class="card" style="margin-top:16px">
+          <h2>This Month</h2>
+          <div class="two-cols">
             <div class="mini">
-              <div class="k">This Month Collection</div>
+              <div class="k">Month Collection</div>
               <div class="v" id="monthCollection">0</div>
             </div>
             <div class="mini">
               <div class="k">Absent Today</div>
               <div class="v" id="absentCount">0</div>
             </div>
-          </div>
-
-          <div class="subcard" style="margin-top:16px">
-            <div class="section-head">
-              <h3 style="margin:0">Quick Status</h3>
-              <span class="badge blue" id="dashboardMonthBadge">Month: --</span>
-            </div>
-            <div id="statusSummary" class="muted">Loading...</div>
           </div>
         </div>
       </section>
@@ -455,7 +314,7 @@
             <input id="teacherPhone" placeholder="07xxxxxxxx" />
             <label>Subject</label>
             <input id="teacherSubject" placeholder="Maths / Science / English" />
-            <div class="btns no-print">
+            <div class="btns">
               <button class="primary" onclick="addTeacher()">Save Teacher</button>
               <button class="secondary" onclick="clearTeacherForm()">Clear</button>
             </div>
@@ -488,7 +347,7 @@
             <select id="classTeacherSelect"></select>
             <label>Class Fee</label>
             <input id="classFee" type="number" min="0" step="1" placeholder="1700" />
-            <div class="btns no-print">
+            <div class="btns">
               <button class="primary" onclick="addClass()">Save Class</button>
               <button class="secondary" onclick="clearClassForm()">Clear</button>
             </div>
@@ -521,7 +380,7 @@
             <textarea id="studentAddress" placeholder="Physical address"></textarea>
             <label>Class</label>
             <select id="studentClassSelect"></select>
-            <div class="btns no-print">
+            <div class="btns">
               <button class="primary" onclick="addStudent()">Save Student</button>
               <button class="secondary" onclick="clearStudentForm()">Clear</button>
             </div>
@@ -529,10 +388,8 @@
           </div>
 
           <div class="card col-8">
-            <div class="section-head">
-              <h2 style="margin:0">Students</h2>
-              <input id="search" placeholder="Search student..." oninput="renderStudentList()" style="max-width:320px" />
-            </div>
+            <h2>Students</h2>
+            <input id="search" placeholder="Search student..." oninput="renderStudentList()" />
             <div class="table-wrap list-wrap">
               <div id="studentList"></div>
             </div>
@@ -565,7 +422,7 @@
             <label>Note</label>
             <input id="note" placeholder="Class fee / advance / extra" />
 
-            <div class="btns no-print">
+            <div class="btns">
               <button class="success" onclick="savePayment()">Save Payment</button>
               <button class="primary" onclick="markSelectedAttendance()">Mark Present</button>
             </div>
@@ -596,188 +453,103 @@
           </div>
         </div>
       </section>
-
       <section id="reportPage" class="page col-12">
-        <div class="grid inner">
-          <div class="card col-4 no-print">
-            <h2>Monthly Report</h2>
+  <div class="grid inner">
+    <div class="card col-4 no-print">
+      <h2>Monthly Report</h2>
 
-            <label>Month</label>
-            <input id="reportMonth" type="month" />
+      <label>Month</label>
+      <input id="reportMonth" type="month" />
 
-            <div class="btns">
-              <button class="primary" onclick="loadMonthlyReport()">Generate Report</button>
-              <button class="success" onclick="printReport()">Save as PDF</button>
-            </div>
+      <div class="btns">
+        <button class="primary" onclick="loadMonthlyReport()">Generate Report</button>
+        <button class="success" onclick="printReport()">Save as PDF</button>
+      </div>
 
-            <hr style="border:none;border-top:1px solid rgba(255,255,255,.18);margin:16px 0">
+      <hr style="border:none;border-top:1px solid #e2e8f0;margin:16px 0">
 
-            <h3>Teacher Paysheet</h3>
-            <label>Teacher</label>
-            <select id="payTeacherSelect"></select>
+      <h3>Add Expense</h3>
+      <label>Category</label>
+      <input id="expenseCategory" placeholder="Rent / Utility / Transport" />
 
-            <label>Month</label>
-            <input id="payTeacherMonth" type="month" />
+      <label>Amount</label>
+      <input id="expenseAmount" type="number" min="0" step="1" placeholder="5000" />
 
-            <div class="btns">
-              <button class="primary" onclick="loadTeacherPaysheet()">Generate Paysheet</button>
-              <button class="success" onclick="printReport()">Save as PDF</button>
-            </div>
+      <label>Note</label>
+      <input id="expenseNote" placeholder="Optional note" />
 
-            <hr style="border:none;border-top:1px solid rgba(255,255,255,.18);margin:16px 0">
+      <div class="btns">
+        <button class="success" onclick="saveExpense()">Save Expense</button>
+      </div>
 
-            <h3>Add Expense</h3>
-            <label>Category</label>
-            <input id="expenseCategory" placeholder="Rent / Utility / Transport" />
+      <div id="expenseMsg" class="msg"></div>
+    </div>
 
-            <label>Amount</label>
-            <input id="expenseAmount" type="number" min="0" step="1" placeholder="5000" />
+    <div class="card col-8" id="reportPrintArea">
+      <div id="reportHeader"></div>
 
-            <label>Note</label>
-            <input id="expenseNote" placeholder="Optional note" />
+      <div class="stats" style="margin-top:16px">
+        <div class="stat"><div class="k">Gross Income</div><div class="v" id="rGross">0</div></div>
+        <div class="stat"><div class="k">Teacher 75%</div><div class="v" id="rTeacher">0</div></div>
+        <div class="stat"><div class="k">Institute 25%</div><div class="v" id="rInstitute">0</div></div>
+        <div class="stat"><div class="k">Expenses</div><div class="v" id="rExpenses">0</div></div>
+        <div class="stat"><div class="k">Net Income</div><div class="v" id="rNet">0</div></div>
+      </div>
 
-            <div class="btns">
-              <button class="success" onclick="saveExpense()">Save Expense</button>
-            </div>
-
-            <div id="expenseMsg" class="msg"></div>
-          </div>
-
-          <div class="col-8">
-            <div class="card print-shell" id="reportPrintArea">
-              <div class="print-brand">
-                <img src="logo/logo.png" alt="ADM Logo" onerror="this.style.display='none'" />
-                <div>
-                  <div class="print-title">ADM CLASS MANAGEMENT</div>
-                  <div class="print-sub">Narammala Road, Negombo Road • 0710658051</div>
-                  <div class="print-sub">Black & White Monthly Finance Report</div>
-                </div>
-              </div>
-
-              <div class="print-meta">
-                <div><b>Report Month:</b> <span id="reportMonthText">--</span></div>
-                <div><b>Generated:</b> <span id="reportGeneratedAt">--</span></div>
-              </div>
-
-              <div class="print-grid">
-                <div class="print-stat"><div class="k">Gross Income</div><div class="v" id="rGross">0</div></div>
-                <div class="print-stat"><div class="k">Teacher 75%</div><div class="v" id="rTeacher">0</div></div>
-                <div class="print-stat"><div class="k">Institute 25%</div><div class="v" id="rInstitute">0</div></div>
-                <div class="print-stat"><div class="k">Expenses</div><div class="v" id="rExpenses">0</div></div>
-                <div class="print-stat"><div class="k">Net Income</div><div class="v" id="rNet">0</div></div>
-              </div>
-
-              <div class="subcard" style="margin-top:16px">
-                <div class="section-head">
-                  <h3 style="margin:0">Payments</h3>
-                  <span class="badge blue">Monthly detailed list</span>
-                </div>
-                <div style="overflow:auto">
-                  <table class="print-table">
-                    <thead>
-                      <tr><th>Date</th><th>Student</th><th>Class</th><th>Amount</th><th>Type</th><th>Note</th></tr>
-                    </thead>
-                    <tbody id="reportPaymentsTable"></tbody>
-                  </table>
-                </div>
-              </div>
-
-              <div class="subcard" style="margin-top:16px">
-                <div class="section-head">
-                  <h3 style="margin:0">Expenses</h3>
-                  <span class="badge orange">Monthly cost list</span>
-                </div>
-                <div style="overflow:auto">
-                  <table class="print-table">
-                    <thead>
-                      <tr><th>Date</th><th>Category</th><th>Amount</th><th>Note</th></tr>
-                    </thead>
-                    <tbody id="reportExpensesTable"></tbody>
-                  </table>
-                </div>
-              </div>
-
-              <div class="subcard" style="margin-top:16px">
-                <div class="section-head">
-                  <h3 style="margin:0">Teacher Paysheet</h3>
-                  <span class="badge purple" id="teacherPaysheetMonthBadge">Month: --</span>
-                </div>
-
-                <div class="pay-sheet">
-                  <div>
-                    <div class="info-line"><span>Teacher</span><b id="psTeacher">--</b></div>
-                    <div class="info-line"><span>Classes</span><b id="psClasses">0</b></div>
-                    <div class="info-line"><span>Students</span><b id="psStudents">0</b></div>
-                    <div class="info-line"><span>Gross Collection</span><b id="psGross">0</b></div>
-                    <div class="info-line"><span>Teacher Share (75%)</span><b id="psTeacherShare">0</b></div>
-                    <div class="info-line"><span>ADM Commission (25%)</span><b id="psAdmShare">0</b></div>
-                    <div class="info-line"><span>Expenses</span><b id="psExpenses">0</b></div>
-                    <div class="info-line"><span>Final Teacher Pay</span><b id="psNet">0</b></div>
-                  </div>
-
-                  <div>
-                    <div class="subcard" style="padding:12px">
-                      <div style="font-weight:900;margin-bottom:8px">Teacher Notes</div>
-                      <div id="psNote" class="muted">Select a teacher and month to generate the paysheet.</div>
-                    </div>
-                    <div class="subcard" style="padding:12px;margin-top:12px">
-                      <div style="font-weight:900;margin-bottom:8px">Monthly Summary</div>
-                      <div id="psSummary" class="muted">No data yet.</div>
-                    </div>
-                  </div>
-                </div>
-
-                <div style="margin-top:14px;overflow:auto">
-                  <table class="print-table">
-                    <thead>
-                      <tr><th>Student</th><th>Class</th><th>Amount</th><th>Payment Type</th><th>Date</th></tr>
-                    </thead>
-                    <tbody id="teacherPaysheetTable"></tbody>
-                  </table>
-                </div>
-              </div>
-
-              <div style="margin-top:18px;color:#333;font-size:12px;text-align:center">
-                Generated by ADM Class Manager
-              </div>
-            </div>
-          </div>
+      <div class="card" style="margin-top:16px">
+        <h3>Payments</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Date</th><th>Student</th><th>Class</th><th>Amount</th><th>Type</th><th>Note</th></tr>
+            </thead>
+            <tbody id="reportPaymentsTable"></tbody>
+          </table>
         </div>
-      </section>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <h3>Expenses</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Date</th><th>Category</th><th>Amount</th><th>Note</th></tr>
+            </thead>
+            <tbody id="reportExpensesTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div style="margin-top:18px;color:#64748b;font-size:12px;text-align:center">
+        Generated by ADM Class Manager
+      </div>
+    </div>
+  </div>
+</section>
     </main>
   </div>
-
 <script>
-  const API_URL = "https://script.google.com/macros/s/AKfycbzZYJTrsaEKnQ8l7nJeCtrhABBKIP1H7k-emO6xIru13Ozh-jSfWcXFx9coEBp_yi_tPw/exec";
+  const API_URL = "https://script.google.com/macros/s/AKfycbx57oarncmYMNntp7LS1L05osoc0z-q5Zr2cN0E-60mDjb7U7MUM0_OiVmiLrdjnZTsNA/exec";
 
   let teachers = [];
   let classes = [];
   let allStudents = [];
   let dashboard = { summary: {}, todayAttendance: [], todayPayments: [], presentIdsToday: [] };
-  let monthlyReport = null;
-  let teacherPaysheet = null;
   let deferredPrompt = null;
   let selectedStudent = null;
 
-  const el = (id) => document.getElementById(id);
-
-  function currentMonth() {
-    return new Date().toISOString().slice(0, 7);
-  }
-
-  function prevMonth(ym) {
-    const [y, m] = String(ym || currentMonth()).split('-').map(Number);
-    const d = new Date(y, (m || 1) - 2, 1);
-    return d.toISOString().slice(0, 7);
+  function el(id) {
+    return document.getElementById(id);
   }
 
   function money(n) {
-    const val = Number(n || 0);
-    return val.toLocaleString("en-LK");
+    return Number(n || 0).toLocaleString("en-LK");
   }
 
   function esc(s) {
-    return String(s ?? "").replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m] || m));
+    return String(s ?? "").replace(/[&<>"']/g, function (m) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m];
+    });
   }
 
   function showError(message) {
@@ -792,41 +564,44 @@
     box.textContent = "";
   }
 
-  function setMsg(id, text, ok = true) {
+  function setMsg(id, text, ok) {
+    if (ok === undefined) ok = true;
     el(id).innerHTML = ok
       ? '<span class="ok">' + esc(text) + '</span>'
       : '<span class="err">' + esc(text) + '</span>';
   }
 
   function showPage(id, btn) {
-    document.querySelectorAll(".page").forEach((p) => p.classList.remove("active"));
+    document.querySelectorAll(".page").forEach(function (p) { p.classList.remove("active"); });
     el(id).classList.add("active");
-    document.querySelectorAll(".nav-btn").forEach((b) => b.classList.remove("active"));
+    document.querySelectorAll(".nav-btn").forEach(function (b) { b.classList.remove("active"); });
     if (btn) btn.classList.add("active");
-    if (id === "reportPage") {
-      el("reportGeneratedAt").textContent = new Date().toLocaleString("en-LK");
-    }
   }
 
-  document.querySelectorAll(".nav-btn").forEach((btn) => {
-    btn.addEventListener("click", () => showPage(btn.dataset.page, btn));
+  document.querySelectorAll(".nav-btn").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      showPage(btn.dataset.page, btn);
+    });
   });
 
-  async function api(action, payload = {}) {
+  async function api(action, payload) {
+    payload = payload || {};
     const res = await fetch(API_URL, {
       method: "POST",
       cache: "no-store",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify(Object.assign({ action }, payload))
+      body: JSON.stringify(Object.assign({ action: action }, payload))
     });
 
     const text = await res.text();
+
     let data;
     try {
       data = JSON.parse(text);
     } catch (err) {
       throw new Error("Server returned non-JSON response. Check Apps Script deployment.\nFirst 200 chars:\n" + text.slice(0, 200));
     }
+
     if (!data.ok) throw new Error(data.message || "Request failed");
     return data;
   }
@@ -904,75 +679,58 @@
 
   function renderDashboard() {
     const s = dashboard.summary || {};
-    el("studentCount").textContent = s.studentCount ?? 0;
-    el("teacherCount").textContent = s.teacherCount ?? 0;
-    el("classCount").textContent = s.classCount ?? 0;
-    el("presentCount").textContent = s.presentCount ?? 0;
-    el("todayCollection").textContent = money(s.todayCollection ?? 0);
-    el("monthCollection").textContent = money(s.monthCollection ?? 0);
-    el("absentCount").textContent = s.absentCount ?? 0;
-    el("dashboardMonthBadge").textContent = "Month: " + (el("reportMonth").value || currentMonth());
-    el("statusSummary").innerHTML = `
-      <span class="badge blue">Paid / Pending status enabled</span>
-      <span class="badge green">${money(s.monthCollection ?? 0)} collected this month</span>
-      <span class="badge orange">${money(s.todayCollection ?? 0)} today</span>
-    `;
+    el("studentCount").textContent = s.studentCount != null ? s.studentCount : 0;
+    el("teacherCount").textContent = s.teacherCount != null ? s.teacherCount : 0;
+    el("classCount").textContent = s.classCount != null ? s.classCount : 0;
+    el("presentCount").textContent = s.presentCount != null ? s.presentCount : 0;
+    el("todayCollection").textContent = money(s.todayCollection != null ? s.todayCollection : 0);
+    el("monthCollection").textContent = money(s.monthCollection != null ? s.monthCollection : 0);
+    el("absentCount").textContent = s.absentCount != null ? s.absentCount : 0;
   }
 
   function renderTeacherSelects() {
-    const teacherOptions = teachers.length
-      ? teachers.map((t) => `<option value="${esc(t.ID)}">${esc(t.Name)} (${esc(t.Subject || "Teacher")})</option>`).join("")
-      : '<option value="">No teachers yet</option>';
-
-    el("classTeacherSelect").innerHTML = teacherOptions;
-    el("payTeacherSelect").innerHTML = teachers.length
-      ? '<option value="">Select teacher</option>' + teachers.map((t) => `<option value="${esc(t.ID)}">${esc(t.Name)}</option>`).join("")
+    el("classTeacherSelect").innerHTML = teachers.length
+      ? teachers.map(function (t) {
+          return '<option value="' + esc(t.ID) + '">' + esc(t.Name) + " (" + esc(t.Subject || "Teacher") + ")</option>";
+        }).join("")
       : '<option value="">No teachers yet</option>';
   }
 
   function renderClassSelects() {
     el("studentClassSelect").innerHTML = classes.length
-      ? '<option value="">Select class</option>' + classes.map((c) => `<option value="${esc(c.ID)}">${esc(c.ClassName)} (${esc(c.Grade)}) • ${esc(c.TeacherName)} • LKR ${money(c.FeeAmount)}</option>`).join("")
+      ? '<option value="">Select class</option>' + classes.map(function (c) {
+          return '<option value="' + esc(c.ID) + '">' +
+            esc(c.ClassName) + " (" + esc(c.Grade) + ") • " +
+            esc(c.TeacherName) + " • LKR " + money(c.FeeAmount) +
+            '</option>';
+        }).join("")
       : '<option value="">No classes yet</option>';
 
     renderActionStudentSelect(allStudents);
   }
 
-  function renderActionStudentSelect(list = allStudents) {
+  function renderActionStudentSelect(list) {
+    list = list || allStudents;
     el("studentSelect").innerHTML = list.length
-      ? '<option value="">Select student</option>' + list.map((s) => `<option value="${esc(s.ID)}" data-fee="${esc(s.FeeAmount || 0)}">${esc(s.Name)} • ${esc(s.ClassName || "")}</option>`).join("")
+      ? '<option value="">Select student</option>' + list.map(function (s) {
+          return '<option value="' + esc(s.ID) + '" data-fee="' + esc(s.FeeAmount || 0) + '">' +
+            esc(s.Name) + " • " + esc(s.ClassName || "") +
+            '</option>';
+        }).join("")
       : '<option value="">No students found</option>';
-  }
-
-  function paymentChip(student) {
-    const month = el("reportMonth").value || currentMonth();
-    const fee = Number(student.FeeAmount || 0);
-    const paid = Number(student.CurrentMonthPaid || student.MonthPaidAmount || 0);
-    const lastPaidMonth = String(student.LastPaymentMonth || "");
-    const status = String(student.PaymentStatus || "").toLowerCase();
-
-    if (status.includes("paid") && !status.includes("partial")) return '<span class="badge green">Paid this month</span>';
-    if (status.includes("partial")) return '<span class="badge orange">Partly paid</span>';
-    if (paid >= fee && fee > 0) return '<span class="badge green">Paid ' + esc(month) + '</span>';
-    if (paid > 0) return '<span class="badge orange">Partly paid ' + esc(month) + '</span>';
-    if (lastPaidMonth === prevMonth(month)) return '<span class="badge blue">Last month paid</span>';
-    return '<span class="badge red">Not paid ' + esc(month) + '</span>';
-  }
-
-  function attendanceChip(studentId) {
-    const present = dashboard.presentIdsToday && dashboard.presentIdsToday.includes(String(studentId));
-    return present ? '<span class="badge green">Present Today</span>' : '<span class="badge gray">Not Marked</span>';
   }
 
   function searchStudentForAction() {
     const q = el("studentSearch").value.trim().toLowerCase();
-    const filtered = allStudents.filter((s) => {
+
+    const filtered = allStudents.filter(function (s) {
       const text = (s.ID + " " + s.Name + " " + s.Phone + " " + s.Address + " " + s.ClassName + " " + s.TeacherName).toLowerCase();
       return !q || text.includes(q);
     });
 
     renderActionStudentSelect(filtered);
     el("studentStatus").textContent = filtered.length ? filtered.length + " match(es) found" : "No matching student";
+
     if (filtered.length === 1) {
       el("studentSelect").value = filtered[0].ID;
       onStudentSelected();
@@ -983,7 +741,8 @@
 
   async function safeRefreshStudentStatus(studentId) {
     try {
-      const data = await api("checkStudentStatus", { studentId });
+      const data = await api("checkStudentStatus", { studentId: studentId });
+
       el("studentStatus").innerHTML =
         '<span class="badge ' + (data.attendanceToday ? "green" : "gray") + '">' +
           (data.attendanceToday ? "Attendance already marked today" : "Attendance not marked today") +
@@ -998,12 +757,14 @@
 
   async function onStudentSelected() {
     const id = el("studentSelect").value;
-    selectedStudent = allStudents.find((x) => String(x.ID) === String(id)) || null;
+    selectedStudent = allStudents.find(function (x) { return String(x.ID) === String(id); }) || null;
+
     if (!selectedStudent) {
       el("studentStatus").textContent = "";
       el("amount").value = "";
       return;
     }
+
     el("amount").value = selectedStudent.FeeAmount || "";
     await safeRefreshStudentStatus(id);
   }
@@ -1015,92 +776,90 @@
   }
 
   function renderTeachersTable() {
-    el("teachersTable").innerHTML = teachers.length ? teachers.map((t) => `
-      <tr>
-        <td>${esc(t.ID)}</td>
-        <td>${esc(t.Name)}</td>
-        <td>${esc(t.Phone)}</td>
-        <td>${esc(t.Subject || "")}</td>
-        <td><span class="badge green">${esc(t.Status || "Active")}</span></td>
-      </tr>
-    `).join("") : '<tr><td colspan="5" class="muted">No teachers yet</td></tr>';
+    el("teachersTable").innerHTML = teachers.length ? teachers.map(function (t) {
+      return '<tr>' +
+        '<td>' + esc(t.ID) + '</td>' +
+        '<td>' + esc(t.Name) + '</td>' +
+        '<td>' + esc(t.Phone) + '</td>' +
+        '<td>' + esc(t.Subject || "") + '</td>' +
+        '<td><span class="badge green">' + esc(t.Status || "Active") + '</span></td>' +
+        '</tr>';
+    }).join("") : '<tr><td colspan="5" class="muted">No teachers yet</td></tr>';
   }
 
   function renderClassesTable() {
-    el("classesTable").innerHTML = classes.length ? classes.map((c) => `
-      <tr>
-        <td>${esc(c.ID)}</td>
-        <td>${esc(c.ClassName)}</td>
-        <td>${esc(c.Grade)}</td>
-        <td>${esc(c.TeacherName)}</td>
-        <td>LKR ${money(c.FeeAmount)}</td>
-        <td><span class="badge green">${esc(c.Status || "Active")}</span></td>
-      </tr>
-    `).join("") : '<tr><td colspan="6" class="muted">No classes yet</td></tr>';
+    el("classesTable").innerHTML = classes.length ? classes.map(function (c) {
+      return '<tr>' +
+        '<td>' + esc(c.ID) + '</td>' +
+        '<td>' + esc(c.ClassName) + '</td>' +
+        '<td>' + esc(c.Grade) + '</td>' +
+        '<td>' + esc(c.TeacherName) + '</td>' +
+        '<td>LKR ' + money(c.FeeAmount) + '</td>' +
+        '<td><span class="badge green">' + esc(c.Status || "Active") + '</span></td>' +
+        '</tr>';
+    }).join("") : '<tr><td colspan="6" class="muted">No classes yet</td></tr>';
   }
 
   function renderStudentList() {
     const q = el("search").value.trim().toLowerCase();
-    const filtered = allStudents.filter((s) => {
+    const filtered = allStudents.filter(function (s) {
       const text = (s.ID + " " + s.Name + " " + s.Phone + " " + s.Address + " " + s.ClassName + " " + s.TeacherName).toLowerCase();
       return !q || text.includes(q);
     });
 
-    el("studentList").innerHTML = filtered.length ? filtered.map((s) => `
-      <div class="student">
-        <div style="min-width:0">
-          <div style="font-weight:900">${esc(s.Name)}</div>
-          <div class="muted">${esc(s.Phone)}${s.Address ? " • " + esc(s.Address) : ""}</div>
-          <div style="margin-top:6px">
-            ${attendanceChip(s.ID)}
-            ${paymentChip(s)}
-            <span class="badge purple">${esc(s.ClassName || "")}</span>
-            <span class="badge orange">${esc(s.TeacherName || "")}</span>
-            <span class="badge blue">LKR ${money(s.FeeAmount || 0)}</span>
-          </div>
-        </div>
-        <div style="text-align:right;flex-shrink:0">
-          <div class="muted" style="font-size:12px">${esc(s.ID)}</div>
-          <button class="primary no-print" style="margin-top:10px" onclick="useStudent('${esc(s.ID)}')">Use</button>
-        </div>
-      </div>
-    `).join("") : '<div class="student"><span class="muted">No students found</span></div>';
+    el("studentList").innerHTML = filtered.length ? filtered.map(function (s) {
+      const present = dashboard.presentIdsToday && dashboard.presentIdsToday.includes(String(s.ID));
+      return '<div class="student">' +
+        '<div style="min-width:0">' +
+          '<div style="font-weight:800">' + esc(s.Name) + '</div>' +
+          '<div class="muted">' + esc(s.Phone) + (s.Address ? " • " + esc(s.Address) : "") + '</div>' +
+          '<div style="margin-top:6px">' +
+            '<span class="badge ' + (present ? "green" : "gray") + '">' + (present ? "Present Today" : "Not Marked") + '</span>' +
+            '<span class="badge purple">' + esc(s.ClassName || "") + '</span>' +
+            '<span class="badge orange">' + esc(s.TeacherName || "") + '</span>' +
+            '<span class="badge">LKR ' + money(s.FeeAmount || 0) + '</span>' +
+          '</div>' +
+        '</div>' +
+        '<div style="text-align:right;flex-shrink:0">' +
+          '<div class="muted" style="font-size:12px">' + esc(s.ID) + '</div>' +
+          '<button class="primary" style="margin-top:10px" onclick="useStudent(\'' + esc(s.ID) + '\')">Use</button>' +
+        '</div>' +
+      '</div>';
+    }).join("") : '<div class="student"><span class="muted">No students found</span></div>';
   }
 
   function formatTime(ts) {
     if (!ts) return "";
-    const d = new Date(ts);
-    if (isNaN(d.getTime())) return String(ts).slice(0, 16);
-    return d.toLocaleTimeString("en-LK", { hour: "2-digit", minute: "2-digit", hour12: true });
-  }
-
-  function normalizeDateDisplay(v) {
-    const d = new Date(v);
-    if (!isNaN(d.getTime())) return d.toLocaleDateString("en-GB");
-    return String(v || "");
+    try {
+      const d = new Date(ts);
+      if (isNaN(d.getTime())) return String(ts).slice(0, 16);
+      return d.toLocaleTimeString("en-LK", { hour: "2-digit", minute: "2-digit", hour12: true });
+    } catch (e) {
+      return String(ts).slice(0, 16);
+    }
   }
 
   function renderTables() {
-    el("attendanceTable").innerHTML = dashboard.todayAttendance.length ? dashboard.todayAttendance.map((r) => `
-      <tr>
-        <td>${esc(formatTime(r.Timestamp))}</td>
-        <td>${esc(r.Name)}</td>
-        <td>${esc(r.ClassName || "")}</td>
-        <td>${esc(r.TeacherName || "")}</td>
-        <td><span class="badge green">${esc(r.Status || "Present")}</span></td>
-      </tr>
-    `).join("") : '<tr><td colspan="5" class="muted">No attendance today</td></tr>';
+    el("attendanceTable").innerHTML = dashboard.todayAttendance.length ? dashboard.todayAttendance.map(function (r) {
+      return '<tr>' +
+        '<td>' + esc(formatTime(r.Timestamp)) + '</td>' +
+        '<td>' + esc(r.Name) + '</td>' +
+        '<td>' + esc(r.ClassName || "") + '</td>' +
+        '<td>' + esc(r.TeacherName || "") + '</td>' +
+        '<td><span class="badge green">' + esc(r.Status || "Present") + '</span></td>' +
+        '</tr>';
+    }).join("") : '<tr><td colspan="5" class="muted">No attendance today</td></tr>';
 
-    el("paymentTable").innerHTML = dashboard.todayPayments.length ? dashboard.todayPayments.map((r) => `
-      <tr>
-        <td>${esc(formatTime(r.Timestamp))}</td>
-        <td>${esc(r.Name)}</td>
-        <td>${esc(r.ClassName || "")}</td>
-        <td>LKR ${money(r.Amount)}</td>
-        <td>${esc(r.PaymentType || "")}</td>
-        <td>${esc(r.Note || "")}</td>
-      </tr>
-    `).join("") : '<tr><td colspan="6" class="muted">No payments today</td></tr>';
+    el("paymentTable").innerHTML = dashboard.todayPayments.length ? dashboard.todayPayments.map(function (r) {
+      return '<tr>' +
+        '<td>' + esc(formatTime(r.Timestamp)) + '</td>' +
+        '<td>' + esc(r.Name) + '</td>' +
+        '<td>' + esc(r.ClassName || "") + '</td>' +
+        '<td>LKR ' + money(r.Amount) + '</td>' +
+        '<td>' + esc(r.PaymentType || "") + '</td>' +
+        '<td>' + esc(r.Note || "") + '</td>' +
+        '</tr>';
+    }).join("") : '<tr><td colspan="6" class="muted">No payments today</td></tr>';
   }
 
   function useStudent(id) {
@@ -1119,7 +878,10 @@
       const opt = sel.options[sel.selectedIndex];
       if (!opt || !opt.value) return setMsg("actionMsg", "Select a student first", false);
 
-      const result = await api("markAttendance", { studentId: opt.value });
+      const result = await api("markAttendance", {
+        studentId: opt.value
+      });
+
       setMsg("actionMsg", result.message, true);
       await reloadAll();
       await safeRefreshStudentStatus(opt.value);
@@ -1136,13 +898,15 @@
       const opt = sel.options[sel.selectedIndex];
       if (!opt || !opt.value) return setMsg("actionMsg", "Select a student first", false);
 
+      const paymentType = el("paymentType").value;
       const amount = Number(el("amount").value || 0);
+
       if (amount <= 0) return setMsg("actionMsg", "Enter a valid amount", false);
 
       const result = await api("addPayment", {
         studentId: opt.value,
-        amount,
-        paymentType: el("paymentType").value,
+        amount: amount,
+        paymentType: paymentType,
         note: el("note").value.trim()
       });
 
@@ -1155,128 +919,6 @@
       setMsg("actionMsg", err.message, false);
       showError(err.message);
     }
-  }
-
-  function renderMonthlyReport(data) {
-    monthlyReport = data;
-    el("reportMonthText").textContent = data.month || currentMonth();
-    el("reportGeneratedAt").textContent = new Date().toLocaleString("en-LK");
-    el("dashboardMonthBadge").textContent = "Month: " + (data.month || currentMonth());
-
-    el("rGross").textContent = money(data.finance?.grossIncome || 0);
-    el("rTeacher").textContent = money(data.finance?.teacherShare || 0);
-    el("rInstitute").textContent = money(data.finance?.instituteIncomeBeforeExpenses || 0);
-    el("rExpenses").textContent = money(data.finance?.expenseTotal || 0);
-    el("rNet").textContent = money(data.finance?.netIncome || 0);
-
-    el("reportPaymentsTable").innerHTML = (data.payments || []).length
-      ? data.payments.map((r) => `
-          <tr>
-            <td>${esc(normalizeDateDisplay(r.Date))}</td>
-            <td>${esc(r.Name || "")}</td>
-            <td>${esc(r.ClassName || "")}</td>
-            <td>LKR ${money(r.Amount || 0)}</td>
-            <td>${esc(r.PaymentType || "")}</td>
-            <td>${esc(r.Note || "")}</td>
-          </tr>
-        `).join("")
-      : `<tr><td colspan="6" class="muted">No payments for this month</td></tr>`;
-
-    el("reportExpensesTable").innerHTML = (data.expenses || []).length
-      ? data.expenses.map((r) => `
-          <tr>
-            <td>${esc(normalizeDateDisplay(r.Date))}</td>
-            <td>${esc(r.Category || "")}</td>
-            <td>LKR ${money(r.Amount || 0)}</td>
-            <td>${esc(r.Note || "")}</td>
-          </tr>
-        `).join("")
-      : `<tr><td colspan="4" class="muted">No expenses for this month</td></tr>`;
-  }
-
-  async function loadMonthlyReport() {
-    try {
-      clearError();
-      const month = el("reportMonth").value || currentMonth();
-      const data = await api("getMonthlyReport", { month });
-      renderMonthlyReport(data);
-      if (teacherPaysheet && String(teacherPaysheet.month) !== String(month)) {
-        teacherPaysheet = null;
-      }
-      el("payTeacherMonth").value = month;
-      el("teacherPaysheetMonthBadge").textContent = "Month: " + month;
-    } catch (err) {
-      showError(err.message);
-    }
-  }
-
-  async function saveExpense() {
-    try {
-      clearError();
-      const category = el("expenseCategory").value.trim();
-      const amount = Number(el("expenseAmount").value || 0);
-      const note = el("expenseNote").value.trim();
-      if (!category || amount <= 0) return setMsg("expenseMsg", "Enter expense category and valid amount", false);
-
-      const result = await api("addExpense", { category, amount, note });
-      setMsg("expenseMsg", result.message, true);
-      el("expenseCategory").value = "";
-      el("expenseAmount").value = "";
-      el("expenseNote").value = "";
-      await reloadAll();
-      await loadMonthlyReport();
-    } catch (err) {
-      setMsg("expenseMsg", err.message, false);
-      showError(err.message);
-    }
-  }
-
-  function renderTeacherPaysheet(data) {
-    teacherPaysheet = data;
-    el("psTeacher").textContent = data.teacherName || "--";
-    el("psClasses").textContent = data.summary?.classesCount ?? 0;
-    el("psStudents").textContent = data.summary?.studentsCount ?? 0;
-    el("psGross").textContent = money(data.summary?.grossCollection || 0);
-    el("psTeacherShare").textContent = money(data.summary?.teacherShare || 0);
-    el("psAdmShare").textContent = money(data.summary?.admShare || 0);
-    el("psExpenses").textContent = money(data.summary?.expenses || 0);
-    el("psNet").textContent = money(data.summary?.netPay || 0);
-    el("psNote").textContent = data.note || "Generated successfully.";
-    el("psSummary").innerHTML = [
-      '<span class="badge green">Teacher 75%</span>',
-      '<span class="badge orange">ADM 25%</span>',
-      '<span class="badge blue">' + money(data.summary?.grossCollection || 0) + ' collected</span>'
-    ].join(" ");
-
-    el("teacherPaysheetMonthBadge").textContent = "Month: " + (data.month || currentMonth());
-    el("teacherPaysheetTable").innerHTML = (data.rows || []).length
-      ? data.rows.map((r) => `
-          <tr>
-            <td>${esc(r.Name || "")}</td>
-            <td>${esc(r.ClassName || "")}</td>
-            <td>LKR ${money(r.Amount || 0)}</td>
-            <td>${esc(r.PaymentType || "")}</td>
-            <td>${esc(normalizeDateDisplay(r.Date))}</td>
-          </tr>
-        `).join("")
-      : `<tr><td colspan="5" class="muted">No data for this teacher/month</td></tr>`;
-  }
-
-  async function loadTeacherPaysheet() {
-    try {
-      clearError();
-      const teacherId = el("payTeacherSelect").value;
-      const month = el("payTeacherMonth").value || currentMonth();
-      if (!teacherId) return showError("Select a teacher first.");
-      const data = await api("getTeacherPaysheet", { teacherId, month });
-      renderTeacherPaysheet(data);
-    } catch (err) {
-      showError(err.message);
-    }
-  }
-
-  function printReport() {
-    window.print();
   }
 
   async function reloadAll() {
@@ -1293,70 +935,152 @@
     renderClassesTable();
     renderStudentList();
     renderTables();
-
-    const month = el("reportMonth").value || currentMonth();
-    el("reportMonth").value = month;
-    el("payTeacherMonth").value = month;
-    el("reportMonthText").textContent = month;
-    el("teacherPaysheetMonthBadge").textContent = "Month: " + month;
-    if (teachers.length && !el("payTeacherSelect").value) {
-      el("payTeacherSelect").value = teachers[0].ID;
-    }
-
-    try { await loadMonthlyReport(); } catch (err) {}
-    if (el("payTeacherSelect").value) {
-      try { await loadTeacherPaysheet(); } catch (err) {}
-    }
-
+    await loadMonthlyReport();
+    
     const selectedId = el("studentSelect").value;
-    if (selectedId) safeRefreshStudentStatus(selectedId);
+    if (selectedId) {
+      safeRefreshStudentStatus(selectedId);
+    }
   }
 
-  function refreshNow() {
-    reloadAll().catch((err) => showError(err.message));
-  }
-
-  window.addEventListener("load", async () => {
-    const now = currentMonth();
-    el("reportMonth").value = now;
-    el("payTeacherMonth").value = now;
-    el("reportMonthText").textContent = now;
-    el("reportGeneratedAt").textContent = new Date().toLocaleString("en-LK");
-
+  window.addEventListener("load", async function () {
     try {
       await reloadAll();
     } catch (err) {
+      setMsg("actionMsg", err.message, false);
       showError(err.message);
     }
 
     if ("serviceWorker" in navigator) {
-      try { await navigator.serviceWorker.register("sw.js"); } catch (e) {}
+      try {
+        await navigator.serviceWorker.register("sw.js");
+      } catch (e) {}
     }
   });
 
-  window.addEventListener("beforeinstallprompt", (e) => {
+  window.addEventListener("beforeinstallprompt", function (e) {
     e.preventDefault();
     deferredPrompt = e;
     el("installBtn").classList.remove("hidden");
-    el("installBtn").onclick = async () => {
+    el("installBtn").onclick = async function () {
       deferredPrompt.prompt();
       await deferredPrompt.userChoice;
       el("installBtn").classList.add("hidden");
       deferredPrompt = null;
     };
   });
+  let monthlyReport = null;
 
-  el("reportMonth").addEventListener("change", () => {
-    loadMonthlyReport().catch((err) => showError(err.message));
-  });
+async function saveExpense() {
+  try {
+    clearError();
+    const category = el("expenseCategory").value.trim();
+    const amount = Number(el("expenseAmount").value || 0);
+    const note = el("expenseNote").value.trim();
 
-  el("payTeacherMonth").addEventListener("change", () => {
-    if (el("payTeacherSelect").value) loadTeacherPaysheet().catch((err) => showError(err.message));
-  });
+    if (!category || amount <= 0) {
+      return setMsg("expenseMsg", "Enter expense category and valid amount", false);
+    }
 
-  el("payTeacherSelect").addEventListener("change", () => {
-    if (el("payTeacherSelect").value) loadTeacherPaysheet().catch((err) => showError(err.message));
-  });
+    const result = await api("addExpense", {
+      category,
+      amount,
+      note
+    });
+
+    setMsg("expenseMsg", result.message, true);
+    el("expenseCategory").value = "";
+    el("expenseAmount").value = "";
+    el("expenseNote").value = "";
+    await reloadAll();
+    await loadMonthlyReport();
+  } catch (err) {
+    setMsg("expenseMsg", err.message, false);
+    showError(err.message);
+  }
+}
+
+async function loadMonthlyReport() {
+  try {
+    clearError();
+    const month = el("reportMonth").value || new Date().toISOString().slice(0, 7);
+    const data = await api("getMonthlyReport", { month });
+    monthlyReport = data;
+
+    el("reportHeader").innerHTML = `
+      <h2 style="margin-bottom:6px">Monthly Income & Expense Report</h2>
+      <div class="muted">Month: <b>${esc(data.month)}</b></div>
+    `;
+
+    el("rGross").textContent = money(data.finance.grossIncome);
+    el("rTeacher").textContent = money(data.finance.teacherShare);
+    el("rInstitute").textContent = money(data.finance.instituteIncomeBeforeExpenses);
+    el("rExpenses").textContent = money(data.finance.expenseTotal);
+    el("rNet").textContent = money(data.finance.netIncome);
+
+    el("reportPaymentsTable").innerHTML = (data.payments || []).length
+      ? data.payments.map(function (r) {
+          return `<tr>
+            <td>${esc(normalizeDateDisplay(r.Date))}</td>
+            <td>${esc(r.Name || "")}</td>
+            <td>${esc(r.ClassName || "")}</td>
+            <td>LKR ${money(r.Amount || 0)}</td>
+            <td>${esc(r.PaymentType || "")}</td>
+            <td>${esc(r.Note || "")}</td>
+          </tr>`;
+        }).join("")
+      : `<tr><td colspan="6" class="muted">No payments for this month</td></tr>`;
+
+    el("reportExpensesTable").innerHTML = (data.expenses || []).length
+      ? data.expenses.map(function (r) {
+          return `<tr>
+            <td>${esc(normalizeDateDisplay(r.Date))}</td>
+            <td>${esc(r.Category || "")}</td>
+            <td>LKR ${money(r.Amount || 0)}</td>
+            <td>${esc(r.Note || "")}</td>
+          </tr>`;
+        }).join("")
+      : `<tr><td colspan="4" class="muted">No expenses for this month</td></tr>`;
+  } catch (err) {
+    showError(err.message);
+  }
+}
+
+function normalizeDateDisplay(v) {
+  try {
+    if (v instanceof Date) {
+      return v.toLocaleDateString("en-GB");
+    }
+    const d = new Date(v);
+    if (!isNaN(d.getTime())) {
+      return d.toLocaleDateString("en-GB");
+    }
+    return String(v || "");
+  } catch (e) {
+    return String(v || "");
+  }
+}
+
+function printReport() {
+  window.print();
+}
+  window.addEventListener("load", async function () {
+  const now = new Date();
+  el("reportMonth").value = now.toISOString().slice(0, 7);
+  try {
+    await reloadAll();
+    await loadMonthlyReport();
+  } catch (err) {
+    setMsg("actionMsg", err.message, false);
+    showError(err.message);
+  }
+
+  if ("serviceWorker" in navigator) {
+    try {
+      await navigator.serviceWorker.register("sw.js");
+    } catch (e) {}
+  }
+});
 </script>
 </body>
-</html>
+</html> 
