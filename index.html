@@ -748,7 +748,7 @@
   </div>
 
 <script>
-  const API_URL = "https://script.google.com/macros/s/AKfycbzZYJTrsaEKnQ8l7nJeCtrhABBKIP1H7k-emO6xIru13Ozh-jSfWcXFx9coEBp_yi_tPw/exec";
+  const API_URL = "https://script.google.com/macros/s/AKfycbx57oarncmYMNntp7LS1L05osoc0z-q5Zr2cN0E-60mDjb7U7MUM0_OiVmiLrdjnZTsNA/exec";
 
   let teachers = [];
   let classes = [];
@@ -1039,12 +1039,6 @@
     `).join("") : '<tr><td colspan="6" class="muted">No classes yet</td></tr>';
   }
 
-  function bindStudentUseButtons() {
-    document.querySelectorAll('[data-use-student]').forEach((btn) => {
-      btn.onclick = () => useStudent(btn.dataset.useStudent);
-    });
-  }
-
   function renderStudentList() {
     const q = el("search").value.trim().toLowerCase();
     const filtered = allStudents.filter((s) => {
@@ -1067,12 +1061,10 @@
         </div>
         <div style="text-align:right;flex-shrink:0">
           <div class="muted" style="font-size:12px">${esc(s.ID)}</div>
-          <button class="primary no-print" style="margin-top:10px" data-use-student="${esc(s.ID)}">Use</button>
+          <button class="primary no-print" style="margin-top:10px" onclick="useStudent('${esc(s.ID)}')">Use</button>
         </div>
       </div>
     `).join("") : '<div class="student"><span class="muted">No students found</span></div>';
-
-    bindStudentUseButtons();
   }
 
   function formatTime(ts) {
@@ -1105,7 +1097,7 @@
         <td>${esc(r.Name)}</td>
         <td>${esc(r.ClassName || "")}</td>
         <td>LKR ${money(r.Amount)}</td>
-        <td>${esc(r.PaymentType || r.Note || "Class Fee")}</td>
+        <td>${esc(r.PaymentType || "")}</td>
         <td>${esc(r.Note || "")}</td>
       </tr>
     `).join("") : '<tr><td colspan="6" class="muted">No payments today</td></tr>';
@@ -1184,7 +1176,7 @@
             <td>${esc(r.Name || "")}</td>
             <td>${esc(r.ClassName || "")}</td>
             <td>LKR ${money(r.Amount || 0)}</td>
-            <td>${esc(r.PaymentType || r.Note || "Class Fee")}</td>
+            <td>${esc(r.PaymentType || "")}</td>
             <td>${esc(r.Note || "")}</td>
           </tr>
         `).join("")
@@ -1263,7 +1255,7 @@
             <td>${esc(r.Name || "")}</td>
             <td>${esc(r.ClassName || "")}</td>
             <td>LKR ${money(r.Amount || 0)}</td>
-            <td>${esc(r.PaymentType || r.Note || "Class Fee")}</td>
+            <td>${esc(r.PaymentType || "")}</td>
             <td>${esc(normalizeDateDisplay(r.Date))}</td>
           </tr>
         `).join("")
@@ -1307,7 +1299,6 @@
     el("payTeacherMonth").value = month;
     el("reportMonthText").textContent = month;
     el("teacherPaysheetMonthBadge").textContent = "Month: " + month;
-
     if (teachers.length && !el("payTeacherSelect").value) {
       el("payTeacherSelect").value = teachers[0].ID;
     }
@@ -1366,19 +1357,6 @@
   el("payTeacherSelect").addEventListener("change", () => {
     if (el("payTeacherSelect").value) loadTeacherPaysheet().catch((err) => showError(err.message));
   });
-
-  window.refreshNow = refreshNow;
-  window.showPage = showPage;
-  window.addTeacher = addTeacher;
-  window.addClass = addClass;
-  window.addStudent = addStudent;
-  window.savePayment = savePayment;
-  window.markSelectedAttendance = markSelectedAttendance;
-  window.loadMonthlyReport = loadMonthlyReport;
-  window.saveExpense = saveExpense;
-  window.loadTeacherPaysheet = loadTeacherPaysheet;
-  window.printReport = printReport;
-  window.useStudent = useStudent;
 </script>
 </body>
 </html>
