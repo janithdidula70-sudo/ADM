@@ -10,26 +10,25 @@
   <meta name="theme-color" content="#0f172a" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ADM Institute - Income & Expense Tracker</title>
-    <!-- Tailwind CSS CDN for Beautiful UI -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- html2pdf.js CDN for PDF Generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;700;900&display=swap');
+        body {
+            font-family: 'Noto Sans Sinhala', sans-serif;
+        }
+        .sinhala-font {
+            font-family: 'Noto Sans Sinhala', sans-serif;
+        }
+    </style>
 </head>
-<body class="bg-gray-50 font-sans min-h-screen pb-12">
+<body class="bg-gray-50 min-h-screen pb-12 sinhala-font">
 
-    <!-- Main Container -->
-    <div class="max-w-5xl mx-auto px-4 py-8">
+    <div class="max-w-6xl mx-auto px-4 py-8">
         
-        <!-- Printable Report Area Start -->
-        <div id="printable-area" class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
+        <div id="printable-area" class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 mb-6">
             
-            <!-- Institute Header Section -->
             <div class="flex flex-col md:flex-row justify-between items-center border-b-2 border-indigo-600 pb-6 mb-6">
                 <div class="text-center md:text-left mb-4 md:mb-0">
                     <h1 class="text-3xl font-black text-indigo-900 tracking-wide uppercase">ADM උසස් අධ්‍යාපන ආයතනය</h1>
@@ -42,86 +41,127 @@
                 </div>
                 <div class="text-center md:text-right">
                     <div class="bg-indigo-50 text-indigo-800 px-4 py-2 rounded-xl font-bold inline-block border border-indigo-100">
-                        මුදල් හා ගිණුම් වාර්තාව
+                        මාසික ආදායම් හා වියදම් ගිණුම් වාර්තාව
                     </div>
-                    <p class="text-xs text-gray-400 mt-2" id="report-generated-time"></p>
+                    <p class="text-xs text-gray-500 mt-2" id="report-generated-time"></p>
                 </div>
             </div>
 
-            <!-- Financial Summary Cards -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                <!-- Income Card -->
                 <div class="bg-emerald-50 border border-emerald-100 p-5 rounded-xl flex items-center justify-between">
                     <div>
-                        <p class="text-sm text-emerald-700 font-medium uppercase">මුළු ආදායම (Income)</p>
+                        <p class="text-sm text-emerald-700 font-bold uppercase">මුළු ආදායම (Total Income)</p>
                         <h3 class="text-2xl font-bold text-emerald-900 mt-1">රු. <span id="total-income">0.00</span></h3>
                     </div>
-                    <div class="bg-emerald-500 text-white p-3 rounded-lg shadow-md shadow-emerald-200">
+                    <div class="bg-emerald-500 text-white p-3 rounded-lg shadow-md">
                         <i class="fa-solid fa-wallet text-xl"></i>
                     </div>
                 </div>
-                <!-- Expense Card -->
                 <div class="bg-rose-50 border border-rose-100 p-5 rounded-xl flex items-center justify-between">
                     <div>
-                        <p class="text-sm text-rose-700 font-medium uppercase">මුළු වියදම (Expense)</p>
+                        <p class="text-sm text-rose-700 font-bold uppercase">මුළු වියදම (Total Expense)</p>
                         <h3 class="text-2xl font-bold text-rose-900 mt-1">රු. <span id="total-expense">0.00</span></h3>
                     </div>
-                    <div class="bg-rose-500 text-white p-3 rounded-lg shadow-md shadow-rose-200">
+                    <div class="bg-rose-500 text-white p-3 rounded-lg shadow-md">
                         <i class="fa-solid fa-credit-card text-xl"></i>
                     </div>
                 </div>
-                <!-- Balance Card -->
                 <div class="bg-indigo-50 border border-indigo-100 p-5 rounded-xl flex items-center justify-between">
                     <div>
-                        <p class="text-sm text-indigo-700 font-medium uppercase">ශේෂය (Balance)</p>
+                        <p class="text-sm text-indigo-700 font-bold uppercase">ශුද්ධ ශේෂය (Net Balance)</p>
                         <h3 class="text-2xl font-bold text-indigo-900 mt-1">රු. <span id="net-balance">0.00</span></h3>
                     </div>
-                    <div class="bg-indigo-500 text-white p-3 rounded-lg shadow-md shadow-indigo-200" id="balance-icon-bg">
+                    <div class="bg-indigo-500 text-white p-3 rounded-lg shadow-md" id="balance-icon-bg">
                         <i class="fa-solid fa-scale-balanced text-xl"></i>
                     </div>
                 </div>
             </div>
 
-            <!-- Filter and Table Controls -->
-            <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-4 no-print">
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6 no-print">
                 <div class="flex items-center gap-2 w-full sm:w-auto">
-                    <label for="month-filter" class="text-sm font-semibold text-gray-700 whitespace-nowrap">මාසය තෝරන්න:</label>
+                    <label for="month-filter" class="text-sm font-bold text-gray-700 whitespace-nowrap">මාසය තෝරන්න:</label>
                     <input type="month" id="month-filter" class="w-full sm:w-auto border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm">
                 </div>
-                <button onclick="downloadPDF()" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-5 py-2.5 rounded-lg flex items-center justify-center gap-2 shadow-lg shadow-indigo-100 transition-all cursor-pointer">
-                    <i class="fa-solid fa-file-pdf"></i> PDF එක බාගත කරගන්න
+                <button onclick="downloadPDF()" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-6 py-2.5 rounded-lg flex items-center justify-center gap-2 shadow-lg shadow-indigo-100 transition-all cursor-pointer">
+                    <i class="fa-solid fa-file-pdf"></i> නවතම PDF වාර්තාව බාගත කරන්න
                 </button>
             </div>
 
-            <!-- Data Table Section -->
-            <div class="overflow-x-auto rounded-xl border border-gray-200">
-                <table class="w-full text-left border-collapse bg-white">
-                    <thead>
-                        <tr class="bg-gray-100 text-gray-700 uppercase text-xs font-bold border-b border-gray-200">
-                            <th class="p-4">දිනය</th>
-                            <th class="p-4">විස්තරය</th>
-                            <th class="p-4">වර්ගය</th>
-                            <th class="p-4 text-right">මුදල (රු.)</th>
-                            <th class="p-4 text-center action-column">ක්‍රියාමාර්ග</th>
-                        </tr>
-                    </thead>
-                    <tbody id="transaction-rows" class="text-sm text-gray-600 divide-y divide-gray-100">
-                        <!-- Dynamic rows will inject here -->
-                    </tbody>
-                </table>
-                <div id="empty-state" class="text-center py-12 text-gray-400 hidden">
-                    <i class="fa-solid fa-folder-open text-4xl mb-2"></i>
-                    <p>මෙම මාසය සඳහා දත්ත ඇතුලත් කර නැත.</p>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
+                
+                <div class="border border-gray-200 rounded-xl overflow-hidden">
+                    <div class="bg-emerald-600 text-white p-3 font-bold flex items-center gap-2">
+                        <i class="fa-solid fa-arrow-trend-up"></i> ආදායම් විස්තර (Income Table)
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse bg-white">
+                            <thead>
+                                <tr class="bg-gray-50 text-gray-700 uppercase text-xs font-bold border-b border-gray-200">
+                                    <th class="p-3">දිනය</th>
+                                    <th class="p-3">විස්තරය</th>
+                                    <th class="p-3 text-right">මුදල (රු.)</th>
+                                    <th class="p-3 text-center action-column">මකන්න</th>
+                                </tr>
+                            </thead>
+                            <tbody id="income-rows" class="text-sm text-gray-600 divide-y divide-gray-100">
+                                </tbody>
+                        </table>
+                    </div>
+                    <div id="income-empty" class="text-center py-6 text-gray-400 text-xs hidden">
+                        ආදායම් දත්ත නොමැත.
+                    </div>
+                </div>
+
+                <div class="border border-gray-200 rounded-xl overflow-hidden">
+                    <div class="bg-rose-600 text-white p-3 font-bold flex items-center gap-2">
+                        <i class="fa-solid fa-arrow-trend-down"></i> වියදම් විස්තර (Expense Table)
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse bg-white">
+                            <thead>
+                                <tr class="bg-gray-50 text-gray-700 uppercase text-xs font-bold border-b border-gray-200">
+                                    <th class="p-3">දිනය</th>
+                                    <th class="p-3">විස්තරය</th>
+                                    <th class="p-3 text-right">මුදල (රු.)</th>
+                                    <th class="p-3 text-center action-column">මකන්න</th>
+                                </tr>
+                            </thead>
+                            <tbody id="expense-rows" class="text-sm text-gray-600 divide-y divide-gray-100">
+                                </tbody>
+                        </table>
+                    </div>
+                    <div id="expense-empty" class="text-center py-6 text-gray-400 text-xs hidden">
+                        වියදම් දත්ත නොමැත.
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="mt-16 border-t border-gray-100 pt-8 flex justify-between items-end px-4">
+                <div class="text-center">
+                    <div class="w-48 border-b border-gray-400 h-12 mx-auto mb-2"></div>
+                    <p class="text-sm font-bold text-gray-700">සකස් කළේ:</p>
+                    <p class="text-xs text-gray-400">ගිණුම් අංශය</p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="w-28 h-28 border-2 border-dashed border-indigo-300 rounded-full flex items-center justify-center mx-auto mb-2 text-indigo-300 p-2 text-center text-[10px] font-bold uppercase tracking-wider leading-tight">
+                        ADM INSTITUTE<br>OFFICIAL SEAL
+                    </div>
+                    <p class="text-xs font-bold text-gray-500">ආයතනික මුද්‍රාව</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="w-48 border-b border-gray-400 h-12 mx-auto mb-2"></div>
+                    <p class="text-sm font-bold text-gray-700">ස්ථිර කළේ:</p>
+                    <p class="text-xs text-gray-400">කළමනාකාරීත්වය</p>
                 </div>
             </div>
 
         </div>
-        <!-- Printable Report Area End -->
-
-        <!-- Input Form Block (Hidden inside PDF) -->
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 no-print">
             <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-                <i class="fa-solid fa-plus-circle text-indigo-600"></i> අලුත් ගනුදෙනුවක් ඇතුලත් කරන්න
+                <i class="fa-solid fa-plus-circle text-indigo-600"></i> නව ගනුදෙනුවක් ඇතුලත් කරන්න
             </h2>
             <form id="transaction-form" class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div>
@@ -129,8 +169,8 @@
                     <input type="date" id="tx-date" required class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">විස්තරය / කාණ්ඩය</label>
-                    <input type="text" id="tx-desc" placeholder="උදා: ලෙක්චර් ෆීස්, කරන්ට් බිල" required class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">විස්තරය</label>
+                    <input type="text" id="tx-desc" placeholder="උදා: ශිෂ්‍ය ගාස්තු, විදුලි බිල" required class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-gray-600 uppercase mb-1">ගනුදෙනු වර්ගය</label>
@@ -143,7 +183,7 @@
                     <label class="block text-xs font-bold text-gray-600 uppercase mb-1">මුදල (රු.)</label>
                     <div class="flex gap-2">
                         <input type="number" id="tx-amount" min="0.01" step="0.01" placeholder="0.00" required class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-                        <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-6 rounded-lg shadow-md transition-all cursor-pointer">
+                        <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 rounded-lg shadow-md transition-all cursor-pointer text-sm">
                             ඇතුලත් කරන්න
                         </button>
                     </div>
@@ -153,28 +193,25 @@
 
     </div>
 
-    <!-- Core App Logic Script -->
     <script>
-        // State Management
-        let transactions = JSON.parse(localStorage.getItem('adm_transactions')) || [];
+        // Data Store
+        let transactions = JSON.parse(localStorage.getItem('adm_transactions_v2')) || [
+            { id: 1, date: '2026-07-01', desc: 'පන්ති ගාස්තු ආදායම', type: 'income', amount: 45000 },
+            { id: 2, date: '2026-07-02', desc: 'දැන්වීම් මුද්‍රණ වියදම්', type: 'expense', amount: 12000 }
+        ];
 
-        // Set default month input to current month
+        // Setup Dates
         const now = new Date();
         const currentYearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
         document.getElementById('month-filter').value = currentYearMonth;
         document.getElementById('tx-date').value = now.toISOString().split('T')[0];
         document.getElementById('report-generated-time').innerText = `වාර්තාව සකස් කල දිනය: ${now.toLocaleDateString()}`;
 
-        // Elements
         const form = document.getElementById('transaction-form');
         const monthFilter = document.getElementById('month-filter');
-        const rowsContainer = document.getElementById('transaction-rows');
-        const emptyState = document.getElementById('empty-state');
 
-        // Form Submit Event
         form.addEventListener('submit', (e) => {
             e.preventDefault();
-            
             const newTx = {
                 id: Date.now(),
                 date: document.getElementById('tx-date').value,
@@ -182,81 +219,80 @@
                 type: document.getElementById('tx-type').value,
                 amount: parseFloat(document.getElementById('tx-amount').value)
             };
-
             transactions.push(newTx);
             saveAndRender();
-            
-            // Reset input values but keep date
             document.getElementById('tx-desc').value = '';
             document.getElementById('tx-amount').value = '';
         });
 
-        // Filter Change Event
         monthFilter.addEventListener('change', render);
 
         function saveAndRender() {
-            localStorage.setItem('adm_transactions', JSON.stringify(transactions));
+            localStorage.setItem('adm_transactions_v2', JSON.stringify(transactions));
             render();
         }
 
         function deleteTransaction(id) {
-            if(confirm("මෙම ගනුදෙනුව දත්ත පද්ධතියෙන් ඉවත් කිරීමට අවශ්‍යද?")) {
+            if(confirm("මෙම ගනුදෙනුව ඉවත් කිරීමට අවශ්‍යද?")) {
                 transactions = transactions.filter(tx => tx.id !== id);
                 saveAndRender();
             }
         }
 
         function render() {
-            const selectedMonth = monthFilter.value; // Format: YYYY-MM
-            rowsContainer.innerHTML = '';
+            const selectedMonth = monthFilter.value;
+            const incContainer = document.getElementById('income-rows');
+            const expContainer = document.getElementById('expense-rows');
+            
+            incContainer.innerHTML = '';
+            expContainer.innerHTML = '';
 
             let totalIncome = 0;
             let totalExpense = 0;
 
-            // Filter transactions for selected month
             const filtered = transactions.filter(tx => tx.date.startsWith(selectedMonth));
-            
-            // Sort by date ascending
             filtered.sort((a,b) => new Date(a.date) - new Date(b.date));
 
-            if(filtered.length === 0) {
-                emptyState.classList.remove('hidden');
-            } else {
-                emptyState.classList.add('hidden');
-                filtered.forEach(tx => {
-                    if(tx.type === 'income') totalIncome += tx.amount;
-                    else totalExpense += tx.amount;
+            let incCount = 0;
+            let expCount = 0;
 
-                    const row = document.createElement('tr');
-                    row.className = "hover:bg-gray-50 transition-colors border-b border-gray-100";
-                    row.innerHTML = `
-                        <td class="p-4 font-medium text-gray-800">${tx.date}</td>
-                        <td class="p-4 text-gray-700">${tx.desc}</td>
-                        <td class="p-4">
-                            <span class="px-2.5 py-1 text-xs font-bold rounded-full ${tx.type === 'income' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
-                                ${tx.type === 'income' ? 'ආදායම්' : 'වියදම්'}
-                            </span>
-                        </td>
-                        <td class="p-4 text-right font-bold ${tx.type === 'income' ? 'text-emerald-600' : 'text-rose-600'}">
-                            ${tx.amount.toFixed(2)}
-                        </td>
-                        <td class="p-4 text-center action-column">
-                            <button onclick="deleteTransaction(${tx.id})" class="text-rose-500 hover:text-rose-700 transition-colors p-1 cursor-pointer" title="මකන්න">
-                                <i class="fa-solid fa-trash-can text-base"></i>
-                            </button>
-                        </td>
-                    `;
-                    rowsContainer.appendChild(row);
-                });
-            }
+            filtered.forEach(tx => {
+                const row = document.createElement('tr');
+                row.className = "hover:bg-gray-50 border-b border-gray-100";
+                row.innerHTML = `
+                    <td class="p-3 font-medium text-gray-800 whitespace-nowrap">${tx.date}</td>
+                    <td class="p-3 text-gray-700">${tx.desc}</td>
+                    <td class="p-3 text-right font-bold ${tx.type === 'income' ? 'text-emerald-600' : 'text-rose-600'}">
+                        ${tx.amount.toFixed(2)}
+                    </td>
+                    <td class="p-3 text-center action-column">
+                        <button onclick="deleteTransaction(${tx.id})" class="text-rose-500 hover:text-rose-700 p-1 cursor-pointer">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </td>
+                `;
 
-            // Update Summary Cards
+                if(tx.type === 'income') {
+                    totalIncome += tx.amount;
+                    incContainer.appendChild(row);
+                    incCount++;
+                } else {
+                    totalExpense += tx.amount;
+                    expContainer.appendChild(row);
+                    expCount++;
+                }
+            });
+
+            // Toggle Empty States
+            document.getElementById('income-empty').style.display = incCount === 0 ? 'block' : 'none';
+            document.getElementById('expense-empty').style.display = expCount === 0 ? 'block' : 'none';
+
+            // Summary
             const netBalance = totalIncome - totalExpense;
             document.getElementById('total-income').innerText = totalIncome.toLocaleString('en-US', {minimumFractionDigits: 2});
             document.getElementById('total-expense').innerText = totalExpense.toLocaleString('en-US', {minimumFractionDigits: 2});
             document.getElementById('net-balance').innerText = netBalance.toLocaleString('en-US', {minimumFractionDigits: 2});
 
-            // Dynamic color shift for balance card
             const balanceBg = document.getElementById('balance-icon-bg');
             if (netBalance < 0) {
                 balanceBg.className = "bg-rose-500 text-white p-3 rounded-lg shadow-md";
@@ -265,37 +301,32 @@
             }
         }
 
-        // Export beautifully to PDF using html2pdf
         function downloadPDF() {
             const element = document.getElementById('printable-area');
             const selectedMonth = monthFilter.value;
             
-            // Hide elements that shouldn't be on PDF
             const style = document.createElement('style');
             style.id = "pdf-temp-style";
             style.innerHTML = `
                 .no-print { display: none !important; }
                 .action-column { display: none !important; }
-                #printable-area { border: none !important; shadow: none !important; padding: 0 !important; }
+                #printable-area { border: none !important; box-shadow: none !important; padding: 0 !important; }
             `;
             document.head.appendChild(style);
 
             const opt = {
-                margin:       [0.5, 0.5, 0.5, 0.5],
-                filename:     `ADM_Report_${selectedMonth}.pdf`,
+                margin:       [0.4, 0.4, 0.4, 0.4],
+                filename:     `ADM_Institute_Report_${selectedMonth}.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2, useCORS: true },
-                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+                jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
             };
 
-            // Run PDF generation
             html2pdf().set(opt).from(element).save().then(() => {
-                // Remove temporary style after generation to restore view
                 document.getElementById('pdf-temp-style').remove();
             });
         }
 
-        // Initial Run
         render();
     </script>
 </body>
