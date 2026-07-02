@@ -10,1077 +10,293 @@
   <meta name="theme-color" content="#0f172a" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-
-  <style>
-    :root{
-      --bg:#f8fafc;
-      --card:#ffffff;
-      --text:#0f172a;
-      --muted:#64748b;
-      --line:#e2e8f0;
-      --primary:#2563eb;
-      --primary2:#1d4ed8;
-      --success:#16a34a;
-      --danger:#dc2626;
-      --warning:#d97706;
-      --shadow:0 10px 30px rgba(15,23,42,.08);
-      --radius:22px;
-    }
-
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      background:linear-gradient(180deg,#eff6ff 0%,var(--bg) 24%,#fff 100%);
-      color:var(--text);
-    }
-
-    .wrap{max-width:1400px;margin:0 auto;padding:18px}
-
-    .topbar{
-      display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between;
-      margin-bottom:18px;
-    }
-
-    .brand{
-      display:flex;align-items:center;gap:12px;
-      padding:16px 18px;background:rgba(255,255,255,.78);
-      backdrop-filter:blur(8px);
-      border:1px solid rgba(226,232,240,.9);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-    }
-
-    .brand h1{font-size:20px;line-height:1.1;margin:0}
-    .brand p{margin:2px 0 0;color:var(--muted);font-size:13px}
-
-    .logo{
-      width:44px;height:44px;border-radius:14px;
-      object-fit:cover;background:#e2e8f0;flex-shrink:0;
-      border:1px solid var(--line);
-      display:block;
-    }
-
-    .pill{
-      border:1px solid var(--line);
-      background:#fff;
-      border-radius:999px;
-      padding:10px 14px;
-      box-shadow:var(--shadow);
-      cursor:pointer;
-      font-weight:700;
-    }
-
-    .hidden{display:none}
-
-    .nav{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      margin:14px 0 4px;
-    }
-
-    .nav-btn{
-      border:1px solid var(--line);
-      background:#fff;
-      border-radius:999px;
-      padding:10px 14px;
-      font-weight:700;
-      cursor:pointer;
-      box-shadow:var(--shadow);
-    }
-
-    .nav-btn.active{
-      background:#0f172a;
-      color:#fff;
-    }
-
-    .grid{
-      display:grid;
-      grid-template-columns:repeat(12,1fr);
-      gap:16px;
-    }
-
-    .page{display:none}
-    .page.active{display:block}
-    .inner{margin-top:12px}
-
-    .card{
-      background:var(--card);
-      border:1px solid rgba(226,232,240,.9);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      padding:18px;
-    }
-
-    .stats{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
-    .stat{
-      padding:18px;border-radius:20px;background:linear-gradient(180deg,#fff,#f8fafc);
-      border:1px solid var(--line);
-    }
-    .stat .k{color:var(--muted);font-size:13px}
-    .stat .v{font-size:28px;font-weight:800;margin-top:8px}
-
-    .two-cols{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-    .mini{
-      padding:18px;border-radius:20px;border:1px solid var(--line);background:#fff;
-    }
-    .mini .k{color:var(--muted);font-size:13px}
-    .mini .v{font-size:28px;font-weight:800;margin-top:8px}
-
-    .col-3{grid-column:span 3}
-    .col-4{grid-column:span 4}
-    .col-8{grid-column:span 8}
-    .col-9{grid-column:span 9}
-    .col-12{grid-column:1/-1}
-
-    @media (max-width:1100px){
-      .stats{grid-template-columns:repeat(2,1fr)}
-      .col-3,.col-4,.col-8,.col-9{grid-column:1/-1}
-    }
-
-    h2,h3{margin:0 0 12px}
-    label{display:block;font-size:13px;font-weight:700;margin:10px 0 6px}
-
-    input,select,textarea{
-      width:100%;
-      padding:13px 14px;
-      border:1px solid var(--line);
-      border-radius:16px;
-      background:#fff;
-      color:var(--text);
-      outline:none;
-    }
-
-    textarea{min-height:90px;resize:vertical}
-    .btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
-
-    button{
-      border:none;
-      border-radius:16px;
-      padding:12px 16px;
-      font-weight:700;
-      cursor:pointer;
-    }
-
-    .primary{background:var(--primary);color:#fff}
-    .primary:hover{background:var(--primary2)}
-    .secondary{background:#e2e8f0;color:#0f172a}
-    .success{background:var(--success);color:#fff}
-
-    .msg{font-size:12px;color:var(--muted);margin-top:8px}
-    .ok{color:var(--success);font-weight:700}
-    .err{color:var(--danger);font-weight:700}
-
-    .table-wrap{
-      max-height:340px;
-      overflow:auto;
-      border:1px solid var(--line);
-      border-radius:18px;
-      background:#fff;
-    }
-    .list-wrap{max-height:430px}
-    table{width:100%;border-collapse:collapse}
-    th,td{
-      padding:10px 8px;
-      border-bottom:1px solid #eef2f7;
-      text-align:left;
-      font-size:13px;
-    }
-    th{
-      color:#334155;
-      background:#f8fafc;
-      position:sticky;
-      top:0;
-      z-index:1;
-    }
-
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      padding:6px 10px;
-      border-radius:999px;
-      font-size:12px;
-      font-weight:700;
-      background:#eff6ff;
-      color:#1d4ed8;
-      margin-right:6px;
-      margin-top:6px;
-    }
-    .badge.green{background:#dcfce7;color:#166534}
-    .badge.gray{background:#f1f5f9;color:#475569}
-    .badge.orange{background:#ffedd5;color:#c2410c}
-    .badge.purple{background:#f3e8ff;color:#7e22ce}
-
-    .student{
-      display:flex;
-      justify-content:space-between;
-      gap:12px;
-      align-items:center;
-      padding:12px;
-      border-bottom:1px solid #eef2f7;
-    }
-    .student:last-child{border-bottom:none}
-    .muted{color:var(--muted)}
-    .error-box{
-      margin-top:12px;
-      padding:12px 14px;
-      border-radius:14px;
-      background:#fef2f2;
-      color:#991b1b;
-      border:1px solid #fecaca;
-      display:none;
-      white-space:pre-wrap;
-      font-size:13px;
-    }
-  @media print {
-    body * {
-      visibility: hidden !important;
-    }
-    #reportPage, #reportPage * {
-      visibility: visible !important;
-    }
-    #reportPage {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 100%;
-      background: #fff;
-    }
-    .no-print {
-      display: none !important;
-    }
-  }
-  </style>
+  
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADM Institute - Income & Expense Tracker</title>
+    <!-- Tailwind CSS CDN for Beautiful UI -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- html2pdf.js CDN for PDF Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body>
-  <div class="wrap">
-    <header class="topbar">
-      <div class="brand">
-        <img src="logo/logo.png" alt="ADM Logo" class="logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-        <div class="logo" style="display:none;align-items:center;justify-content:center;">🏫</div>
-        <div>
-          <h1>ADM Class Manager</h1>
-          <p>Teachers • Classes • Students • Attendance • Payments</p>
+<body class="bg-gray-50 font-sans min-h-screen pb-12">
+
+    <!-- Main Container -->
+    <div class="max-w-5xl mx-auto px-4 py-8">
+        
+        <!-- Printable Report Area Start -->
+        <div id="printable-area" class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
+            
+            <!-- Institute Header Section -->
+            <div class="flex flex-col md:flex-row justify-between items-center border-b-2 border-indigo-600 pb-6 mb-6">
+                <div class="text-center md:text-left mb-4 md:mb-0">
+                    <h1 class="text-3xl font-black text-indigo-900 tracking-wide uppercase">ADM උසස් අධ්‍යාපන ආයතනය</h1>
+                    <p class="text-gray-600 mt-1 flex items-center justify-center md:justify-start gap-2">
+                        <i class="fa-solid fa-location-dot text-indigo-500"></i> සිසිර ඉන්ධන පිරවුම්හල අසල, නාරම්මල.
+                    </p>
+                    <p class="text-gray-600 flex items-center justify-center md:justify-start gap-2">
+                        <i class="fa-solid fa-phone text-indigo-500"></i> 0710658051
+                    </p>
+                </div>
+                <div class="text-center md:text-right">
+                    <div class="bg-indigo-50 text-indigo-800 px-4 py-2 rounded-xl font-bold inline-block border border-indigo-100">
+                        මුදල් හා ගිණුම් වාර්තාව
+                    </div>
+                    <p class="text-xs text-gray-400 mt-2" id="report-generated-time"></p>
+                </div>
+            </div>
+
+            <!-- Financial Summary Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <!-- Income Card -->
+                <div class="bg-emerald-50 border border-emerald-100 p-5 rounded-xl flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-emerald-700 font-medium uppercase">මුළු ආදායම (Income)</p>
+                        <h3 class="text-2xl font-bold text-emerald-900 mt-1">රු. <span id="total-income">0.00</span></h3>
+                    </div>
+                    <div class="bg-emerald-500 text-white p-3 rounded-lg shadow-md shadow-emerald-200">
+                        <i class="fa-solid fa-wallet text-xl"></i>
+                    </div>
+                </div>
+                <!-- Expense Card -->
+                <div class="bg-rose-50 border border-rose-100 p-5 rounded-xl flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-rose-700 font-medium uppercase">මුළු වියදම (Expense)</p>
+                        <h3 class="text-2xl font-bold text-rose-900 mt-1">රු. <span id="total-expense">0.00</span></h3>
+                    </div>
+                    <div class="bg-rose-500 text-white p-3 rounded-lg shadow-md shadow-rose-200">
+                        <i class="fa-solid fa-credit-card text-xl"></i>
+                    </div>
+                </div>
+                <!-- Balance Card -->
+                <div class="bg-indigo-50 border border-indigo-100 p-5 rounded-xl flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-indigo-700 font-medium uppercase">ශේෂය (Balance)</p>
+                        <h3 class="text-2xl font-bold text-indigo-900 mt-1">රු. <span id="net-balance">0.00</span></h3>
+                    </div>
+                    <div class="bg-indigo-500 text-white p-3 rounded-lg shadow-md shadow-indigo-200" id="balance-icon-bg">
+                        <i class="fa-solid fa-scale-balanced text-xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter and Table Controls -->
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-4 no-print">
+                <div class="flex items-center gap-2 w-full sm:w-auto">
+                    <label for="month-filter" class="text-sm font-semibold text-gray-700 whitespace-nowrap">මාසය තෝරන්න:</label>
+                    <input type="month" id="month-filter" class="w-full sm:w-auto border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm">
+                </div>
+                <button onclick="downloadPDF()" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-5 py-2.5 rounded-lg flex items-center justify-center gap-2 shadow-lg shadow-indigo-100 transition-all cursor-pointer">
+                    <i class="fa-solid fa-file-pdf"></i> PDF එක බාගත කරගන්න
+                </button>
+            </div>
+
+            <!-- Data Table Section -->
+            <div class="overflow-x-auto rounded-xl border border-gray-200">
+                <table class="w-full text-left border-collapse bg-white">
+                    <thead>
+                        <tr class="bg-gray-100 text-gray-700 uppercase text-xs font-bold border-b border-gray-200">
+                            <th class="p-4">දිනය</th>
+                            <th class="p-4">විස්තරය</th>
+                            <th class="p-4">වර්ගය</th>
+                            <th class="p-4 text-right">මුදල (රු.)</th>
+                            <th class="p-4 text-center action-column">ක්‍රියාමාර්ග</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transaction-rows" class="text-sm text-gray-600 divide-y divide-gray-100">
+                        <!-- Dynamic rows will inject here -->
+                    </tbody>
+                </table>
+                <div id="empty-state" class="text-center py-12 text-gray-400 hidden">
+                    <i class="fa-solid fa-folder-open text-4xl mb-2"></i>
+                    <p>මෙම මාසය සඳහා දත්ත ඇතුලත් කර නැත.</p>
+                </div>
+            </div>
+
         </div>
-      </div>
-      <button id="installBtn" class="pill hidden">Install App</button>
-    </header>
+        <!-- Printable Report Area End -->
 
-    <nav class="nav">
-      <button class="nav-btn active" data-page="dashboardPage">Dashboard</button>
-      <button class="nav-btn" data-page="teachersPage">Teachers</button>
-      <button class="nav-btn" data-page="classesPage">Classes</button>
-      <button class="nav-btn" data-page="studentsPage">Students</button>
-      <button class="nav-btn" data-page="actionsPage">Attendance / Payments</button>
-      <button class="nav-btn" data-page="reportPage">Reports</button>
-    </nav>
-
-    <div id="errorBox" class="error-box"></div>
-
-    <main class="grid">
-      <section id="dashboardPage" class="page active col-12">
-        <div class="stats">
-          <div class="stat"><div class="k">Students</div><div class="v" id="studentCount">0</div></div>
-          <div class="stat"><div class="k">Teachers</div><div class="v" id="teacherCount">0</div></div>
-          <div class="stat"><div class="k">Classes</div><div class="v" id="classCount">0</div></div>
-          <div class="stat"><div class="k">Present Today</div><div class="v" id="presentCount">0</div></div>
-          <div class="stat"><div class="k">Today Collection</div><div class="v" id="todayCollection">0</div></div>
+        <!-- Input Form Block (Hidden inside PDF) -->
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 no-print">
+            <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-plus-circle text-indigo-600"></i> අලුත් ගනුදෙනුවක් ඇතුලත් කරන්න
+            </h2>
+            <form id="transaction-form" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">දිනය</label>
+                    <input type="date" id="tx-date" required class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">විස්තරය / කාණ්ඩය</label>
+                    <input type="text" id="tx-desc" placeholder="උදා: ලෙක්චර් ෆීස්, කරන්ට් බිල" required class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">ගනුදෙනු වර්ගය</label>
+                    <select id="tx-type" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                        <option value="income">ආදායම (Income)</option>
+                        <option value="expense">වියදම (Expense)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">මුදල (රු.)</label>
+                    <div class="flex gap-2">
+                        <input type="number" id="tx-amount" min="0.01" step="0.01" placeholder="0.00" required class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                        <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-6 rounded-lg shadow-md transition-all cursor-pointer">
+                            ඇතුලත් කරන්න
+                        </button>
+                    </div>
+                </div>
+            </form>
         </div>
 
-        <div class="card" style="margin-top:16px">
-          <h2>This Month</h2>
-          <div class="two-cols">
-            <div class="mini">
-              <div class="k">Month Collection</div>
-              <div class="v" id="monthCollection">0</div>
-            </div>
-            <div class="mini">
-              <div class="k">Absent Today</div>
-              <div class="v" id="absentCount">0</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="teachersPage" class="page col-12">
-        <div class="grid inner">
-          <div class="card col-4">
-            <h2>Add Teacher</h2>
-            <label>Name</label>
-            <input id="teacherName" placeholder="Teacher name" />
-            <label>Phone</label>
-            <input id="teacherPhone" placeholder="07xxxxxxxx" />
-            <label>Subject</label>
-            <input id="teacherSubject" placeholder="Maths / Science / English" />
-            <div class="btns">
-              <button class="primary" onclick="addTeacher()">Save Teacher</button>
-              <button class="secondary" onclick="clearTeacherForm()">Clear</button>
-            </div>
-            <div id="teacherMsg" class="msg"></div>
-          </div>
-
-          <div class="card col-8">
-            <h2>Teachers List</h2>
-            <div class="table-wrap">
-              <table>
-                <thead>
-                  <tr><th>ID</th><th>Name</th><th>Phone</th><th>Subject</th><th>Status</th></tr>
-                </thead>
-                <tbody id="teachersTable"></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="classesPage" class="page col-12">
-        <div class="grid inner">
-          <div class="card col-4">
-            <h2>Add Class</h2>
-            <label>Class Name</label>
-            <input id="className" placeholder="Revision / Batch A / 11A" />
-            <label>Grade</label>
-            <input id="classGrade" placeholder="9 / 10 / 11 / A/L" />
-            <label>Teacher</label>
-            <select id="classTeacherSelect"></select>
-            <label>Class Fee</label>
-            <input id="classFee" type="number" min="0" step="1" placeholder="1700" />
-            <div class="btns">
-              <button class="primary" onclick="addClass()">Save Class</button>
-              <button class="secondary" onclick="clearClassForm()">Clear</button>
-            </div>
-            <div id="classMsg" class="msg"></div>
-          </div>
-
-          <div class="card col-8">
-            <h2>Classes List</h2>
-            <div class="table-wrap">
-              <table>
-                <thead>
-                  <tr><th>ID</th><th>Class</th><th>Grade</th><th>Teacher</th><th>Fee</th><th>Status</th></tr>
-                </thead>
-                <tbody id="classesTable"></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="studentsPage" class="page col-12">
-        <div class="grid inner">
-          <div class="card col-4">
-            <h2>Add Student</h2>
-            <label>Name</label>
-            <input id="studentName" placeholder="Student name" />
-            <label>Phone</label>
-            <input id="studentPhone" placeholder="07xxxxxxxx" />
-            <label>Address</label>
-            <textarea id="studentAddress" placeholder="Physical address"></textarea>
-            <label>Class</label>
-            <select id="studentClassSelect"></select>
-            <div class="btns">
-              <button class="primary" onclick="addStudent()">Save Student</button>
-              <button class="secondary" onclick="clearStudentForm()">Clear</button>
-            </div>
-            <div id="studentMsg" class="msg"></div>
-          </div>
-
-          <div class="card col-8">
-            <h2>Students</h2>
-            <input id="search" placeholder="Search student..." oninput="renderStudentList()" />
-            <div class="table-wrap list-wrap">
-              <div id="studentList"></div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="actionsPage" class="page col-12">
-        <div class="grid inner">
-          <div class="card col-3">
-            <h2>Quick Actions</h2>
-
-            <label>Search Student</label>
-            <input id="studentSearch" placeholder="Type student name..." oninput="searchStudentForAction()" />
-
-            <label>Student</label>
-            <select id="studentSelect" onchange="onStudentSelected()"></select>
-            <div id="studentStatus" class="msg"></div>
-
-            <label>Payment Type</label>
-            <select id="paymentType" onchange="onPaymentTypeChange()">
-              <option value="Class Fee">Class Fee</option>
-              <option value="Advance">Advance</option>
-              <option value="Extra">Extra</option>
-            </select>
-
-            <label>Payment Amount</label>
-            <input id="amount" type="number" min="0" step="1" placeholder="1700" />
-
-            <label>Note</label>
-            <input id="note" placeholder="Class fee / advance / extra" />
-
-            <div class="btns">
-              <button class="success" onclick="savePayment()">Save Payment</button>
-              <button class="primary" onclick="markSelectedAttendance()">Mark Present</button>
-            </div>
-
-            <div id="actionMsg" class="msg"></div>
-          </div>
-
-          <div class="card col-9">
-            <h2>Today's Attendance</h2>
-            <div class="table-wrap" style="margin-bottom:16px">
-              <table>
-                <thead>
-                  <tr><th>Time</th><th>Student</th><th>Class</th><th>Teacher</th><th>Status</th></tr>
-                </thead>
-                <tbody id="attendanceTable"></tbody>
-              </table>
-            </div>
-
-            <h2>Today's Payments</h2>
-            <div class="table-wrap">
-              <table>
-                <thead>
-                  <tr><th>Time</th><th>Student</th><th>Class</th><th>Amount</th><th>Type</th><th>Note</th></tr>
-                </thead>
-                <tbody id="paymentTable"></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </section>
-      <section id="reportPage" class="page col-12">
-  <div class="grid inner">
-    <div class="card col-4 no-print">
-      <h2>Monthly Report</h2>
-
-      <label>Month</label>
-      <input id="reportMonth" type="month" />
-
-      <div class="btns">
-        <button class="primary" onclick="loadMonthlyReport()">Generate Report</button>
-        <button class="success" onclick="printReport()">Save as PDF</button>
-      </div>
-
-      <hr style="border:none;border-top:1px solid #e2e8f0;margin:16px 0">
-
-      <h3>Add Expense</h3>
-      <label>Category</label>
-      <input id="expenseCategory" placeholder="Rent / Utility / Transport" />
-
-      <label>Amount</label>
-      <input id="expenseAmount" type="number" min="0" step="1" placeholder="5000" />
-
-      <label>Note</label>
-      <input id="expenseNote" placeholder="Optional note" />
-
-      <div class="btns">
-        <button class="success" onclick="saveExpense()">Save Expense</button>
-      </div>
-
-      <div id="expenseMsg" class="msg"></div>
     </div>
 
-    <div class="card col-8" id="reportPrintArea">
-      <div id="reportHeader"></div>
-
-      <div class="stats" style="margin-top:16px">
-        <div class="stat"><div class="k">Gross Income</div><div class="v" id="rGross">0</div></div>
-        <div class="stat"><div class="k">Teacher 75%</div><div class="v" id="rTeacher">0</div></div>
-        <div class="stat"><div class="k">Institute 25%</div><div class="v" id="rInstitute">0</div></div>
-        <div class="stat"><div class="k">Expenses</div><div class="v" id="rExpenses">0</div></div>
-        <div class="stat"><div class="k">Net Income</div><div class="v" id="rNet">0</div></div>
-      </div>
-
-      <div class="card" style="margin-top:16px">
-        <h3>Payments</h3>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr><th>Date</th><th>Student</th><th>Class</th><th>Amount</th><th>Type</th><th>Note</th></tr>
-            </thead>
-            <tbody id="reportPaymentsTable"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="card" style="margin-top:16px">
-        <h3>Expenses</h3>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr><th>Date</th><th>Category</th><th>Amount</th><th>Note</th></tr>
-            </thead>
-            <tbody id="reportExpensesTable"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div style="margin-top:18px;color:#64748b;font-size:12px;text-align:center">
-        Generated by ADM Class Manager
-      </div>
-    </div>
-  </div>
-</section>
-    </main>
-  </div>
-<script>
-  const API_URL = "https://script.google.com/macros/s/AKfycbzZYJTrsaEKnQ8l7nJeCtrhABBKIP1H7k-emO6xIru13Ozh-jSfWcXFx9coEBp_yi_tPw/exec";
-
-  let teachers = [];
-  let classes = [];
-  let allStudents = [];
-  let dashboard = { summary: {}, todayAttendance: [], todayPayments: [], presentIdsToday: [] };
-  let deferredPrompt = null;
-  let selectedStudent = null;
-
-  function el(id) {
-    return document.getElementById(id);
-  }
-
-  function money(n) {
-    return Number(n || 0).toLocaleString("en-LK");
-  }
-
-  function esc(s) {
-    return String(s ?? "").replace(/[&<>"']/g, function (m) {
-      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m];
-    });
-  }
-
-  function showError(message) {
-    const box = el("errorBox");
-    box.style.display = "block";
-    box.textContent = message;
-  }
-
-  function clearError() {
-    const box = el("errorBox");
-    box.style.display = "none";
-    box.textContent = "";
-  }
-
-  function setMsg(id, text, ok) {
-    if (ok === undefined) ok = true;
-    el(id).innerHTML = ok
-      ? '<span class="ok">' + esc(text) + '</span>'
-      : '<span class="err">' + esc(text) + '</span>';
-  }
-
-  function showPage(id, btn) {
-    document.querySelectorAll(".page").forEach(function (p) { p.classList.remove("active"); });
-    el(id).classList.add("active");
-    document.querySelectorAll(".nav-btn").forEach(function (b) { b.classList.remove("active"); });
-    if (btn) btn.classList.add("active");
-  }
-
-  document.querySelectorAll(".nav-btn").forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      showPage(btn.dataset.page, btn);
-    });
-  });
-
-  async function api(action, payload) {
-    payload = payload || {};
-    const res = await fetch(API_URL, {
-      method: "POST",
-      cache: "no-store",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify(Object.assign({ action: action }, payload))
-    });
-
-    const text = await res.text();
-
-    let data;
-    try {
-      data = JSON.parse(text);
-    } catch (err) {
-      throw new Error("Server returned non-JSON response. Check Apps Script deployment.\nFirst 200 chars:\n" + text.slice(0, 200));
-    }
-
-    if (!data.ok) throw new Error(data.message || "Request failed");
-    return data;
-  }
-
-  function clearTeacherForm() {
-    el("teacherName").value = "";
-    el("teacherPhone").value = "";
-    el("teacherSubject").value = "";
-  }
-
-  function clearClassForm() {
-    el("className").value = "";
-    el("classGrade").value = "";
-    el("classFee").value = "";
-  }
-
-  function clearStudentForm() {
-    el("studentName").value = "";
-    el("studentPhone").value = "";
-    el("studentAddress").value = "";
-  }
-
-  async function addTeacher() {
-    try {
-      clearError();
-      const result = await api("addTeacher", {
-        name: el("teacherName").value.trim(),
-        phone: el("teacherPhone").value.trim(),
-        subject: el("teacherSubject").value.trim()
-      });
-      setMsg("teacherMsg", result.message, true);
-      clearTeacherForm();
-      await reloadAll();
-    } catch (err) {
-      setMsg("teacherMsg", err.message, false);
-      showError(err.message);
-    }
-  }
-
-  async function addClass() {
-    try {
-      clearError();
-      const result = await api("addClass", {
-        className: el("className").value.trim(),
-        grade: el("classGrade").value.trim(),
-        teacherID: el("classTeacherSelect").value,
-        feeAmount: el("classFee").value
-      });
-      setMsg("classMsg", result.message, true);
-      clearClassForm();
-      await reloadAll();
-    } catch (err) {
-      setMsg("classMsg", err.message, false);
-      showError(err.message);
-    }
-  }
-
-  async function addStudent() {
-    try {
-      clearError();
-      const result = await api("addStudent", {
-        name: el("studentName").value.trim(),
-        phone: el("studentPhone").value.trim(),
-        address: el("studentAddress").value.trim(),
-        classID: el("studentClassSelect").value
-      });
-      setMsg("studentMsg", result.message, true);
-      clearStudentForm();
-      await reloadAll();
-    } catch (err) {
-      setMsg("studentMsg", err.message, false);
-      showError(err.message);
-    }
-  }
-
-  function renderDashboard() {
-    const s = dashboard.summary || {};
-    el("studentCount").textContent = s.studentCount != null ? s.studentCount : 0;
-    el("teacherCount").textContent = s.teacherCount != null ? s.teacherCount : 0;
-    el("classCount").textContent = s.classCount != null ? s.classCount : 0;
-    el("presentCount").textContent = s.presentCount != null ? s.presentCount : 0;
-    el("todayCollection").textContent = money(s.todayCollection != null ? s.todayCollection : 0);
-    el("monthCollection").textContent = money(s.monthCollection != null ? s.monthCollection : 0);
-    el("absentCount").textContent = s.absentCount != null ? s.absentCount : 0;
-  }
-
-  function renderTeacherSelects() {
-    el("classTeacherSelect").innerHTML = teachers.length
-      ? teachers.map(function (t) {
-          return '<option value="' + esc(t.ID) + '">' + esc(t.Name) + " (" + esc(t.Subject || "Teacher") + ")</option>";
-        }).join("")
-      : '<option value="">No teachers yet</option>';
-  }
-
-  function renderClassSelects() {
-    el("studentClassSelect").innerHTML = classes.length
-      ? '<option value="">Select class</option>' + classes.map(function (c) {
-          return '<option value="' + esc(c.ID) + '">' +
-            esc(c.ClassName) + " (" + esc(c.Grade) + ") • " +
-            esc(c.TeacherName) + " • LKR " + money(c.FeeAmount) +
-            '</option>';
-        }).join("")
-      : '<option value="">No classes yet</option>';
-
-    renderActionStudentSelect(allStudents);
-  }
-
-  function renderActionStudentSelect(list) {
-    list = list || allStudents;
-    el("studentSelect").innerHTML = list.length
-      ? '<option value="">Select student</option>' + list.map(function (s) {
-          return '<option value="' + esc(s.ID) + '" data-fee="' + esc(s.FeeAmount || 0) + '">' +
-            esc(s.Name) + " • " + esc(s.ClassName || "") +
-            '</option>';
-        }).join("")
-      : '<option value="">No students found</option>';
-  }
-
-  function searchStudentForAction() {
-    const q = el("studentSearch").value.trim().toLowerCase();
-
-    const filtered = allStudents.filter(function (s) {
-      const text = (s.ID + " " + s.Name + " " + s.Phone + " " + s.Address + " " + s.ClassName + " " + s.TeacherName).toLowerCase();
-      return !q || text.includes(q);
-    });
-
-    renderActionStudentSelect(filtered);
-    el("studentStatus").textContent = filtered.length ? filtered.length + " match(es) found" : "No matching student";
-
-    if (filtered.length === 1) {
-      el("studentSelect").value = filtered[0].ID;
-      onStudentSelected();
-    } else {
-      selectedStudent = null;
-    }
-  }
-
-  async function safeRefreshStudentStatus(studentId) {
-    try {
-      const data = await api("checkStudentStatus", { studentId: studentId });
-
-      el("studentStatus").innerHTML =
-        '<span class="badge ' + (data.attendanceToday ? "green" : "gray") + '">' +
-          (data.attendanceToday ? "Attendance already marked today" : "Attendance not marked today") +
-        '</span>' +
-        '<span class="badge ' + (data.balance <= 0 ? "green" : "orange") + '">' +
-          (data.balance <= 0 ? "Fully paid" : "Balance: LKR " + money(data.balance)) +
-        '</span>';
-    } catch (err) {
-      el("studentStatus").innerHTML = '<span class="badge gray">Status unavailable</span>';
-    }
-  }
-
-  async function onStudentSelected() {
-    const id = el("studentSelect").value;
-    selectedStudent = allStudents.find(function (x) { return String(x.ID) === String(id); }) || null;
-
-    if (!selectedStudent) {
-      el("studentStatus").textContent = "";
-      el("amount").value = "";
-      return;
-    }
-
-    el("amount").value = selectedStudent.FeeAmount || "";
-    await safeRefreshStudentStatus(id);
-  }
-
-  function onPaymentTypeChange() {
-    if (selectedStudent && el("paymentType").value === "Class Fee") {
-      el("amount").value = selectedStudent.FeeAmount || "";
-    }
-  }
-
-  function renderTeachersTable() {
-    el("teachersTable").innerHTML = teachers.length ? teachers.map(function (t) {
-      return '<tr>' +
-        '<td>' + esc(t.ID) + '</td>' +
-        '<td>' + esc(t.Name) + '</td>' +
-        '<td>' + esc(t.Phone) + '</td>' +
-        '<td>' + esc(t.Subject || "") + '</td>' +
-        '<td><span class="badge green">' + esc(t.Status || "Active") + '</span></td>' +
-        '</tr>';
-    }).join("") : '<tr><td colspan="5" class="muted">No teachers yet</td></tr>';
-  }
-
-  function renderClassesTable() {
-    el("classesTable").innerHTML = classes.length ? classes.map(function (c) {
-      return '<tr>' +
-        '<td>' + esc(c.ID) + '</td>' +
-        '<td>' + esc(c.ClassName) + '</td>' +
-        '<td>' + esc(c.Grade) + '</td>' +
-        '<td>' + esc(c.TeacherName) + '</td>' +
-        '<td>LKR ' + money(c.FeeAmount) + '</td>' +
-        '<td><span class="badge green">' + esc(c.Status || "Active") + '</span></td>' +
-        '</tr>';
-    }).join("") : '<tr><td colspan="6" class="muted">No classes yet</td></tr>';
-  }
-
-  function renderStudentList() {
-    const q = el("search").value.trim().toLowerCase();
-    const filtered = allStudents.filter(function (s) {
-      const text = (s.ID + " " + s.Name + " " + s.Phone + " " + s.Address + " " + s.ClassName + " " + s.TeacherName).toLowerCase();
-      return !q || text.includes(q);
-    });
-
-    el("studentList").innerHTML = filtered.length ? filtered.map(function (s) {
-      const present = dashboard.presentIdsToday && dashboard.presentIdsToday.includes(String(s.ID));
-      return '<div class="student">' +
-        '<div style="min-width:0">' +
-          '<div style="font-weight:800">' + esc(s.Name) + '</div>' +
-          '<div class="muted">' + esc(s.Phone) + (s.Address ? " • " + esc(s.Address) : "") + '</div>' +
-          '<div style="margin-top:6px">' +
-            '<span class="badge ' + (present ? "green" : "gray") + '">' + (present ? "Present Today" : "Not Marked") + '</span>' +
-            '<span class="badge purple">' + esc(s.ClassName || "") + '</span>' +
-            '<span class="badge orange">' + esc(s.TeacherName || "") + '</span>' +
-            '<span class="badge">LKR ' + money(s.FeeAmount || 0) + '</span>' +
-          '</div>' +
-        '</div>' +
-        '<div style="text-align:right;flex-shrink:0">' +
-          '<div class="muted" style="font-size:12px">' + esc(s.ID) + '</div>' +
-          '<button class="primary" style="margin-top:10px" onclick="useStudent(\'' + esc(s.ID) + '\')">Use</button>' +
-        '</div>' +
-      '</div>';
-    }).join("") : '<div class="student"><span class="muted">No students found</span></div>';
-  }
-
-  function formatTime(ts) {
-    if (!ts) return "";
-    try {
-      const d = new Date(ts);
-      if (isNaN(d.getTime())) return String(ts).slice(0, 16);
-      return d.toLocaleTimeString("en-LK", { hour: "2-digit", minute: "2-digit", hour12: true });
-    } catch (e) {
-      return String(ts).slice(0, 16);
-    }
-  }
-
-  function renderTables() {
-    el("attendanceTable").innerHTML = dashboard.todayAttendance.length ? dashboard.todayAttendance.map(function (r) {
-      return '<tr>' +
-        '<td>' + esc(formatTime(r.Timestamp)) + '</td>' +
-        '<td>' + esc(r.Name) + '</td>' +
-        '<td>' + esc(r.ClassName || "") + '</td>' +
-        '<td>' + esc(r.TeacherName || "") + '</td>' +
-        '<td><span class="badge green">' + esc(r.Status || "Present") + '</span></td>' +
-        '</tr>';
-    }).join("") : '<tr><td colspan="5" class="muted">No attendance today</td></tr>';
-
-    el("paymentTable").innerHTML = dashboard.todayPayments.length ? dashboard.todayPayments.map(function (r) {
-      return '<tr>' +
-        '<td>' + esc(formatTime(r.Timestamp)) + '</td>' +
-        '<td>' + esc(r.Name) + '</td>' +
-        '<td>' + esc(r.ClassName || "") + '</td>' +
-        '<td>LKR ' + money(r.Amount) + '</td>' +
-        '<td>' + esc(r.PaymentType || "") + '</td>' +
-        '<td>' + esc(r.Note || "") + '</td>' +
-        '</tr>';
-    }).join("") : '<tr><td colspan="6" class="muted">No payments today</td></tr>';
-  }
-
-  function useStudent(id) {
-    el("studentSearch").value = "";
-    renderActionStudentSelect(allStudents);
-    el("studentSelect").value = id;
-    onStudentSelected();
-    showPage("actionsPage", document.querySelector('.nav-btn[data-page="actionsPage"]'));
-    el("studentSelect").scrollIntoView({ behavior: "smooth", block: "center" });
-  }
-
-  async function markSelectedAttendance() {
-    try {
-      clearError();
-      const sel = el("studentSelect");
-      const opt = sel.options[sel.selectedIndex];
-      if (!opt || !opt.value) return setMsg("actionMsg", "Select a student first", false);
-
-      const result = await api("markAttendance", {
-        studentId: opt.value
-      });
-
-      setMsg("actionMsg", result.message, true);
-      await reloadAll();
-      await safeRefreshStudentStatus(opt.value);
-    } catch (err) {
-      setMsg("actionMsg", err.message, false);
-      showError(err.message);
-    }
-  }
-
-  async function savePayment() {
-    try {
-      clearError();
-      const sel = el("studentSelect");
-      const opt = sel.options[sel.selectedIndex];
-      if (!opt || !opt.value) return setMsg("actionMsg", "Select a student first", false);
-
-      const paymentType = el("paymentType").value;
-      const amount = Number(el("amount").value || 0);
-
-      if (amount <= 0) return setMsg("actionMsg", "Enter a valid amount", false);
-
-      const result = await api("addPayment", {
-        studentId: opt.value,
-        amount: amount,
-        paymentType: paymentType,
-        note: el("note").value.trim()
-      });
-
-      setMsg("actionMsg", result.message, true);
-      el("amount").value = "";
-      el("note").value = "";
-      await reloadAll();
-      await safeRefreshStudentStatus(opt.value);
-    } catch (err) {
-      setMsg("actionMsg", err.message, false);
-      showError(err.message);
-    }
-  }
-
-  async function reloadAll() {
-    const data = await api("getDashboard");
-    dashboard = data || { summary: {}, todayAttendance: [], todayPayments: [], presentIdsToday: [] };
-    teachers = dashboard.teachers || [];
-    classes = dashboard.classes || [];
-    allStudents = dashboard.students || [];
-
-    renderDashboard();
-    renderTeacherSelects();
-    renderClassSelects();
-    renderTeachersTable();
-    renderClassesTable();
-    renderStudentList();
-    renderTables();
-    await loadMonthlyReport();
-    
-    const selectedId = el("studentSelect").value;
-    if (selectedId) {
-      safeRefreshStudentStatus(selectedId);
-    }
-  }
-
-  window.addEventListener("load", async function () {
-    try {
-      await reloadAll();
-    } catch (err) {
-      setMsg("actionMsg", err.message, false);
-      showError(err.message);
-    }
-
-    if ("serviceWorker" in navigator) {
-      try {
-        await navigator.serviceWorker.register("sw.js");
-      } catch (e) {}
-    }
-  });
-
-  window.addEventListener("beforeinstallprompt", function (e) {
-    e.preventDefault();
-    deferredPrompt = e;
-    el("installBtn").classList.remove("hidden");
-    el("installBtn").onclick = async function () {
-      deferredPrompt.prompt();
-      await deferredPrompt.userChoice;
-      el("installBtn").classList.add("hidden");
-      deferredPrompt = null;
-    };
-  });
-  let monthlyReport = null;
-
-async function saveExpense() {
-  try {
-    clearError();
-    const category = el("expenseCategory").value.trim();
-    const amount = Number(el("expenseAmount").value || 0);
-    const note = el("expenseNote").value.trim();
-
-    if (!category || amount <= 0) {
-      return setMsg("expenseMsg", "Enter expense category and valid amount", false);
-    }
-
-    const result = await api("addExpense", {
-      category,
-      amount,
-      note
-    });
-
-    setMsg("expenseMsg", result.message, true);
-    el("expenseCategory").value = "";
-    el("expenseAmount").value = "";
-    el("expenseNote").value = "";
-    await reloadAll();
-    await loadMonthlyReport();
-  } catch (err) {
-    setMsg("expenseMsg", err.message, false);
-    showError(err.message);
-  }
-}
-
-async function loadMonthlyReport() {
-  try {
-    clearError();
-    const month = el("reportMonth").value || new Date().toISOString().slice(0, 7);
-    const data = await api("getMonthlyReport", { month });
-    monthlyReport = data;
-
-    el("reportHeader").innerHTML = `
-      <h2 style="margin-bottom:6px">Monthly Income & Expense Report</h2>
-      <div class="muted">Month: <b>${esc(data.month)}</b></div>
-    `;
-
-    el("rGross").textContent = money(data.finance.grossIncome);
-    el("rTeacher").textContent = money(data.finance.teacherShare);
-    el("rInstitute").textContent = money(data.finance.instituteIncomeBeforeExpenses);
-    el("rExpenses").textContent = money(data.finance.expenseTotal);
-    el("rNet").textContent = money(data.finance.netIncome);
-
-    el("reportPaymentsTable").innerHTML = (data.payments || []).length
-      ? data.payments.map(function (r) {
-          return `<tr>
-            <td>${esc(normalizeDateDisplay(r.Date))}</td>
-            <td>${esc(r.Name || "")}</td>
-            <td>${esc(r.ClassName || "")}</td>
-            <td>LKR ${money(r.Amount || 0)}</td>
-            <td>${esc(r.PaymentType || "")}</td>
-            <td>${esc(r.Note || "")}</td>
-          </tr>`;
-        }).join("")
-      : `<tr><td colspan="6" class="muted">No payments for this month</td></tr>`;
-
-    el("reportExpensesTable").innerHTML = (data.expenses || []).length
-      ? data.expenses.map(function (r) {
-          return `<tr>
-            <td>${esc(normalizeDateDisplay(r.Date))}</td>
-            <td>${esc(r.Category || "")}</td>
-            <td>LKR ${money(r.Amount || 0)}</td>
-            <td>${esc(r.Note || "")}</td>
-          </tr>`;
-        }).join("")
-      : `<tr><td colspan="4" class="muted">No expenses for this month</td></tr>`;
-  } catch (err) {
-    showError(err.message);
-  }
-}
-
-function normalizeDateDisplay(v) {
-  try {
-    if (v instanceof Date) {
-      return v.toLocaleDateString("en-GB");
-    }
-    const d = new Date(v);
-    if (!isNaN(d.getTime())) {
-      return d.toLocaleDateString("en-GB");
-    }
-    return String(v || "");
-  } catch (e) {
-    return String(v || "");
-  }
-}
-
-function printReport() {
-  window.print();
-}
-  window.addEventListener("load", async function () {
-  const now = new Date();
-  el("reportMonth").value = now.toISOString().slice(0, 7);
-  try {
-    await reloadAll();
-    await loadMonthlyReport();
-  } catch (err) {
-    setMsg("actionMsg", err.message, false);
-    showError(err.message);
-  }
-
-  if ("serviceWorker" in navigator) {
-    try {
-      await navigator.serviceWorker.register("sw.js");
-    } catch (e) {}
-  }
-});
-</script>
+    <!-- Core App Logic Script -->
+    <script>
+        // State Management
+        let transactions = JSON.parse(localStorage.getItem('adm_transactions')) || [];
+
+        // Set default month input to current month
+        const now = new Date();
+        const currentYearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+        document.getElementById('month-filter').value = currentYearMonth;
+        document.getElementById('tx-date').value = now.toISOString().split('T')[0];
+        document.getElementById('report-generated-time').innerText = `වාර්තාව සකස් කල දිනය: ${now.toLocaleDateString()}`;
+
+        // Elements
+        const form = document.getElementById('transaction-form');
+        const monthFilter = document.getElementById('month-filter');
+        const rowsContainer = document.getElementById('transaction-rows');
+        const emptyState = document.getElementById('empty-state');
+
+        // Form Submit Event
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const newTx = {
+                id: Date.now(),
+                date: document.getElementById('tx-date').value,
+                desc: document.getElementById('tx-desc').value,
+                type: document.getElementById('tx-type').value,
+                amount: parseFloat(document.getElementById('tx-amount').value)
+            };
+
+            transactions.push(newTx);
+            saveAndRender();
+            
+            // Reset input values but keep date
+            document.getElementById('tx-desc').value = '';
+            document.getElementById('tx-amount').value = '';
+        });
+
+        // Filter Change Event
+        monthFilter.addEventListener('change', render);
+
+        function saveAndRender() {
+            localStorage.setItem('adm_transactions', JSON.stringify(transactions));
+            render();
+        }
+
+        function deleteTransaction(id) {
+            if(confirm("මෙම ගනුදෙනුව දත්ත පද්ධතියෙන් ඉවත් කිරීමට අවශ්‍යද?")) {
+                transactions = transactions.filter(tx => tx.id !== id);
+                saveAndRender();
+            }
+        }
+
+        function render() {
+            const selectedMonth = monthFilter.value; // Format: YYYY-MM
+            rowsContainer.innerHTML = '';
+
+            let totalIncome = 0;
+            let totalExpense = 0;
+
+            // Filter transactions for selected month
+            const filtered = transactions.filter(tx => tx.date.startsWith(selectedMonth));
+            
+            // Sort by date ascending
+            filtered.sort((a,b) => new Date(a.date) - new Date(b.date));
+
+            if(filtered.length === 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+                filtered.forEach(tx => {
+                    if(tx.type === 'income') totalIncome += tx.amount;
+                    else totalExpense += tx.amount;
+
+                    const row = document.createElement('tr');
+                    row.className = "hover:bg-gray-50 transition-colors border-b border-gray-100";
+                    row.innerHTML = `
+                        <td class="p-4 font-medium text-gray-800">${tx.date}</td>
+                        <td class="p-4 text-gray-700">${tx.desc}</td>
+                        <td class="p-4">
+                            <span class="px-2.5 py-1 text-xs font-bold rounded-full ${tx.type === 'income' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+                                ${tx.type === 'income' ? 'ආදායම්' : 'වියදම්'}
+                            </span>
+                        </td>
+                        <td class="p-4 text-right font-bold ${tx.type === 'income' ? 'text-emerald-600' : 'text-rose-600'}">
+                            ${tx.amount.toFixed(2)}
+                        </td>
+                        <td class="p-4 text-center action-column">
+                            <button onclick="deleteTransaction(${tx.id})" class="text-rose-500 hover:text-rose-700 transition-colors p-1 cursor-pointer" title="මකන්න">
+                                <i class="fa-solid fa-trash-can text-base"></i>
+                            </button>
+                        </td>
+                    `;
+                    rowsContainer.appendChild(row);
+                });
+            }
+
+            // Update Summary Cards
+            const netBalance = totalIncome - totalExpense;
+            document.getElementById('total-income').innerText = totalIncome.toLocaleString('en-US', {minimumFractionDigits: 2});
+            document.getElementById('total-expense').innerText = totalExpense.toLocaleString('en-US', {minimumFractionDigits: 2});
+            document.getElementById('net-balance').innerText = netBalance.toLocaleString('en-US', {minimumFractionDigits: 2});
+
+            // Dynamic color shift for balance card
+            const balanceBg = document.getElementById('balance-icon-bg');
+            if (netBalance < 0) {
+                balanceBg.className = "bg-rose-500 text-white p-3 rounded-lg shadow-md";
+            } else {
+                balanceBg.className = "bg-indigo-500 text-white p-3 rounded-lg shadow-md";
+            }
+        }
+
+        // Export beautifully to PDF using html2pdf
+        function downloadPDF() {
+            const element = document.getElementById('printable-area');
+            const selectedMonth = monthFilter.value;
+            
+            // Hide elements that shouldn't be on PDF
+            const style = document.createElement('style');
+            style.id = "pdf-temp-style";
+            style.innerHTML = `
+                .no-print { display: none !important; }
+                .action-column { display: none !important; }
+                #printable-area { border: none !important; shadow: none !important; padding: 0 !important; }
+            `;
+            document.head.appendChild(style);
+
+            const opt = {
+                margin:       [0.5, 0.5, 0.5, 0.5],
+                filename:     `ADM_Report_${selectedMonth}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+
+            // Run PDF generation
+            html2pdf().set(opt).from(element).save().then(() => {
+                // Remove temporary style after generation to restore view
+                document.getElementById('pdf-temp-style').remove();
+            });
+        }
+
+        // Initial Run
+        render();
+    </script>
 </body>
-</html> 
+</html>
