@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>ADM Class Manager</title>
+  <title>ADM Class Manager - Landscape</title>
 
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#0f172a" />
@@ -25,52 +25,64 @@
           -webkit-font-smoothing: antialiased;
       }
 
-      /* PDF මුද්‍රණය සඳහා විශේෂ කළු සහ සුදු ස්ටයිල්ස් */
-      .pdf-bw-mode h1, .pdf-bw-mode h2, .pdf-bw-mode h3, .pdf-bw-mode p, .pdf-bw-mode div, .pdf-bw-mode td, .pdf-bw-mode th {
+      /* ================= LANDSCAPE PDF PRINT STYLES ================= */
+      .pdf-landscape-mode h1, 
+      .pdf-landscape-mode h2, 
+      .pdf-landscape-mode h3, 
+      .pdf-landscape-mode p, 
+      .pdf-landscape-mode div, 
+      .pdf-landscape-mode td, 
+      .pdf-landscape-mode th {
           color: #000000 !important;
           border-color: #000000 !important;
           background-color: #ffffff !important;
           text-shadow: none !important;
           box-shadow: none !important;
       }
-      .pdf-bw-mode th {
+      
+      .pdf-landscape-mode th {
           border-bottom: 2px solid #000000 !important;
           border-top: 2px solid #000000 !important;
+          background-color: #f8fafc !important; /* මුද්‍රණයේදී පැහැදිලි වීමට */
       }
-      .pdf-bw-mode .pdf-border-top {
-          border-top: 2px solid #000000 !important;
-      }
-      .pdf-bw-mode .pdf-header {
+      
+      .pdf-landscape-mode .pdf-header {
           border-bottom: 3px double #000000 !important;
       }
-      .pdf-bw-mode {
-          font-size: 12px !important;
-          line-height: 1.3 !important;
-      }
-      .pdf-bw-mode h1 { font-size: 22px !important; }
       
-      /* PDF එකේදී කාඩ්ස් සහ ටේබල්ස් A4 එකට ගැලපෙන සේ සැකසීම */
-      .pdf-bw-mode #summary-grid {
+      .pdf-landscape-mode {
+          font-size: 11px !important;
+          line-height: 1.2 !important;
+          padding: 10px !important;
+      }
+      
+      .pdf-landscape-mode h1 { font-size: 24px !important; }
+
+      /* Landscape එකේදී වගු දෙක දෙපැත්තට (Side-by-Side) ලස්සනට තැබීම */
+      .pdf-landscape-mode #summary-grid {
           display: grid !important;
           grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-          gap: 12px !important;
-          margin-bottom: 20px !important;
+          gap: 16px !important;
+          margin-bottom: 24px !important;
       }
-      .pdf-bw-mode #tables-grid {
-          display: flex !important;
-          flex-direction: column !important;
-          gap: 25px !important;
+      
+      .pdf-landscape-mode #tables-grid {
+          display: grid !important;
+          grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+          gap: 20px !important;
       }
-      .pdf-bw-mode .summary-box {
+      
+      .pdf-landscape-mode .summary-box {
           border: 1px solid #000000 !important;
-          padding: 10px !important;
+          padding: 12px !important;
           border-radius: 8px !important;
       }
-      .pdf-bw-mode tr {
+      
+      .pdf-landscape-mode tr {
           page-break-inside: avoid;
       }
       
-      /* Loading Screen එක සඳහා */
+      /* Loader */
       .loader-overlay {
           background: rgba(255, 255, 255, 0.8);
           backdrop-filter: blur(2px);
@@ -85,11 +97,12 @@
         <p class="text-sm font-bold text-indigo-900">දත්ත යාවත්කාලීන වෙමින් පවතී...</p>
     </div>
 
-    <div class="max-w-6xl mx-auto px-2 sm:px-4 py-4 sm:py-8">
+    <div class="max-w-7xl mx-auto px-2 sm:px-4 py-4 sm:py-8">
         
-        <!-- බාගත වන ප්‍රදේශය -->
+        <!-- බාගත වන ප්‍රදේශය (A4 Landscape සදහා සැකසූ කොටස) -->
         <div id="printable-area" class="bg-white p-4 sm:p-8 rounded-2xl shadow-sm border border-gray-200 mb-6 overflow-hidden transition-all">
             
+            <!-- Header Section -->
             <div id="pdf-head-section" class="flex flex-col md:flex-row justify-between items-center border-b-2 border-indigo-600 pb-4 mb-6 text-center md:text-left">
                 <div class="mb-4 md:mb-0 w-full md:w-auto">
                     <h1 class="text-2xl sm:text-3xl font-black text-indigo-900 tracking-wide uppercase">ADM Higher Education Center</h1>
@@ -109,7 +122,7 @@
             </div>
 
             <!-- Summary Grid (කාඩ් පත තුන) -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6" id="summary-grid">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6" id="summary-grid">
                 <div id="inc-card" class="bg-emerald-50 border border-emerald-100 p-4 rounded-xl flex items-center justify-between summary-box">
                     <div>
                         <p class="text-xs sm:text-sm text-emerald-700 font-bold uppercase">මුළු ආදායම (Income)</p>
@@ -139,14 +152,14 @@
                 </div>
             </div>
 
-            <!-- ෆිල්ටර් සහ ඩවුන්ලෝඩ් බටන් -->
+            <!-- ෆිල්ටර් සහ ඩවුන්ලෝඩ් බටන් (PDF එකට ප්‍රින්ට් වෙන්නේ නැත) -->
             <div class="flex flex-col sm:flex-row justify-between items-center gap-3 mb-6 no-print">
                 <div class="flex items-center gap-2 w-full sm:w-auto">
                     <label for="month-filter" class="text-sm font-bold text-gray-700 whitespace-nowrap">මාසය තෝරන්න:</label>
                     <input type="month" id="month-filter" class="w-full sm:w-auto border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm bg-white">
                 </div>
                 <button onclick="downloadPDF()" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-5 py-2.5 rounded-lg flex items-center justify-center gap-2 shadow-md transition-all cursor-pointer text-sm">
-                    <i class="fa-solid fa-file-pdf"></i> කළු-සුදු A4 PDF එක බාගන්න
+                    <i class="fa-solid fa-file-pdf"></i> ලස්සන A4 Landscape PDF එක බාගන්න
                 </button>
             </div>
 
@@ -204,10 +217,10 @@
             </div>
 
             <!-- අත්සන් සහ මුද්‍රාව -->
-            <div class="mt-8 border-t border-gray-200 pt-6 flex justify-between items-end px-2 gap-2 text-center">
+            <div class="mt-12 border-t border-gray-200 pt-6 flex justify-between items-end px-4 gap-4 text-center">
                 <div class="flex-1">
-                    <div class="w-full max-w-[150px] border-b border-gray-400 h-8 mx-auto mb-1"></div>
-                    <p class="text-xs sm:text-sm font-bold text-gray-700">සකස් කළේ:</p>
+                    <div class="w-full max-w-[180px] border-b border-gray-400 h-8 mx-auto mb-1"></div>
+                    <p class="text-xs sm:text-sm font-bold text-gray-700">Composed By (සකස් කළේ):</p>
                     <p class="text-[10px] text-gray-400">ගිණුම් අංශය</p>
                 </div>
                 
@@ -219,8 +232,8 @@
                 </div>
 
                 <div class="flex-1">
-                    <div class="w-full max-w-[150px] border-b border-gray-400 h-8 mx-auto mb-1"></div>
-                    <p class="text-xs sm:text-sm font-bold text-gray-700">ස්ථිර කළේ:</p>
+                    <div class="w-full max-w-[180px] border-b border-gray-400 h-8 mx-auto mb-1"></div>
+                    <p class="text-xs sm:text-sm font-bold text-gray-700">Approved By (ස්ථිර කළේ):</p>
                     <p class="text-[10px] text-gray-400">කළමනාකාරීත්වය</p>
                 </div>
             </div>
@@ -263,6 +276,7 @@
     </div>
 
     <script>
+        // ඔයාගේ නිවැරදි Google Apps Script URL එක මෙතනට දාන්න
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyB2yBSKN2VEU1PXQnCi_SUnpYxVzezbUe5iCbtgFleM7BaFUnezfrKZr1eidJdATQF/exec";
 
         let transactions = [];
@@ -276,18 +290,18 @@
             }
         }
 
-        // [UPDATE FIX] - Cache නොවී හැමවිටම අලුත්ම දත්ත ලැබීමට කාලය (Timestamp) එකතු කර ඇත
-        async function loadTransactions() {
-            showLoading(true);
+        // [SILENT AUTO-UPDATE SYSTEM]
+        async function loadTransactions(isSilent = false) {
+            if (!isSilent) showLoading(true);
             try {
                 const response = await fetch(`${SCRIPT_URL}?ts=${Date.now()}`);
                 transactions = await response.json();
                 render();
             } catch (error) {
                 console.error("Data loading error: ", error);
-                alert("Google Sheet එකෙන් දත්ත ලබාගැනීමට නොහැකි වුණා.");
+                if (!isSilent) alert("Google Sheet එකෙන් දත්ත ලබාගැනීමට නොහැකි වුණා.");
             } finally {
-                showLoading(false);
+                if (!isSilent) showLoading(false);
             }
         }
 
@@ -295,7 +309,7 @@
         const currentYearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
         document.getElementById('month-filter').value = currentYearMonth;
         document.getElementById('tx-date').value = now.toISOString().split('T')[0];
-        document.getElementById('report-generated-time').innerText = `වාර්තාව සකස් කල දිනය: ${now.toLocaleDateString()}`;
+        document.getElementById('report-generated-time').innerText = `Report Date: ${now.toLocaleDateString()} | ${now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
 
         const form = document.getElementById('transaction-form');
         const monthFilter = document.getElementById('month-filter');
@@ -328,7 +342,6 @@
                 const txMonth = txDate.substring(0, 7);
                 monthFilter.value = txMonth;
                 
-                // දත්ත ඇතුලත් වූ විගස refresh කිරීම
                 await loadTransactions();
             } catch (error) {
                 console.error("Error adding row: ", error);
@@ -380,7 +393,7 @@
                 row.className = "hover:bg-gray-50 border-b border-gray-100 transition-colors";
                 row.innerHTML = `
                     <td class="p-2.5 font-medium text-gray-800 whitespace-nowrap">${tx.date}</td>
-                    <td class="p-2.5 text-gray-700 break-words max-w-[150px]">${tx.desc}</td>
+                    <td class="p-2.5 text-gray-700 break-words max-w-[180px]">${tx.desc}</td>
                     <td class="p-2.5 text-right font-bold ${tx.type === 'income' ? 'text-emerald-600' : 'text-rose-600'}">
                         ${tx.amount.toFixed(2)}
                     </td>
@@ -418,44 +431,58 @@
             }
         }
 
-        // [PDF FIXED FOR A4 PORTRAIT] - ජංගම දුරකථන වල කැපීම වැලැක්වීමට සහ Portrait ආකාරයට හැදීම
+        // [SMART AUTO REFRESH TRIGGERS]
+        document.addEventListener("visibilitychange", () => {
+            if (document.visibilityState === "visible") {
+                loadTransactions(true); 
+            }
+        });
+
+        setInterval(() => {
+            if (document.visibilityState === "visible") {
+                loadTransactions(true);
+            }
+        }, 30000); 
+
+        // [A4 LANDSCAPE PDF CONFIGURATION]
         function downloadPDF() {
             const element = document.getElementById('printable-area');
             const selectedMonth = document.getElementById('month-filter').value || 'report';
             
-            element.classList.add('pdf-bw-mode');
+            element.classList.add('pdf-landscape-mode');
             
+            // Delete බටන් ටික මුද්‍රණයෙන් ඉවත් කිරීම
             const actionColumns = document.querySelectorAll('.action-column');
             actionColumns.forEach(col => col.style.display = 'none');
 
             const opt = {
-                margin:       [12, 12, 12, 12],
-                filename:     `ADM_Report_${selectedMonth}.pdf`,
+                margin:       [10, 12, 10, 12],
+                filename:     `ADM_Landscape_Report_${selectedMonth}.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { 
                     scale: 2, 
                     useCORS: true,
-                    windowWidth: 850 // A4 Portrait එකට කදිමට ගැලපෙන පළල
+                    windowWidth: 1120 // Landscape A4 එකට හරියටම ගැලපෙන කැනවස් පළල
                 },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' } // Portrait (සිරස්) ආකාරයට මාරු කළා
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' } // Landscape එකට මෙතනින් හැරෙව්වා
             };
 
             showLoading(true);
 
             html2pdf().set(opt).from(element).save().then(() => {
-                element.classList.remove('pdf-bw-mode');
+                element.classList.remove('pdf-landscape-mode');
                 actionColumns.forEach(col => col.style.display = '');
                 showLoading(false);
             }).catch(err => {
                 console.error("PDF error: ", err);
-                element.classList.remove('pdf-bw-mode');
+                element.classList.remove('pdf-landscape-mode');
                 actionColumns.forEach(col => col.style.display = '');
                 showLoading(false);
                 alert("PDF සකස් කිරීම අසාර්ථකයි.");
             });
         }
 
-        // මුලින්ම පිටුව Load වෙද්දී දත්ත ලබාගැනීම
+        // ඇප් එක පටන් ගනිද්දී දත්ත ලබාගැනීම
         loadTransactions();
     </script>
 </body>
