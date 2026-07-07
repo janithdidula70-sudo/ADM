@@ -236,7 +236,6 @@
     </div>
 
     <script>
-        // Google Web App URL එක සාර්ථකව සම්බන්ධ කර ඇත
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyB2yBSKN2VEU1PXQnCi_SUnpYxVzezbUe5iCbtgFleM7BaFUnezfrKZr1eidJdATQF/exec";
 
         let transactions = [];
@@ -280,10 +279,11 @@
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             
+            const txDate = document.getElementById('tx-date').value;
             const newTx = {
                 action: 'add',
                 id: Date.now().toString(),
-                date: document.getElementById('tx-date').value,
+                date: txDate,
                 desc: document.getElementById('tx-desc').value,
                 type: document.getElementById('tx-type').value,
                 amount: parseFloat(document.getElementById('tx-amount').value)
@@ -294,17 +294,20 @@
                 await fetch(SCRIPT_URL, {
                     method: 'POST',
                     body: JSON.stringify(newTx),
-                    headers: { 'Content-Type': 'text/plain' }
+                    headers: { 'Content-Type': 'text/plain' },
+                    mode: 'no-cors'
                 });
                 
                 document.getElementById('tx-desc').value = '';
                 document.getElementById('tx-amount').value = '';
                 
-                // සාර්ථකව ඇතුලත් වූ පසු නැවත Google Sheet එකෙන් ඩේටා refresh කිරීම
+                const txMonth = txDate.substring(0, 7);
+                monthFilter.value = txMonth;
+                
                 await loadTransactions();
             } catch (error) {
                 console.error("Error adding row: ", error);
-                alert("දත්ත ඇතුලත් කිරීම අසාර්ථකයි!");
+                alert("දත්ත ඇතුලත් කිරීමේදී ගැටලුවක් ඇතිවිය. කරුණාකර නැවත උත්සාහ කරන්න.");
                 showLoading(false);
             }
         });
@@ -319,7 +322,8 @@
                     await fetch(SCRIPT_URL, {
                         method: 'POST',
                         body: JSON.stringify({ action: 'delete', id: id.toString() }),
-                        headers: { 'Content-Type': 'text/plain' }
+                        headers: { 'Content-Type': 'text/plain' },
+                        mode: 'no-cors'
                     });
                     await loadTransactions();
                 } catch (error) {
@@ -391,57 +395,45 @@
             }
         }
 
-        // PDF Exporter Function (B&W + Single Page + Mobile Layout Fix)
+        // [මෙතන තමයි අලුත් වෙනස තියෙන්නේ] - PDF එක බාගත කරන නිවැරදි Function එක
         function downloadPDF() {
             const element = document.getElementById('printable-area');
-            const selectedMonth = monthFilter.value;
+            const selectedMonth = document.getElementById('month-filter').value || 'report';
             
-            // 📱 Mobile Fix: PDF එක හදන වෙලාවට විතරක් layout එක බලෙන් Desktop විදිහට සකස් කිරීම
-            const originalWidth = element.style.width;
-            const originalMaxWidth = element.style.maxWidth;
-            element.style.width = "1024px"; 
-            element.style.maxWidth = "1024px";
-
+            // PDF එක මුද්‍රණය කිරීමට පෙර කළු/සුදු ස්ටයිල් එක ඇතුලත් කිරීම
             element.classList.add('pdf-bw-mode');
             
-            const style = document.createElement('style');
-            style.id = "pdf-temp-style";
-            style.innerHTML = `
-                .no-print { display: none !important; }
-                .action-column { display: none !important; }
-                .no-print-icon { display: none !important; }
-                #printable-area { border: none !important; box-shadow: none !important; padding: 10px !important; margin: 0 !important; }
-                #summary-grid { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 12px !important; }
-                #tables-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 16px !important; }
-            `;
-            document.head.appendChild(style);
+            // "මකන්න" (Action) තීරුව PDF එකෙන් තාවකාලිකව ඉවත් කිරීම
+            const actionColumns = document.querySelectorAll('.action-column');
+            actionColumns.forEach(col => col.style.display = 'none');
 
+            // html2pdf Options - Mobile වලදී කැපීම වැලැක්වීමට windowWidth යොදා ඇත
             const opt = {
-                margin:       [0.2, 0.3, 0.2, 0.3],
-                filename:     `ADM_Report_BW_${selectedMonth}.pdf`,
+                margin:       [10, 10, 10, 10],
+                filename:     `ADM_Report_${selectedMonth}.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { 
                     scale: 2, 
-                    useCORS: true, 
-                    letterRendering: true,
-                    windowWidth: 1200
+                    useCORS: true,
+                    windowWidth: 1100 // Phone එකෙන් බෑවත් Desktop එකක වගේ පළලට රෙන්ඩර් කරයි
                 },
-                jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' },
-                pagebreak:    { mode: ['avoid-all'] }
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' } // Landscape එක වඩාත් ගැලපේ
             };
 
+            showLoading(true);
+
+            // PDF එක සකස් කර බාගත කිරීම
             html2pdf().set(opt).from(element).save().then(() => {
-                // PDF එක හැදුණු පසු නැවත සාමාන්‍ය තත්ත්වයට පත් කිරීම
+                // PDF එක බාගත වූ පසු නැවත සාමාන්‍ය තත්වයට පත් කිරීම
                 element.classList.remove('pdf-bw-mode');
-                element.style.width = originalWidth;
-                element.style.maxWidth = originalMaxWidth;
-                document.getElementById('pdf-temp-style').remove();
+                actionColumns.forEach(col => col.style.display = '');
+                showLoading(false);
             }).catch(err => {
+                console.error("PDF generation error: ", err);
                 element.classList.remove('pdf-bw-mode');
-                element.style.width = originalWidth;
-                element.style.maxWidth = originalMaxWidth;
-                if(document.getElementById('pdf-temp-style')) document.getElementById('pdf-temp-style').remove();
-                console.error(err);
+                actionColumns.forEach(col => col.style.display = '');
+                showLoading(false);
+                alert("PDF එක සකස් කිරීමේදී දෝෂයක් ඇතිවුණා.");
             });
         }
 
