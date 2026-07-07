@@ -26,39 +26,18 @@
       }
 
       /* ================= LANDSCAPE PDF PRINT STYLES ================= */
-      .pdf-landscape-mode h1, 
-      .pdf-landscape-mode h2, 
-      .pdf-landscape-mode h3, 
-      .pdf-landscape-mode p, 
-      .pdf-landscape-mode div, 
-      .pdf-landscape-mode td, 
-      .pdf-landscape-mode th {
-          color: #000000 !important;
-          border-color: #000000 !important;
-          background-color: #ffffff !important;
-          text-shadow: none !important;
-          box-shadow: none !important;
-      }
-      
-      .pdf-landscape-mode th {
-          border-bottom: 2px solid #000000 !important;
-          border-top: 2px solid #000000 !important;
-          background-color: #f8fafc !important; /* මුද්‍රණයේදී පැහැදිලි වීමට */
-      }
-      
-      .pdf-landscape-mode .pdf-header {
-          border-bottom: 3px double #000000 !important;
-      }
-      
+      /* PDF එකෙත් පාටවල් එලෙසම තබා ගැනීමට පැරණි !important සුදු/කළු රීති ඉවත් කර ඇත */
       .pdf-landscape-mode {
-          font-size: 11px !important;
-          line-height: 1.2 !important;
-          padding: 10px !important;
+          font-size: 12px !important;
+          padding: 15px !important;
+          background-color: #ffffff !important;
       }
       
-      .pdf-landscape-mode h1 { font-size: 24px !important; }
+      .pdf-landscape-mode .no-print {
+          display: none !important;
+      }
 
-      /* Landscape එකේදී වගු දෙක දෙපැත්තට (Side-by-Side) ලස්සනට තැබීම */
+      /* Landscape එකේදී වගු දෙක සහ කාඩ් දෙපැත්තට ලස්සනට තැබීම */
       .pdf-landscape-mode #summary-grid {
           display: grid !important;
           grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
@@ -70,12 +49,6 @@
           display: grid !important;
           grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
           gap: 20px !important;
-      }
-      
-      .pdf-landscape-mode .summary-box {
-          border: 1px solid #000000 !important;
-          padding: 12px !important;
-          border-radius: 8px !important;
       }
       
       .pdf-landscape-mode tr {
@@ -91,7 +64,6 @@
 </head>
 <body class="bg-gray-100 min-h-screen pb-12 sinhala-font text-gray-800 relative">
 
-    <!-- Loading Spinner -->
     <div id="loading-spinner" class="fixed inset-0 loader-overlay z-50 flex flex-col items-center justify-center hidden">
         <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-indigo-600 mb-2"></div>
         <p class="text-sm font-bold text-indigo-900">දත්ත යාවත්කාලීන වෙමින් පවතී...</p>
@@ -99,36 +71,33 @@
 
     <div class="max-w-7xl mx-auto px-2 sm:px-4 py-4 sm:py-8">
         
-        <!-- බාගත වන ප්‍රදේශය (A4 Landscape සදහා සැකසූ කොටස) -->
         <div id="printable-area" class="bg-white p-4 sm:p-8 rounded-2xl shadow-sm border border-gray-200 mb-6 overflow-hidden transition-all">
             
-            <!-- Header Section -->
-            <div id="pdf-head-section" class="flex flex-col md:flex-row justify-between items-center border-b-2 border-indigo-600 pb-4 mb-6 text-center md:text-left">
-                <div class="mb-4 md:mb-0 w-full md:w-auto">
+            <div id="pdf-head-section" class="flex flex-row justify-between items-center border-b-2 border-indigo-600 pb-4 mb-6 text-left">
+                <div class="w-auto">
                     <h1 class="text-2xl sm:text-3xl font-black text-indigo-900 tracking-wide uppercase">ADM Higher Education Center</h1>
-                    <p class="text-sm text-gray-600 mt-1 flex items-center justify-center md:justify-start gap-2">
-                        <i class="fa-solid fa-location-dot text-indigo-500 no-print-icon"></i> සිසිර ඉන්ධන පිරවුම්හල අසල, නාරම්මල.
+                    <p class="text-sm text-gray-600 mt-1 flex items-center justify-start gap-2">
+                        <i class="fa-solid fa-location-dot text-indigo-500"></i> සිසිර ඉන්ධන පිරවුම්හල අසල, නාරම්මල.
                     </p>
-                    <p class="text-sm text-gray-600 flex items-center justify-center md:justify-start gap-2">
-                        <i class="fa-solid fa-phone text-indigo-500 no-print-icon"></i> 0710658051
+                    <p class="text-sm text-gray-600 flex items-center justify-start gap-2">
+                        <i class="fa-solid fa-phone text-indigo-500"></i> 0710658051
                     </p>
                 </div>
-                <div class="text-center md:text-right w-full md:w-auto">
+                <div class="text-right w-auto">
                     <div id="pdf-title-badge" class="bg-indigo-50 text-indigo-800 px-4 py-2 rounded-xl font-bold inline-block border border-indigo-100 text-sm">
-                        මාසික ආදායම් හා වියදම් ගිණුම් වාර්තාව
+                        **මාසික ආදායම් හා වියදම් ගිණුම් වාර්තාව**
                     </div>
                     <p class="text-xs text-gray-500 mt-2" id="report-generated-time"></p>
                 </div>
             </div>
 
-            <!-- Summary Grid (කාඩ් පත තුන) -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6" id="summary-grid">
                 <div id="inc-card" class="bg-emerald-50 border border-emerald-100 p-4 rounded-xl flex items-center justify-between summary-box">
                     <div>
                         <p class="text-xs sm:text-sm text-emerald-700 font-bold uppercase">මුළු ආදායම (Income)</p>
                         <h3 class="text-xl sm:text-2xl font-bold text-emerald-900 mt-1">රු. <span id="total-income">0.00</span></h3>
                     </div>
-                    <div class="bg-emerald-500 text-white p-2.5 rounded-lg shadow-sm no-print-icon">
+                    <div class="bg-emerald-500 text-white p-2.5 rounded-lg shadow-sm">
                         <i class="fa-solid fa-wallet text-lg"></i>
                     </div>
                 </div>
@@ -137,7 +106,7 @@
                         <p class="text-xs sm:text-sm text-rose-700 font-bold uppercase">මුළු වියදම (Expense)</p>
                         <h3 class="text-xl sm:text-2xl font-bold text-rose-900 mt-1">රු. <span id="total-expense">0.00</span></h3>
                     </div>
-                    <div class="bg-rose-500 text-white p-2.5 rounded-lg shadow-sm no-print-icon">
+                    <div class="bg-rose-500 text-white p-2.5 rounded-lg shadow-sm">
                         <i class="fa-solid fa-credit-card text-lg"></i>
                     </div>
                 </div>
@@ -146,13 +115,12 @@
                         <p class="text-xs sm:text-sm text-indigo-700 font-bold uppercase">ශුද්ධ ශේෂය (Balance)</p>
                         <h3 class="text-xl sm:text-2xl font-bold text-indigo-900 mt-1">රු. <span id="net-balance">0.00</span></h3>
                     </div>
-                    <div class="bg-indigo-500 text-white p-2.5 rounded-lg shadow-sm no-print-icon" id="balance-icon-bg">
+                    <div class="bg-indigo-500 text-white p-2.5 rounded-lg shadow-sm" id="balance-icon-bg">
                         <i class="fa-solid fa-scale-balanced text-lg"></i>
                     </div>
                 </div>
             </div>
 
-            <!-- ෆිල්ටර් සහ ඩවුන්ලෝඩ් බටන් (PDF එකට ප්‍රින්ට් වෙන්නේ නැත) -->
             <div class="flex flex-col sm:flex-row justify-between items-center gap-3 mb-6 no-print">
                 <div class="flex items-center gap-2 w-full sm:w-auto">
                     <label for="month-filter" class="text-sm font-bold text-gray-700 whitespace-nowrap">මාසය තෝරන්න:</label>
@@ -163,13 +131,11 @@
                 </button>
             </div>
 
-            <!-- ආදායම් සහ වියදම් වගු (Tables Grid) -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8" id="tables-grid">
                 
-                <!-- Income Table -->
                 <div id="inc-table-box" class="border border-gray-200 rounded-xl overflow-hidden shadow-sm h-fit">
                     <div class="bg-emerald-600 text-white p-3 font-bold flex items-center gap-2 text-sm table-header">
-                        <i class="fa-solid fa-arrow-trend-up no-print-icon"></i> ආදායම් විස්තර (Income Table)
+                        <i class="fa-solid fa-arrow-trend-up"></i> ආදායම් විස්තර (Income Table)
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse bg-white min-w-[300px]">
@@ -190,10 +156,9 @@
                     </div>
                 </div>
 
-                <!-- Expense Table -->
                 <div id="exp-table-box" class="border border-gray-200 rounded-xl overflow-hidden shadow-sm h-fit">
                     <div class="bg-rose-600 text-white p-3 font-bold flex items-center gap-2 text-sm table-header">
-                        <i class="fa-solid fa-arrow-trend-down no-print-icon"></i> වියදම් විස්තර (Expense Table)
+                        <i class="fa-solid fa-arrow-trend-down"></i> වියදම් විස්තර (Expense Table)
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse bg-white min-w-[300px]">
@@ -216,7 +181,6 @@
 
             </div>
 
-            <!-- අත්සන් සහ මුද්‍රාව -->
             <div class="mt-12 border-t border-gray-200 pt-6 flex justify-between items-end px-4 gap-4 text-center">
                 <div class="flex-1">
                     <div class="w-full max-w-[180px] border-b border-gray-400 h-8 mx-auto mb-1"></div>
@@ -240,7 +204,6 @@
 
         </div>
 
-        <!-- නව ගනුදෙනු ඇතුලත් කිරීමේ Form එක -->
         <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-gray-200 no-print">
             <h2 class="text-lg sm:text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
                 <i class="fa-solid fa-plus-circle text-indigo-600"></i> නව ගනුදෙනුවක් ඇතුලත් කරන්න
@@ -276,7 +239,6 @@
     </div>
 
     <script>
-        // ඔයාගේ නිවැරදි Google Apps Script URL එක මෙතනට දාන්න
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyB2yBSKN2VEU1PXQnCi_SUnpYxVzezbUe5iCbtgFleM7BaFUnezfrKZr1eidJdATQF/exec";
 
         let transactions = [];
@@ -290,7 +252,6 @@
             }
         }
 
-        // [SILENT AUTO-UPDATE SYSTEM]
         async function loadTransactions(isSilent = false) {
             if (!isSilent) showLoading(true);
             try {
@@ -431,7 +392,6 @@
             }
         }
 
-        // [SMART AUTO REFRESH TRIGGERS]
         document.addEventListener("visibilitychange", () => {
             if (document.visibilityState === "visible") {
                 loadTransactions(true); 
@@ -444,27 +404,29 @@
             }
         }, 30000); 
 
-        // [A4 LANDSCAPE PDF CONFIGURATION]
+        // [A4 LANDSCAPE PDF CONFIGURATION - FIXED]
         function downloadPDF() {
             const element = document.getElementById('printable-area');
             const selectedMonth = document.getElementById('month-filter').value || 'report';
             
+            // මුද්‍රණයට පෙර හැඩතල ගැන්වීම් එක් කිරීම
             element.classList.add('pdf-landscape-mode');
             
-            // Delete බටන් ටික මුද්‍රණයෙන් ඉවත් කිරීම
+            // Delete බටන් තීරුව මුද්‍රණයෙන් තාවකාලිකව සැඟවීම
             const actionColumns = document.querySelectorAll('.action-column');
             actionColumns.forEach(col => col.style.display = 'none');
 
             const opt = {
-                margin:       [10, 12, 10, 12],
+                margin:       [8, 8, 8, 8],
                 filename:     `ADM_Landscape_Report_${selectedMonth}.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { 
                     scale: 2, 
                     useCORS: true,
-                    windowWidth: 1120 // Landscape A4 එකට හරියටම ගැලපෙන කැනවස් පළල
+                    logging: false,
+                    windowWidth: 1280 // HTML මූලද්‍රව්‍ය නිවැරදිව පිරිමැසීමට සකසන ලදී
                 },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' } // Landscape එකට මෙතනින් හැරෙව්වා
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
             };
 
             showLoading(true);
@@ -482,7 +444,6 @@
             });
         }
 
-        // ඇප් එක පටන් ගනිද්දී දත්ත ලබාගැනීම
         loadTransactions();
     </script>
 </body>
