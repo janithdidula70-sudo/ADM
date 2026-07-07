@@ -23,10 +23,10 @@
       tr, td, th, p, h1, h2, h3 {
           font-variant-ligatures: no-common-ligatures;
           -webkit-font-smoothing: antialiased;
+          font-variant-numeric: tabular-nums;
       }
 
       /* ================= LANDSCAPE PDF PRINT STYLES ================= */
-      /* PDF එකෙත් පාටවල් එලෙසම තබා ගැනීමට පැරණි !important සුදු/කළු රීති ඉවත් කර ඇත */
       .pdf-landscape-mode {
           font-size: 12px !important;
           padding: 15px !important;
@@ -37,7 +37,6 @@
           display: none !important;
       }
 
-      /* Landscape එකේදී වගු දෙක සහ කාඩ් දෙපැත්තට ලස්සනට තැබීම */
       .pdf-landscape-mode #summary-grid {
           display: grid !important;
           grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
@@ -64,6 +63,7 @@
 </head>
 <body class="bg-gray-100 min-h-screen pb-12 sinhala-font text-gray-800 relative">
 
+    <!-- Loading Spinner -->
     <div id="loading-spinner" class="fixed inset-0 loader-overlay z-50 flex flex-col items-center justify-center hidden">
         <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-indigo-600 mb-2"></div>
         <p class="text-sm font-bold text-indigo-900">දත්ත යාවත්කාලීන වෙමින් පවතී...</p>
@@ -71,8 +71,10 @@
 
     <div class="max-w-7xl mx-auto px-2 sm:px-4 py-4 sm:py-8">
         
+        <!-- බාගත වන ප්‍රදේශය (A4 Landscape සදහා සැකසූ කොටස) -->
         <div id="printable-area" class="bg-white p-4 sm:p-8 rounded-2xl shadow-sm border border-gray-200 mb-6 overflow-hidden transition-all">
             
+            <!-- Header Section -->
             <div id="pdf-head-section" class="flex flex-row justify-between items-center border-b-2 border-indigo-600 pb-4 mb-6 text-left">
                 <div class="w-auto">
                     <h1 class="text-2xl sm:text-3xl font-black text-indigo-900 tracking-wide uppercase">ADM Higher Education Center</h1>
@@ -85,12 +87,13 @@
                 </div>
                 <div class="text-right w-auto">
                     <div id="pdf-title-badge" class="bg-indigo-50 text-indigo-800 px-4 py-2 rounded-xl font-bold inline-block border border-indigo-100 text-sm">
-                        **මාසික ආදායම් හා වියදම් ගිණුම් වාර්තාව**
+                        මාසික ආදායම් හා වියදම් ගිණුම් වාර්තාව
                     </div>
                     <p class="text-xs text-gray-500 mt-2" id="report-generated-time"></p>
                 </div>
             </div>
 
+            <!-- Summary Grid (කාඩ් පත තුන) -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6" id="summary-grid">
                 <div id="inc-card" class="bg-emerald-50 border border-emerald-100 p-4 rounded-xl flex items-center justify-between summary-box">
                     <div>
@@ -121,6 +124,7 @@
                 </div>
             </div>
 
+            <!-- ෆිල්ටර් සහ ඩවුන්ලෝඩ් බටන් (PDF එකට ප්‍රින්ට් වෙන්නේ නැත) -->
             <div class="flex flex-col sm:flex-row justify-between items-center gap-3 mb-6 no-print">
                 <div class="flex items-center gap-2 w-full sm:w-auto">
                     <label for="month-filter" class="text-sm font-bold text-gray-700 whitespace-nowrap">මාසය තෝරන්න:</label>
@@ -131,8 +135,10 @@
                 </button>
             </div>
 
+            <!-- ආදායම් සහ වියදම් වගු (Tables Grid) -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8" id="tables-grid">
                 
+                <!-- Income Table -->
                 <div id="inc-table-box" class="border border-gray-200 rounded-xl overflow-hidden shadow-sm h-fit">
                     <div class="bg-emerald-600 text-white p-3 font-bold flex items-center gap-2 text-sm table-header">
                         <i class="fa-solid fa-arrow-trend-up"></i> ආදායම් විස්තර (Income Table)
@@ -156,6 +162,7 @@
                     </div>
                 </div>
 
+                <!-- Expense Table -->
                 <div id="exp-table-box" class="border border-gray-200 rounded-xl overflow-hidden shadow-sm h-fit">
                     <div class="bg-rose-600 text-white p-3 font-bold flex items-center gap-2 text-sm table-header">
                         <i class="fa-solid fa-arrow-trend-down"></i> වියදම් විස්තර (Expense Table)
@@ -181,6 +188,7 @@
 
             </div>
 
+            <!-- අත්සන් සහ මුද්‍රාව -->
             <div class="mt-12 border-t border-gray-200 pt-6 flex justify-between items-end px-4 gap-4 text-center">
                 <div class="flex-1">
                     <div class="w-full max-w-[180px] border-b border-gray-400 h-8 mx-auto mb-1"></div>
@@ -204,6 +212,7 @@
 
         </div>
 
+        <!-- නව ගනුදෙනු ඇතුලත් කිරීමේ Form එක -->
         <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-gray-200 no-print">
             <h2 class="text-lg sm:text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
                 <i class="fa-solid fa-plus-circle text-indigo-600"></i> නව ගනුදෙනුවක් ඇතුලත් කරන්න
@@ -239,6 +248,7 @@
     </div>
 
     <script>
+        // ඔයාගේ Apps Script Web App URL එක මෙතනට දාන්න
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyB2yBSKN2VEU1PXQnCi_SUnpYxVzezbUe5iCbtgFleM7BaFUnezfrKZr1eidJdATQF/exec";
 
         let transactions = [];
@@ -252,11 +262,27 @@
             }
         }
 
+        // [DATE FORMAT FIXED FUNCTION]
         async function loadTransactions(isSilent = false) {
             if (!isSilent) showLoading(true);
             try {
                 const response = await fetch(`${SCRIPT_URL}?ts=${Date.now()}`);
-                transactions = await response.json();
+                let fetchedData = await response.json();
+                
+                // Google Sheet එකෙන් එන ඕනෑම දිනයක් YYYY-MM-DD ආකෘතියට සකසන කොටස
+                transactions = fetchedData.map(tx => {
+                    if (tx.date) {
+                        const d = new Date(tx.date);
+                        if (!isNaN(d.getTime())) {
+                            const year = d.getFullYear();
+                            const month = String(d.getMonth() + 1).padStart(2, '0');
+                            const day = String(d.getDate()).padStart(2, '0');
+                            tx.date = `${year}-${month}-${day}`; 
+                        }
+                    }
+                    return tx;
+                });
+
                 render();
             } catch (error) {
                 console.error("Data loading error: ", error);
@@ -365,11 +391,11 @@
                     </td>
                 `;
 
-                if(tx.type === 'income') {
+                if(tx.type === 'income' || tx.type === 'income') {
                     totalIncome += tx.amount;
                     incContainer.appendChild(row);
                     incCount++;
-                } else {
+                } else if(tx.type === 'expense' || tx.type === 'expense') {
                     totalExpense += tx.amount;
                     expContainer.appendChild(row);
                     expCount++;
@@ -404,15 +430,12 @@
             }
         }, 30000); 
 
-        // [A4 LANDSCAPE PDF CONFIGURATION - FIXED]
         function downloadPDF() {
             const element = document.getElementById('printable-area');
             const selectedMonth = document.getElementById('month-filter').value || 'report';
             
-            // මුද්‍රණයට පෙර හැඩතල ගැන්වීම් එක් කිරීම
             element.classList.add('pdf-landscape-mode');
             
-            // Delete බටන් තීරුව මුද්‍රණයෙන් තාවකාලිකව සැඟවීම
             const actionColumns = document.querySelectorAll('.action-column');
             actionColumns.forEach(col => col.style.display = 'none');
 
@@ -424,7 +447,7 @@
                     scale: 2, 
                     useCORS: true,
                     logging: false,
-                    windowWidth: 1280 // HTML මූලද්‍රව්‍ය නිවැරදිව පිරිමැසීමට සකසන ලදී
+                    windowWidth: 1280 
                 },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
             };
