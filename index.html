@@ -20,13 +20,12 @@
           font-family: 'Noto Sans Sinhala', sans-serif;
       }
       
-      /* PDF එක ඇතුළත සිංහල අකුරු නිවැරදිව පෙන්වීමට සහ කැඩීම වැළැක්වීමට */
       tr, td, th, p, h1, h2, h3 {
           font-variant-ligatures: no-common-ligatures;
           -webkit-font-smoothing: antialiased;
       }
 
-      /* PDF මුද්‍රණය සඳහා විශේෂ කළු සහ සුදු (Black & White) ස්ටයිල්ස් */
+      /* PDF මුද්‍රණය සඳහා විශේෂ කළු සහ සුදු ස්ටයිල්ස් */
       .pdf-bw-mode h1, .pdf-bw-mode h2, .pdf-bw-mode h3, .pdf-bw-mode p, .pdf-bw-mode div, .pdf-bw-mode td, .pdf-bw-mode th {
           color: #000000 !important;
           border-color: #000000 !important;
@@ -44,7 +43,6 @@
       .pdf-bw-mode .pdf-header {
           border-bottom: 3px double #000000 !important;
       }
-      /* PDF එක තනි පිටුවකට සීමා කිරීම සඳහා අකුරු සහ පරතරයන් කුඩා කිරීම */
       .pdf-bw-mode {
           font-size: 11px !important;
           line-height: 1.2 !important;
@@ -54,13 +52,24 @@
           border: 1px solid #000000 !important;
           padding: 8px !important;
       }
+      /* Loading Screen එක සඳහා */
+      .loader-overlay {
+          background: rgba(255, 255, 255, 0.8);
+          backdrop-filter: blur(2px);
+      }
   </style>
 </head>
-<body class="bg-gray-100 min-h-screen pb-12 sinhala-font text-gray-800">
+<body class="bg-gray-100 min-h-screen pb-12 sinhala-font text-gray-800 relative">
+
+    <!-- Loading Spinner -->
+    <div id="loading-spinner" class="fixed inset-0 loader-overlay z-50 flex flex-col items-center justify-center hidden">
+        <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-indigo-600 mb-2"></div>
+        <p class="text-sm font-bold text-indigo-900">දත්ත යාවත්කාලීන වෙමින් පවතී...</p>
+    </div>
 
     <div class="max-w-6xl mx-auto px-2 sm:px-4 py-4 sm:py-8">
         
-        <div id="printable-area" class="bg-white p-4 sm:p-8 rounded-2xl shadow-sm border border-gray-200 mb-6 overflow-hidden">
+        <div id="printable-area" class="bg-white p-4 sm:p-8 rounded-2xl shadow-sm border border-gray-200 mb-6 overflow-hidden transition-all">
             
             <div id="pdf-head-section" class="flex flex-col md:flex-row justify-between items-center border-b-2 border-indigo-600 pb-4 mb-6 text-center md:text-left">
                 <div class="mb-4 md:mb-0 w-full md:w-auto">
@@ -80,7 +89,7 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6" id="summary-grid">
                 <div id="inc-card" class="bg-emerald-50 border border-emerald-100 p-4 rounded-xl flex items-center justify-between summary-box">
                     <div>
                         <p class="text-xs sm:text-sm text-emerald-700 font-bold uppercase">මුළු ආදායම (Total Income)</p>
@@ -120,7 +129,7 @@
                 </button>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8" id="tables-grid">
                 
                 <div id="inc-table-box" class="border border-gray-200 rounded-xl overflow-hidden shadow-sm">
                     <div class="bg-emerald-600 text-white p-3 font-bold flex items-center gap-2 text-sm table-header">
@@ -137,7 +146,7 @@
                                 </tr>
                             </thead>
                             <tbody id="income-rows" class="text-xs sm:text-sm text-gray-600 divide-y divide-gray-100">
-                                </tbody>
+                            </tbody>
                         </table>
                     </div>
                     <div id="income-empty" class="text-center py-4 text-gray-400 text-xs hidden">
@@ -160,7 +169,7 @@
                                 </tr>
                             </thead>
                             <tbody id="expense-rows" class="text-xs sm:text-sm text-gray-600 divide-y divide-gray-100">
-                                </tbody>
+                            </tbody>
                         </table>
                     </div>
                     <div id="expense-empty" class="text-center py-4 text-gray-400 text-xs hidden">
@@ -216,7 +225,7 @@
                     <label class="block text-xs font-bold text-gray-600 uppercase mb-1">මුදල (රු.)</label>
                     <div class="flex gap-2">
                         <input type="number" id="tx-amount" min="0.01" step="0.01" placeholder="0.00" required class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-gray-50">
-                        <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 rounded-lg shadow-sm transition-all text-xs sm:text-sm whitespace-nowrap cursor-pointer">
+                        <button type="submit" id="submit-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 rounded-lg shadow-sm transition-all text-xs sm:text-sm whitespace-nowrap cursor-pointer">
                             ඇතුලත් කරන්න
                         </button>
                     </div>
@@ -227,13 +236,37 @@
     </div>
 
     <script>
-        // Data Store (LocalStorage)
-        let transactions = JSON.parse(localStorage.getItem('adm_transactions_v2')) || [
-            { id: 1, date: '2026-07-01', desc: 'පන්ති ගාස්තු ආදායම', type: 'income', amount: 45000 },
-            { id: 2, date: '2026-07-02', desc: 'දැන්වීම් මුද්‍රණ වියදම්', type: 'expense', amount: 12000 }
-        ];
+        // Google Web App URL එක සාර්ථකව සම්බන්ධ කර ඇත
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyB2yBSKN2VEU1PXQnCi_SUnpYxVzezbUe5iCbtgFleM7BaFUnezfrKZr1eidJdATQF/exec";
 
-        // Setup dates and current view
+        let transactions = [];
+
+        // Loading Screen පාලනය
+        function showLoading(show) {
+            const spinner = document.getElementById('loading-spinner');
+            if (show) {
+                spinner.classList.remove('hidden');
+            } else {
+                spinner.classList.add('hidden');
+            }
+        }
+
+        // Google Sheet එකෙන් ඩේටා කියවීම (Fetch Data)
+        async function loadTransactions() {
+            showLoading(true);
+            try {
+                const response = await fetch(SCRIPT_URL);
+                transactions = await response.json();
+                render();
+            } catch (error) {
+                console.error("Data loading error: ", error);
+                alert("Google Sheet එකෙන් දත්ත ලබාගැනීමට නොහැකි වුණා. කරුණාකර ඔබ Google Script එක නිවැරදිව Deploy කර ඇත්දැයි පරීක්ෂා කරන්න.");
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // මුලින්ම දිනයන් සහ මූලික සැකසුම් හැදීම
         const now = new Date();
         const currentYearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
         document.getElementById('month-filter').value = currentYearMonth;
@@ -243,36 +276,61 @@
         const form = document.getElementById('transaction-form');
         const monthFilter = document.getElementById('month-filter');
 
-        form.addEventListener('submit', (e) => {
+        // අලුත් දත්තයක් ඇතුලත් කිරීම (Add Transaction)
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
+            
             const newTx = {
-                id: Date.now(),
+                action: 'add',
+                id: Date.now().toString(),
                 date: document.getElementById('tx-date').value,
                 desc: document.getElementById('tx-desc').value,
                 type: document.getElementById('tx-type').value,
                 amount: parseFloat(document.getElementById('tx-amount').value)
             };
-            transactions.push(newTx);
-            saveAndRender();
-            
-            document.getElementById('tx-desc').value = '';
-            document.getElementById('tx-amount').value = '';
+
+            showLoading(true);
+            try {
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(newTx),
+                    headers: { 'Content-Type': 'text/plain' }
+                });
+                
+                document.getElementById('tx-desc').value = '';
+                document.getElementById('tx-amount').value = '';
+                
+                // සාර්ථකව ඇතුලත් වූ පසු නැවත Google Sheet එකෙන් ඩේටා refresh කිරීම
+                await loadTransactions();
+            } catch (error) {
+                console.error("Error adding row: ", error);
+                alert("දත්ත ඇතුලත් කිරීම අසාර්ථකයි!");
+                showLoading(false);
+            }
         });
 
         monthFilter.addEventListener('change', render);
 
-        function saveAndRender() {
-            localStorage.setItem('adm_transactions_v2', JSON.stringify(transactions));
-            render();
-        }
-
-        function deleteTransaction(id) {
+        // දත්තයක් මකා දැමීම (Delete Transaction)
+        async function deleteTransaction(id) {
             if(confirm("මෙම ගනුදෙනුව ඉවත් කිරීමට අවශ්‍යද?")) {
-                transactions = transactions.filter(tx => tx.id !== id);
-                saveAndRender();
+                showLoading(true);
+                try {
+                    await fetch(SCRIPT_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({ action: 'delete', id: id.toString() }),
+                        headers: { 'Content-Type': 'text/plain' }
+                    });
+                    await loadTransactions();
+                } catch (error) {
+                    console.error("Error deleting row: ", error);
+                    alert("දත්ත ඉවත් කිරීම අසාර්ථකයි!");
+                    showLoading(false);
+                }
             }
         }
 
+        // Interface එකට Data රෙන්ඩර් කිරීම
         function render() {
             const selectedMonth = monthFilter.value;
             const incContainer = document.getElementById('income-rows');
@@ -284,7 +342,7 @@
             let totalIncome = 0;
             let totalExpense = 0;
 
-            const filtered = transactions.filter(tx => tx.date.startsWith(selectedMonth));
+            const filtered = transactions.filter(tx => tx.date && tx.date.startsWith(selectedMonth));
             filtered.sort((a,b) => new Date(a.date) - new Date(b.date));
 
             let incCount = 0;
@@ -300,7 +358,7 @@
                         ${tx.amount.toFixed(2)}
                     </td>
                     <td class="p-2.5 text-center action-column">
-                        <button onclick="deleteTransaction(${tx.id})" class="text-rose-500 hover:text-rose-700 p-1 cursor-pointer transition-colors" title="මකන්න">
+                        <button onclick="deleteTransaction('${tx.id}')" class="text-rose-500 hover:text-rose-700 p-1 cursor-pointer transition-colors" title="මකන්න">
                             <i class="fa-solid fa-trash-can"></i>
                         </button>
                     </td>
@@ -333,48 +391,62 @@
             }
         }
 
-        // PDF Exporter Function (B&W + Single Page Mode)
+        // PDF Exporter Function (B&W + Single Page + Mobile Layout Fix)
         function downloadPDF() {
             const element = document.getElementById('printable-area');
             const selectedMonth = monthFilter.value;
             
-            // 1. PDF එක සෑදීමට පෙර කළු සුදු මෝස්තර සහ තනි පිටුවකට සරිලන පරිදි වෙනස්කම් සිදුකිරීම
+            // 📱 Mobile Fix: PDF එක හදන වෙලාවට විතරක් layout එක බලෙන් Desktop විදිහට සකස් කිරීම
+            const originalWidth = element.style.width;
+            const originalMaxWidth = element.style.maxWidth;
+            element.style.width = "1024px"; 
+            element.style.maxWidth = "1024px";
+
             element.classList.add('pdf-bw-mode');
             
-            // අනවශ්‍ය අයිකන සහ බොත්තම් තාවකාලිකව සැඟවීම සඳහා CSS එකක් එක් කිරීම
             const style = document.createElement('style');
             style.id = "pdf-temp-style";
             style.innerHTML = `
                 .no-print { display: none !important; }
                 .action-column { display: none !important; }
                 .no-print-icon { display: none !important; }
-                #printable-area { border: none !important; box-shadow: none !important; padding: 0 !important; margin: 0 !important; }
+                #printable-area { border: none !important; box-shadow: none !important; padding: 10px !important; margin: 0 !important; }
+                #summary-grid { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 12px !important; }
+                #tables-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 16px !important; }
             `;
             document.head.appendChild(style);
 
-            // 2. html2pdf සැකසුම් (තනි පිටුවකට ගැලපෙන ලෙස Page break පාලනය කිරීම)
             const opt = {
-                margin:       [0.3, 0.3, 0.3, 0.3], // පිටුවේ මායිම් අවම කිරීම
+                margin:       [0.2, 0.3, 0.2, 0.3],
                 filename:     `ADM_Report_BW_${selectedMonth}.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true, letterRendering: true },
+                html2canvas:  { 
+                    scale: 2, 
+                    useCORS: true, 
+                    letterRendering: true,
+                    windowWidth: 1200
+                },
                 jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' },
-                pagebreak:    { mode: ['avoid-all'] } // දත්ත මැදින් පිටු කැඩී යාම වැළැක්වීම (තනි පිටුවක් සඳහා)
+                pagebreak:    { mode: ['avoid-all'] }
             };
 
-            // 3. PDF එක සාදා නිම වූ පසු නැවත සාමාන්‍ය වර්ණ සහිත Dashboard එක පෙන්වීම
             html2pdf().set(opt).from(element).save().then(() => {
+                // PDF එක හැදුණු පසු නැවත සාමාන්‍ය තත්ත්වයට පත් කිරීම
                 element.classList.remove('pdf-bw-mode');
+                element.style.width = originalWidth;
+                element.style.maxWidth = originalMaxWidth;
                 document.getElementById('pdf-temp-style').remove();
             }).catch(err => {
                 element.classList.remove('pdf-bw-mode');
+                element.style.width = originalWidth;
+                element.style.maxWidth = originalMaxWidth;
                 if(document.getElementById('pdf-temp-style')) document.getElementById('pdf-temp-style').remove();
                 console.error(err);
             });
         }
 
-        // Initial setup execution
-        render();
+        // මුලින්ම පිටුව Load වෙද්දී Sheet එකේ තියෙන දත්ත කියවීම සිදු කරයි
+        loadTransactions();
     </script>
 </body>
 </html>
