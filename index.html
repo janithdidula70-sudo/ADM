@@ -2,7 +2,7 @@
 <html lang="si">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover" />
   <title>ADM Class Manager</title>
 
   <link rel="manifest" href="manifest.json" />
@@ -16,14 +16,46 @@
   <style>
       @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;700;900&display=swap');
       
+      html, body {
+          overscroll-behavior-y: contain;
+      }
+
       body, .sinhala-font {
           font-family: 'Noto Sans Sinhala', sans-serif;
+          padding-bottom: calc(3rem + env(safe-area-inset-bottom));
+          padding-top: env(safe-area-inset-top);
       }
       
       tr, td, th, p, h1, h2, h3 {
           font-variant-ligatures: no-common-ligatures;
           -webkit-font-smoothing: antialiased;
           font-variant-numeric: tabular-nums;
+      }
+
+      /* ================= MOBILE UX FIXES ================= */
+      /* iOS Safari auto-zooms inputs whose font-size is below 16px on focus.
+         Force 16px on phones so tapping a field doesn't zoom the page. */
+      @media (max-width: 640px) {
+          input, select, textarea, button {
+              font-size: 16px !important;
+          }
+          #submit-btn {
+              min-height: 44px;
+          }
+          .action-column button {
+              min-width: 40px;
+              min-height: 40px;
+          }
+      }
+
+      /* Bigger, easier-to-tap delete buttons on any screen */
+      .action-column button {
+          padding: 6px 10px;
+      }
+
+      /* Keep the "add transaction" card reachable above the mobile keyboard */
+      #transaction-form input, #transaction-form select {
+          min-height: 42px;
       }
 
       /* ================= PORTRAIT PDF PRINT STYLES ================= */
@@ -140,8 +172,8 @@
                     <label for="month-filter" class="text-xs font-bold text-gray-700 whitespace-nowrap">මාසය තෝරන්න:</label>
                     <input type="month" id="month-filter" class="w-full sm:w-auto border border-gray-300 rounded-lg p-1.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-xs bg-white">
                 </div>
-                <button onclick="downloadPDF()" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2 rounded-lg flex items-center justify-center gap-2 shadow-md transition-all cursor-pointer text-xs">
-                    <i class="fa-solid fa-file-pdf"></i> A4 Portrait PDF එක බාගන්න
+                <button onclick="downloadPDF()" id="pdf-btn" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 shadow-md transition-all cursor-pointer text-xs min-h-[44px]">
+                    <i class="fa-solid fa-file-pdf"></i> තනි පිටුවක PDF එක බාගන්න
                 </button>
             </div>
 
@@ -241,7 +273,7 @@
                 <div>
                     <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">මුදල (රු.)</label>
                     <div class="flex gap-2">
-                        <input type="number" id="tx-amount" min="0.01" step="0.01" placeholder="0.00" required class="w-full border border-gray-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-gray-50">
+                        <input type="number" inputmode="decimal" id="tx-amount" min="0.01" step="0.01" placeholder="0.00" required class="w-full border border-gray-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-gray-50">
                         <button type="submit" id="submit-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-3 rounded-lg shadow-sm transition-all text-xs whitespace-nowrap cursor-pointer">
                             ඇතුලත් කරන්න
                         </button>
@@ -429,43 +461,58 @@
             }
         }, 30000); 
 
-        // [PORTRAIT PDF DOWNLOAD FUNCTION]
-        function downloadPDF() {
+        // [SINGLE-PAGE PORTRAIT PDF DOWNLOAD]
+        // Instead of letting html2pdf auto-paginate onto multiple A4 pages,
+        // we render the whole report to one canvas and build a PDF page whose
+        // HEIGHT matches the content exactly (width stays fixed at A4's 210mm).
+        // That guarantees everything — however long the tables are — lands on
+        // a single, uncut page.
+        async function downloadPDF() {
             const element = document.getElementById('printable-area');
             const selectedMonth = document.getElementById('month-filter').value || 'report';
-            
-            // Portrait පෙනුම සක්‍රිය කිරීම
+            const pdfBtn = document.getElementById('pdf-btn');
+
             element.classList.add('pdf-portrait-mode');
-            
             const actionColumns = document.querySelectorAll('.action-column');
             actionColumns.forEach(col => col.style.display = 'none');
-
-            const opt = {
-                margin:       [10, 10, 10, 10], // නිවැරදි Margin පාලනය
-                filename:     `ADM_Portrait_Report_${selectedMonth}.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { 
-                    scale: 2, 
-                    useCORS: true,
-                    logging: false,
-                    windowWidth: 794 // A4 Portrait පික්සල් අගයට ප්‍රශස්ත කිරීම
-                },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' } // Portrait කිරීම
-            };
+            if (pdfBtn) pdfBtn.disabled = true;
 
             showLoading(true);
 
-            html2pdf().set(opt).from(element).save().then(() => {
-                element.classList.remove('pdf-portrait-mode');
-                actionColumns.forEach(col => col.style.display = '');
-                showLoading(false);
-            }).catch(err => {
+            // let the layout settle before we snapshot it
+            await new Promise(resolve => setTimeout(resolve, 60));
+
+            try {
+                const canvas = await html2canvas(element, {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    windowWidth: 794 // A4 portrait width in px @ 96dpi
+                });
+
+                const imgData = canvas.toDataURL('image/jpeg', 0.98);
+
+                const pdfWidthMM = 210; // A4 width, fixed
+                const pdfHeightMM = (canvas.height * pdfWidthMM) / canvas.width; // scales to fit ALL content on one page
+
+                const JsPDFClass = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : window.jsPDF;
+                const pdf = new JsPDFClass({
+                    unit: 'mm',
+                    format: [pdfWidthMM, pdfHeightMM],
+                    orientation: 'portrait'
+                });
+
+                pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidthMM, pdfHeightMM);
+                pdf.save(`ADM_Portrait_Report_${selectedMonth}.pdf`);
+            } catch (err) {
                 console.error("PDF error: ", err);
+                alert("PDF සකස් කිරීම අසාර්ථකයි.");
+            } finally {
                 element.classList.remove('pdf-portrait-mode');
                 actionColumns.forEach(col => col.style.display = '');
+                if (pdfBtn) pdfBtn.disabled = false;
                 showLoading(false);
-                alert("PDF සකස් කිරීම අසාර්ථකයි.");
-            });
+            }
         }
 
         loadTransactions();
