@@ -10,7 +10,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <style>
@@ -551,6 +552,13 @@
             await new Promise(resolve => setTimeout(resolve, 80));
 
             try {
+                if (typeof html2canvas === 'undefined') {
+                    throw new Error('html2canvas library load වෙලා නෑ — Internet connection එක check කරලා page එක refresh කරන්න.');
+                }
+                if (!((window.jspdf && window.jspdf.jsPDF) || window.jsPDF)) {
+                    throw new Error('jsPDF library load වෙලා නෑ — Internet connection එක check කරලා page එක refresh කරන්න.');
+                }
+
                 const canvas = await html2canvas(element, {
                     scale: 2,
                     useCORS: true,
