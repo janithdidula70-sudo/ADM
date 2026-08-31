@@ -96,6 +96,22 @@
           padding: 6px 8px !important;
           font-size: 11px !important;
       }
+      /* Force tables to respect the page width exactly — no column should
+         ever need horizontal scrolling to be seen (that's what was causing
+         the amount/action columns to get cut off in exported PDFs). */
+      .pdf-portrait-mode .table-box table {
+          table-layout: fixed !important;
+          width: 100% !important;
+      }
+      .pdf-portrait-mode .table-box .overflow-x-auto {
+          overflow: visible !important;
+      }
+      .pdf-portrait-mode .table-box th:nth-child(1),
+      .pdf-portrait-mode .table-box td:nth-child(1) { width: 22% !important; }
+      .pdf-portrait-mode .table-box th:nth-child(2),
+      .pdf-portrait-mode .table-box td:nth-child(2) { width: 48% !important; word-break: break-word; }
+      .pdf-portrait-mode .table-box th:nth-child(3),
+      .pdf-portrait-mode .table-box td:nth-child(3) { width: 30% !important; }
       
       .pdf-portrait-mode .signature-section {
           margin-top: 30px !important;
@@ -541,9 +557,7 @@
                     scale: 2,
                     useCORS: true,
                     logging: false,
-                    windowWidth: 794, // A4 portrait width in px @ 96dpi
-                    width: element.scrollWidth,
-                    height: element.scrollHeight,
+                    windowWidth: 1000, // extra room beyond the 210mm content so nothing spills past the render window and gets cut off
                     onclone: (clonedDoc) => {
                         try { normalizePdfColors(clonedDoc.body); } catch (e) { /* ignore */ }
                     }
