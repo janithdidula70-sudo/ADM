@@ -96,26 +96,6 @@
           padding: 6px 8px !important;
           font-size: 11px !important;
       }
-
-      /* Desktop style PDF: still A4 portrait width, but income/expense tables
-         sit side-by-side just like they do on a wide desktop screen. */
-      .pdf-portrait-mode.pdf-desktop-mode #tables-grid {
-          display: grid !important;
-          grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-          gap: 10px !important;
-      }
-      .pdf-portrait-mode.pdf-desktop-mode .table-box {
-          margin-bottom: 0 !important;
-      }
-      .pdf-portrait-mode.pdf-desktop-mode th,
-      .pdf-portrait-mode.pdf-desktop-mode td {
-          padding: 4px 5px !important;
-          font-size: 9px !important;
-      }
-      .pdf-portrait-mode.pdf-desktop-mode .table-header {
-          font-size: 10px !important;
-          padding: 6px 8px !important;
-      }
       
       .pdf-portrait-mode .signature-section {
           margin-top: 30px !important;
@@ -529,13 +509,11 @@
             const selectedMonth = document.getElementById('month-filter').value || 'report';
             const pdfBtn = document.getElementById('pdf-btn');
 
-            // Wide screens (desktop/tablet-landscape) get the side-by-side
-            // table layout; phones keep the stacked layout. Page stays A4
-            // portrait width either way.
-            const isDesktop = window.innerWidth >= 1024;
-
+            // Wide-column side-by-side tables looked good on screen but were
+            // prone to overflowing/cutting off in the exported PDF, so the
+            // PDF now always uses the reliable stacked (single-column) layout
+            // regardless of screen width.
             element.classList.add('pdf-portrait-mode');
-            if (isDesktop) element.classList.add('pdf-desktop-mode');
             const actionColumns = document.querySelectorAll('.action-column');
             actionColumns.forEach(col => col.style.display = 'none');
             if (pdfBtn) pdfBtn.disabled = true;
@@ -564,6 +542,8 @@
                     useCORS: true,
                     logging: false,
                     windowWidth: 794, // A4 portrait width in px @ 96dpi
+                    width: element.scrollWidth,
+                    height: element.scrollHeight,
                     onclone: (clonedDoc) => {
                         try { normalizePdfColors(clonedDoc.body); } catch (e) { /* ignore */ }
                     }
@@ -592,7 +572,7 @@
                     alert("PDF සකස් කිරීම අසාර්ථකයි.\n\nDetail: " + detail);
                 }
             } finally {
-                element.classList.remove('pdf-portrait-mode', 'pdf-desktop-mode');
+                element.classList.remove('pdf-portrait-mode');
                 actionColumns.forEach(col => col.style.display = '');
                 if (pdfBtn) pdfBtn.disabled = false;
                 showLoading(false);
