@@ -301,6 +301,12 @@
 
     </div>
 
+    <!-- Hidden, fixed-width render target used only for PDF export. Keeping
+         it fully detached from the responsive max-w-4xl/padding layout above
+         means the PDF is never affected by the current screen width or
+         parent spacing — this is what was causing content to get cut off. -->
+    <div id="pdf-render-slot" style="position:fixed; top:0; left:-10000px; width:780px; z-index:-1;"></div>
+
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyB2yBSKN2VEU1PXQnCi_SUnpYxVzezbUe5iCbtgFleM7BaFUnezfrKZr1eidJdATQF/exec";
 
@@ -521,29 +527,28 @@
         // That guarantees everything — however long the tables are — lands on
         // a single, uncut page.
         async function downloadPDF() {
-            const element = document.getElementById('printable-area');
+            const original = document.getElementById('printable-area');
             const selectedMonth = document.getElementById('month-filter').value || 'report';
             const pdfBtn = document.getElementById('pdf-btn');
+            const slot = document.getElementById('pdf-render-slot');
 
-            // Wide-column side-by-side tables looked good on screen but were
-            // prone to overflowing/cutting off in the exported PDF, so the
-            // PDF now always uses the reliable stacked (single-column) layout
-            // regardless of screen width.
-            element.classList.add('pdf-portrait-mode');
-            const actionColumns = document.querySelectorAll('.action-column');
-            actionColumns.forEach(col => col.style.display = 'none');
             if (pdfBtn) pdfBtn.disabled = true;
-
             showLoading(true);
 
-            // let the layout settle + fonts finish loading before we snapshot it
-            // (slower mobile networks can still be fetching the Sinhala webfont)
-            try {
-                if (document.fonts && document.fonts.ready) {
-                    await Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 1500))]);
-                }
-            } catch (e) { /* ignore font readiness issues */ }
-            await new Promise(resolve => setTimeout(resolve, 80));
+            // Build a fully isolated clone at a fixed pixel width, detached
+            // from the on-screen responsive layout (its paddings/breakpoints
+            // are exactly what was causing content to get cut off in exports).
+            const clone = original.cloneNode(true);
+            clone.classList.add('pdf-portrait-mode');
+            clone.style.width = '780px';
+            clone.style.maxWidth = '780px';
+            clone.style.margin = '0';
+            clone.style.boxSizing = 'border-box';
+            clone.querySelectorAll('.action-column').forEach(el => { el.style.display = 'none'; });
+            clone.querySelectorAll('.no-print').forEach(el => { el.style.display = 'none'; });
+
+            slot.innerHTML = '';
+            slot.appendChild(clone);
 
             try {
                 if (typeof html2canvas === 'undefined') {
@@ -553,11 +558,19 @@
                     throw new Error('jsPDF library load වෙලා නෑ — Internet connection එක check කරලා page එක refresh කරන්න.');
                 }
 
-                const canvas = await html2canvas(element, {
+                // let the clone finish laying out + fonts finish loading
+                // (slower mobile networks can still be fetching the Sinhala webfont)
+                try {
+                    if (document.fonts && document.fonts.ready) {
+                        await Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 1500))]);
+                    }
+                } catch (e) { /* ignore font readiness issues */ }
+                await new Promise(resolve => setTimeout(resolve, 80));
+
+                const canvas = await html2canvas(clone, {
                     scale: 2,
                     useCORS: true,
                     logging: false,
-                    windowWidth: 1000, // extra room beyond the 210mm content so nothing spills past the render window and gets cut off
                     onclone: (clonedDoc) => {
                         try { normalizePdfColors(clonedDoc.body); } catch (e) { /* ignore */ }
                     }
@@ -586,8 +599,7 @@
                     alert("PDF සකස් කිරීම අසාර්ථකයි.\n\nDetail: " + detail);
                 }
             } finally {
-                element.classList.remove('pdf-portrait-mode');
-                actionColumns.forEach(col => col.style.display = '');
+                slot.innerHTML = '';
                 if (pdfBtn) pdfBtn.disabled = false;
                 showLoading(false);
             }
