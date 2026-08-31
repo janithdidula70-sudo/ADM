@@ -10,6 +10,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -34,8 +35,6 @@
       }
 
       /* ================= MOBILE UX FIXES ================= */
-      /* iOS Safari auto-zooms inputs whose font-size is below 16px on focus.
-         Force 16px on phones so tapping a field doesn't zoom the page. */
       @media (max-width: 640px) {
           input, select, textarea, button {
               font-size: 16px !important;
@@ -49,14 +48,67 @@
           }
       }
 
-      /* Bigger, easier-to-tap delete buttons on any screen */
       .action-column button {
           padding: 6px 10px;
       }
 
-      /* Keep the "add transaction" card reachable above the mobile keyboard */
       #transaction-form input, #transaction-form select {
           min-height: 42px;
+      }
+
+      /* ================= PORTRAIT PDF PRINT STYLES (Sinhala/image mode) ================= */
+      .pdf-portrait-mode {
+          width: 210mm !important;
+          max-width: 100% !important;
+          padding: 10mm !important;
+          background-color: #ffffff !important;
+          box-shadow: none !important;
+          border: none !important;
+      }
+
+      .pdf-portrait-mode .no-print {
+          display: none !important;
+      }
+
+      .pdf-portrait-mode h1 { font-size: 20px !important; }
+      .pdf-portrait-mode p { font-size: 11px !important; }
+      .pdf-portrait-mode #summary-grid {
+          display: grid !important;
+          grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+          gap: 10px !important;
+          margin-bottom: 15px !important;
+      }
+      .pdf-portrait-mode .summary-box h3 { font-size: 14px !important; }
+      .pdf-portrait-mode .summary-box p { font-size: 9px !important; }
+
+      .pdf-portrait-mode #tables-grid {
+          display: block !important;
+      }
+      .pdf-portrait-mode .table-box {
+          margin-bottom: 20px !important;
+          page-break-inside: avoid;
+      }
+      .pdf-portrait-mode th, .pdf-portrait-mode td {
+          padding: 6px 8px !important;
+          font-size: 11px !important;
+      }
+      .pdf-portrait-mode .table-box table {
+          table-layout: fixed !important;
+          width: 100% !important;
+      }
+      .pdf-portrait-mode .table-box .overflow-x-auto {
+          overflow: visible !important;
+      }
+      .pdf-portrait-mode .table-box th:nth-child(1),
+      .pdf-portrait-mode .table-box td:nth-child(1) { width: 22% !important; }
+      .pdf-portrait-mode .table-box th:nth-child(2),
+      .pdf-portrait-mode .table-box td:nth-child(2) { width: 48% !important; word-break: break-word; }
+      .pdf-portrait-mode .table-box th:nth-child(3),
+      .pdf-portrait-mode .table-box td:nth-child(3) { width: 30% !important; }
+
+      .pdf-portrait-mode .signature-section {
+          margin-top: 30px !important;
+          page-break-inside: avoid;
       }
 
       /* Loader */
@@ -130,9 +182,15 @@
                     <label for="month-filter" class="text-xs font-bold text-gray-700 whitespace-nowrap">මාසය තෝරන්න:</label>
                     <input type="month" id="month-filter" class="w-full sm:w-auto border border-gray-300 rounded-lg p-1.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-xs bg-white">
                 </div>
-                <button onclick="downloadPDF()" id="pdf-btn" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 shadow-md transition-all cursor-pointer text-xs min-h-[44px]">
-                    <i class="fa-solid fa-file-pdf"></i> PDF එක බාගන්න
-                </button>
+                <div class="flex items-center gap-2 w-full sm:w-auto">
+                    <select id="pdf-lang" class="border border-gray-300 rounded-lg p-2 text-xs bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none min-h-[42px]">
+                        <option value="si">සිංහල PDF (Image)</option>
+                        <option value="en">English PDF (Text)</option>
+                    </select>
+                    <button onclick="downloadPDF()" id="pdf-btn" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 shadow-md transition-all cursor-pointer text-xs min-h-[44px] whitespace-nowrap">
+                        <i class="fa-solid fa-file-pdf"></i> PDF බාගන්න
+                    </button>
+                </div>
             </div>
 
             <div class="grid grid-cols-1 gap-4" id="tables-grid">
@@ -241,6 +299,9 @@
         </div>
 
     </div>
+
+    <!-- Hidden, fixed-width render target used only for the Sinhala/image PDF export. -->
+    <div id="pdf-render-slot" style="position:fixed; top:0; left:-10000px; width:780px; z-index:-1;"></div>
 
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyB2yBSKN2VEU1PXQnCi_SUnpYxVzezbUe5iCbtgFleM7BaFUnezfrKZr1eidJdATQF/exec";
@@ -424,60 +485,136 @@
             }
         }, 30000);
 
-        // ================= TEXT-BASED PDF GENERATION =================
-        // Replaces the old html2canvas "screenshot the DOM" approach with a
-        // pure text/table PDF built directly through jsPDF + jspdf-autotable.
-        // Result: selectable/searchable text, a much smaller file, crisp
-        // output on any device (no font/color rendering quirks), and tables
-        // that paginate properly instead of being squeezed onto one image.
-        //
-        // Sinhala glyphs aren't in jsPDF's built-in fonts, so we fetch a
-        // static (non-variable) Noto Sans Sinhala TTF once, register it with
-        // jsPDF's virtual file system, and cache the base64 in memory so
-        // repeat PDF downloads in the same session don't re-fetch it.
-
-        const SINHALA_FONT_REGULAR_URL = "https://raw.githubusercontent.com/jenskutilek/free-fonts/master/Noto/Noto%20Sans%20Sinhala/TTF/NotoSansSinhala-Regular.ttf";
-        const SINHALA_FONT_BOLD_URL = "https://raw.githubusercontent.com/jenskutilek/free-fonts/master/Noto/Noto%20Sans%20Sinhala/TTF/NotoSansSinhala-Bold.ttf";
-
-        let sinhalaFontCache = null; // { regular: base64, bold: base64 }
-
-        function arrayBufferToBase64(buffer) {
-            let binary = '';
-            const bytes = new Uint8Array(buffer);
-            const chunkSize = 0x8000;
-            for (let i = 0; i < bytes.length; i += chunkSize) {
-                binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
-            }
-            return btoa(binary);
-        }
-
-        async function fetchFontBase64(url) {
-            const res = await fetch(url);
-            if (!res.ok) throw new Error('Font fetch failed (' + res.status + ')');
-            const buf = await res.arrayBuffer();
-            return arrayBufferToBase64(buf);
-        }
-
-        async function registerSinhalaFonts(doc) {
-            if (!sinhalaFontCache) {
-                showLoading(true, 'Sinhala font එක load වෙමින් පවතී...');
-                const [regular, bold] = await Promise.all([
-                    fetchFontBase64(SINHALA_FONT_REGULAR_URL),
-                    fetchFontBase64(SINHALA_FONT_BOLD_URL)
-                ]);
-                sinhalaFontCache = { regular, bold };
-            }
-            doc.addFileToVFS('NotoSansSinhala-Regular.ttf', sinhalaFontCache.regular);
-            doc.addFont('NotoSansSinhala-Regular.ttf', 'NotoSinhala', 'normal');
-            doc.addFileToVFS('NotoSansSinhala-Bold.ttf', sinhalaFontCache.bold);
-            doc.addFont('NotoSansSinhala-Bold.ttf', 'NotoSinhala', 'bold');
-        }
-
-        function formatRs(n) {
-            return 'රු. ' + n.toLocaleString('en-US', { minimumFractionDigits: 2 });
-        }
-
+        // ================= PDF DOWNLOAD (dispatcher) =================
+        // Two modes because jsPDF's built-in text engine cannot shape
+        // complex scripts like Sinhala (no conjunct/vowel reordering
+        // support) - it just prints raw glyphs in the wrong order, which is
+        // the "අකුරු ඇවිල් ගිය" garbling. There is no pure-text fix for that
+        // in a browser-only jsPDF setup, so:
+        //   - Sinhala report -> screenshot the real, correctly-shaped DOM
+        //     (html2canvas) and place that image on one PDF page.
+        //   - English report -> build actual PDF text/tables (jsPDF +
+        //     autoTable) since Latin text needs no shaping - this gives a
+        //     smaller, selectable, multi-page-safe PDF.
         async function downloadPDF() {
+            const lang = document.getElementById('pdf-lang').value;
+            if (lang === 'en') {
+                await downloadPDFEnglishText();
+            } else {
+                await downloadPDFSinhalaImage();
+            }
+        }
+
+        // ---------- Sinhala mode: html2canvas image capture ----------
+        function normalizePdfColors(root) {
+            const probe = document.createElement('canvas').getContext('2d');
+            const props = ['color', 'backgroundColor', 'borderColor', 'borderTopColor',
+                'borderRightColor', 'borderBottomColor', 'borderLeftColor',
+                'outlineColor', 'textDecorationColor'];
+            const all = root.querySelectorAll('*');
+            all.forEach(el => {
+                const cs = window.getComputedStyle(el);
+                props.forEach(prop => {
+                    const val = cs[prop];
+                    if (val && /oklch|oklab|color-mix|lab\(|lch\(/i.test(val)) {
+                        try {
+                            probe.fillStyle = '#000000';
+                            probe.fillStyle = val;
+                            el.style.setProperty(
+                                prop.replace(/[A-Z]/g, m => '-' + m.toLowerCase()),
+                                probe.fillStyle,
+                                'important'
+                            );
+                        } catch (e) { /* ignore single-property failures */ }
+                    }
+                });
+                const shadow = cs.boxShadow;
+                if (shadow && /oklch|oklab|color-mix/i.test(shadow)) {
+                    el.style.setProperty('box-shadow', 'none', 'important');
+                }
+            });
+        }
+
+        async function downloadPDFSinhalaImage() {
+            const original = document.getElementById('printable-area');
+            const selectedMonth = document.getElementById('month-filter').value || 'report';
+            const pdfBtn = document.getElementById('pdf-btn');
+            const slot = document.getElementById('pdf-render-slot');
+
+            if (pdfBtn) pdfBtn.disabled = true;
+            showLoading(true, 'PDF එක සකස් වෙමින් පවතී...');
+
+            const clone = original.cloneNode(true);
+            clone.classList.add('pdf-portrait-mode');
+            clone.style.width = '780px';
+            clone.style.maxWidth = '780px';
+            clone.style.margin = '0';
+            clone.style.boxSizing = 'border-box';
+            clone.querySelectorAll('.action-column').forEach(el => { el.style.display = 'none'; });
+            clone.querySelectorAll('.no-print').forEach(el => { el.style.display = 'none'; });
+
+            slot.innerHTML = '';
+            slot.appendChild(clone);
+
+            try {
+                if (typeof html2canvas === 'undefined') {
+                    throw new Error('html2canvas library load වෙලා නෑ — Internet connection එක check කරලා page එක refresh කරන්න.');
+                }
+                if (!((window.jspdf && window.jspdf.jsPDF) || window.jsPDF)) {
+                    throw new Error('jsPDF library load වෙලා නෑ — Internet connection එක check කරලා page එක refresh කරන්න.');
+                }
+
+                try {
+                    if (document.fonts && document.fonts.ready) {
+                        await Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 1500))]);
+                    }
+                } catch (e) { /* ignore font readiness issues */ }
+                await new Promise(resolve => setTimeout(resolve, 80));
+
+                const canvas = await html2canvas(clone, {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    onclone: (clonedDoc) => {
+                        try { normalizePdfColors(clonedDoc.body); } catch (e) { /* ignore */ }
+                    }
+                });
+
+                const imgData = canvas.toDataURL('image/jpeg', 0.98);
+
+                const pdfWidthMM = 210;
+                const pdfHeightMM = (canvas.height * pdfWidthMM) / canvas.width;
+
+                const JsPDFClass = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : window.jsPDF;
+                const pdf = new JsPDFClass({
+                    unit: 'mm',
+                    format: [pdfWidthMM, pdfHeightMM],
+                    orientation: 'portrait'
+                });
+
+                pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidthMM, pdfHeightMM);
+                pdf.save(`ADM_Sinhala_Report_${selectedMonth}.pdf`);
+            } catch (err) {
+                console.error("PDF error: ", err);
+                const detail = (err && err.message) ? err.message : String(err);
+                if (/security|tainted|cors/i.test(detail)) {
+                    alert("PDF සකස් කිරීම අසාර්ථකයි (image/font එකක් load වෙන්න බැරි වුණා). Internet connection එක check කරලා, VPN/ad-blocker අක්‍රීය කරලා ආයේ try කරන්න.\n\nDetail: " + detail);
+                } else {
+                    alert("PDF සකස් කිරීම අසාර්ථකයි.\n\nDetail: " + detail);
+                }
+            } finally {
+                slot.innerHTML = '';
+                if (pdfBtn) pdfBtn.disabled = false;
+                showLoading(false);
+            }
+        }
+
+        // ---------- English mode: jsPDF text + autoTable ----------
+        function formatRsEn(n) {
+            return 'Rs. ' + n.toLocaleString('en-US', { minimumFractionDigits: 2 });
+        }
+
+        async function downloadPDFEnglishText() {
             const pdfBtn = document.getElementById('pdf-btn');
             const selectedMonth = document.getElementById('month-filter').value || 'report';
 
@@ -495,34 +632,31 @@
                     throw new Error('jspdf-autotable library load වෙලා නෑ — Internet connection එක check කරලා page එක refresh කරන්න.');
                 }
 
-                await registerSinhalaFonts(doc);
-                doc.setFont('NotoSinhala', 'normal');
-
                 const pageWidth = doc.internal.pageSize.getWidth();
                 const pageHeight = doc.internal.pageSize.getHeight();
                 const marginX = 14;
                 let y = 16;
 
                 // ---- Header ----
-                doc.setFont('NotoSinhala', 'bold');
+                doc.setFont('helvetica', 'bold');
                 doc.setFontSize(15);
                 doc.setTextColor(30, 27, 105);
                 doc.text('ADM Higher Education Center', marginX, y);
 
-                doc.setFont('NotoSinhala', 'normal');
+                doc.setFont('helvetica', 'normal');
                 doc.setFontSize(9);
                 doc.setTextColor(90, 90, 90);
                 y += 5.5;
-                doc.text('සිසිර ඉන්ධන පිරවුම්හල අසල, නාරම්මල.', marginX, y);
+                doc.text('Near Sisira Fuel Station, Narammala.', marginX, y);
                 y += 4.5;
                 doc.text('0710658051', marginX, y);
 
                 const reportNow = new Date();
-                doc.setFont('NotoSinhala', 'bold');
+                doc.setFont('helvetica', 'bold');
                 doc.setFontSize(10);
                 doc.setTextColor(55, 48, 163);
-                doc.text('මාසික වාර්තාව', pageWidth - marginX, 16, { align: 'right' });
-                doc.setFont('NotoSinhala', 'normal');
+                doc.text('Monthly Report', pageWidth - marginX, 16, { align: 'right' });
+                doc.setFont('helvetica', 'normal');
                 doc.setFontSize(8);
                 doc.setTextColor(120, 120, 120);
                 doc.text(
@@ -551,28 +685,27 @@
                 const boxW = (pageWidth - marginX * 2 - boxGap * 2) / 3;
                 const boxH = 18;
                 const boxes = [
-                    { label: 'මුළු ආදායම', value: formatRs(totalIncome), fill: [236, 253, 245], text: [4, 120, 87] },
-                    { label: 'මුළු වියදම', value: formatRs(totalExpense), fill: [255, 241, 242], text: [190, 18, 60] },
-                    { label: 'ශුද්ධ ශේෂය', value: formatRs(netBalance), fill: netBalance < 0 ? [255, 241, 242] : [238, 242, 255], text: netBalance < 0 ? [190, 18, 60] : [67, 56, 202] }
+                    { label: 'TOTAL INCOME', value: formatRsEn(totalIncome), fill: [236, 253, 245], text: [4, 120, 87] },
+                    { label: 'TOTAL EXPENSE', value: formatRsEn(totalExpense), fill: [255, 241, 242], text: [190, 18, 60] },
+                    { label: 'NET BALANCE', value: formatRsEn(netBalance), fill: netBalance < 0 ? [255, 241, 242] : [238, 242, 255], text: netBalance < 0 ? [190, 18, 60] : [67, 56, 202] }
                 ];
                 boxes.forEach((box, i) => {
                     const bx = marginX + i * (boxW + boxGap);
                     doc.setFillColor(box.fill[0], box.fill[1], box.fill[2]);
                     doc.roundedRect(bx, y, boxW, boxH, 2, 2, 'F');
-                    doc.setFont('NotoSinhala', 'normal');
+                    doc.setFont('helvetica', 'normal');
                     doc.setFontSize(7.5);
                     doc.setTextColor(90, 90, 90);
                     doc.text(box.label, bx + 4, y + 6);
-                    doc.setFont('NotoSinhala', 'bold');
+                    doc.setFont('helvetica', 'bold');
                     doc.setFontSize(10.5);
                     doc.setTextColor(box.text[0], box.text[1], box.text[2]);
                     doc.text(box.value, bx + 4, y + 13.5);
                 });
                 y += boxH + 10;
 
-                // ---- helper to draw one table section ----
                 function drawSection(titleText, barColor, rows, emptyText) {
-                    doc.setFont('NotoSinhala', 'bold');
+                    doc.setFont('helvetica', 'bold');
                     doc.setFontSize(10);
                     doc.setTextColor(255, 255, 255);
                     doc.setFillColor(barColor[0], barColor[1], barColor[2]);
@@ -583,17 +716,17 @@
                     if (rows.length) {
                         doc.autoTable({
                             startY: y,
-                            head: [['දිනය', 'විස්තරය', 'මුදල (රු.)']],
+                            head: [['Date', 'Description', 'Amount (Rs.)']],
                             body: rows,
                             margin: { left: marginX, right: marginX },
-                            styles: { font: 'NotoSinhala', fontSize: 8.5, cellPadding: 2.2, textColor: [55, 65, 81] },
-                            headStyles: { fillColor: [243, 244, 246], textColor: [55, 65, 81], font: 'NotoSinhala', fontStyle: 'bold' },
+                            styles: { font: 'helvetica', fontSize: 8.5, cellPadding: 2.2, textColor: [55, 65, 81] },
+                            headStyles: { fillColor: [243, 244, 246], textColor: [55, 65, 81], font: 'helvetica', fontStyle: 'bold' },
                             columnStyles: { 0: { cellWidth: 26 }, 2: { cellWidth: 32, halign: 'right' } },
                             theme: 'grid'
                         });
                         y = doc.lastAutoTable.finalY + 8;
                     } else {
-                        doc.setFont('NotoSinhala', 'normal');
+                        doc.setFont('helvetica', 'normal');
                         doc.setFontSize(9);
                         doc.setTextColor(160, 160, 160);
                         doc.text(emptyText, pageWidth / 2, y + 8, { align: 'center' });
@@ -604,8 +737,8 @@
                 const incomeRows = filtered.filter(t => t.type === 'income').map(t => [t.date, t.desc, t.amount.toFixed(2)]);
                 const expenseRows = filtered.filter(t => t.type === 'expense').map(t => [t.date, t.desc, t.amount.toFixed(2)]);
 
-                drawSection('ආදායම් විස්තර (Income Table)', [5, 150, 105], incomeRows, 'ආදායම් දත්ත නොමැත.');
-                drawSection('වියදම් විස්තර (Expense Table)', [225, 29, 72], expenseRows, 'වියදම් දත්ත නොමැත.');
+                drawSection('Income Table', [5, 150, 105], incomeRows, 'No income data.');
+                drawSection('Expense Table', [225, 29, 72], expenseRows, 'No expense data.');
 
                 // ---- Signature section ----
                 if (y > pageHeight - 40) {
@@ -618,31 +751,28 @@
                 doc.setDrawColor(160, 160, 160);
                 doc.setLineWidth(0.2);
 
-                // Composed By
                 doc.line(marginX + colW * 0.2, y, marginX + colW * 0.8, y);
-                doc.setFont('NotoSinhala', 'bold'); doc.setFontSize(8); doc.setTextColor(55, 65, 81);
+                doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.setTextColor(55, 65, 81);
                 doc.text('Composed By:', marginX + colW / 2, y + 5, { align: 'center' });
-                doc.setFont('NotoSinhala', 'normal'); doc.setFontSize(7); doc.setTextColor(160, 160, 160);
-                doc.text('ගිණුම් අංශය', marginX + colW / 2, y + 9, { align: 'center' });
+                doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(160, 160, 160);
+                doc.text('Accounts Department', marginX + colW / 2, y + 9, { align: 'center' });
 
-                // Seal
                 const sealCx = marginX + colW * 1.5;
                 try { doc.setLineDashPattern([1, 1], 0); } catch (e) { /* older jsPDF versions ignore this */ }
                 doc.circle(sealCx, y - 6, 7, 'S');
                 try { doc.setLineDashPattern([], 0); } catch (e) { /* ignore */ }
-                doc.setFont('NotoSinhala', 'bold'); doc.setFontSize(6); doc.setTextColor(160, 160, 160);
+                doc.setFont('helvetica', 'bold'); doc.setFontSize(6); doc.setTextColor(160, 160, 160);
                 doc.text('ADM INST. SEAL', sealCx, y - 6, { align: 'center' });
-                doc.setFont('NotoSinhala', 'normal'); doc.setFontSize(7);
-                doc.text('මුද්‍රාව', sealCx, y + 9, { align: 'center' });
+                doc.setFont('helvetica', 'normal'); doc.setFontSize(7);
+                doc.text('Seal', sealCx, y + 9, { align: 'center' });
 
-                // Approved By
                 doc.line(marginX + colW * 2.2, y, marginX + colW * 2.8, y);
-                doc.setFont('NotoSinhala', 'bold'); doc.setFontSize(8); doc.setTextColor(55, 65, 81);
+                doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.setTextColor(55, 65, 81);
                 doc.text('Approved By:', marginX + colW * 2.5, y + 5, { align: 'center' });
-                doc.setFont('NotoSinhala', 'normal'); doc.setFontSize(7); doc.setTextColor(160, 160, 160);
-                doc.text('කළමනාකාරීත්වය', marginX + colW * 2.5, y + 9, { align: 'center' });
+                doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(160, 160, 160);
+                doc.text('Management', marginX + colW * 2.5, y + 9, { align: 'center' });
 
-                doc.save(`ADM_Report_${selectedMonth}.pdf`);
+                doc.save(`ADM_English_Report_${selectedMonth}.pdf`);
             } catch (err) {
                 console.error("PDF error: ", err);
                 const detail = (err && err.message) ? err.message : String(err);
