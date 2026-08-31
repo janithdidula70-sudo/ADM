@@ -85,7 +85,7 @@
       .pdf-portrait-mode .summary-box p { font-size: 9px !important; }
       
       .pdf-portrait-mode #tables-grid {
-          display: block !important; /* Portrait එකේ එක යට එක වගු පිහිටීමට */
+          display: block !important; /* Portrait එකේ එක යට එක වගු පිහිටීමට (phone) */
       }
       .pdf-portrait-mode .table-box {
           margin-bottom: 20px !important;
@@ -94,6 +94,26 @@
       .pdf-portrait-mode th, .pdf-portrait-mode td {
           padding: 6px 8px !important;
           font-size: 11px !important;
+      }
+
+      /* Desktop style PDF: still A4 portrait width, but income/expense tables
+         sit side-by-side just like they do on a wide desktop screen. */
+      .pdf-portrait-mode.pdf-desktop-mode #tables-grid {
+          display: grid !important;
+          grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+          gap: 10px !important;
+      }
+      .pdf-portrait-mode.pdf-desktop-mode .table-box {
+          margin-bottom: 0 !important;
+      }
+      .pdf-portrait-mode.pdf-desktop-mode th,
+      .pdf-portrait-mode.pdf-desktop-mode td {
+          padding: 4px 5px !important;
+          font-size: 9px !important;
+      }
+      .pdf-portrait-mode.pdf-desktop-mode .table-header {
+          font-size: 10px !important;
+          padding: 6px 8px !important;
       }
       
       .pdf-portrait-mode .signature-section {
@@ -461,6 +481,42 @@
             }
         }, 30000); 
 
+        // Android/mobile Chrome often fails to render Tailwind's newer
+        // oklch()/color-mix() colors inside html2canvas (desktop Chrome is
+        // more forgiving). This walks the cloned document right before
+        // capture and normalizes every color to a plain rgb()/rgba() value
+        // that html2canvas can always parse.
+        function normalizePdfColors(root) {
+            const probe = document.createElement('canvas').getContext('2d');
+            const props = ['color', 'backgroundColor', 'borderColor', 'borderTopColor',
+                'borderRightColor', 'borderBottomColor', 'borderLeftColor',
+                'outlineColor', 'textDecorationColor'];
+            const all = root.querySelectorAll('*');
+            all.forEach(el => {
+                const cs = window.getComputedStyle(el);
+                props.forEach(prop => {
+                    const val = cs[prop];
+                    if (val && /oklch|oklab|color-mix|lab\(|lch\(/i.test(val)) {
+                        try {
+                            probe.fillStyle = '#000000';
+                            probe.fillStyle = val;
+                            el.style.setProperty(
+                                prop.replace(/[A-Z]/g, m => '-' + m.toLowerCase()),
+                                probe.fillStyle,
+                                'important'
+                            );
+                        } catch (e) { /* ignore single-property failures */ }
+                    }
+                });
+                // box-shadow / ring utilities can also carry oklch/color-mix and
+                // html2canvas doesn't need them for this report, so drop safely.
+                const shadow = cs.boxShadow;
+                if (shadow && /oklch|oklab|color-mix/i.test(shadow)) {
+                    el.style.setProperty('box-shadow', 'none', 'important');
+                }
+            });
+        }
+
         // [SINGLE-PAGE PORTRAIT PDF DOWNLOAD]
         // Instead of letting html2pdf auto-paginate onto multiple A4 pages,
         // we render the whole report to one canvas and build a PDF page whose
@@ -472,22 +528,37 @@
             const selectedMonth = document.getElementById('month-filter').value || 'report';
             const pdfBtn = document.getElementById('pdf-btn');
 
+            // Wide screens (desktop/tablet-landscape) get the side-by-side
+            // table layout; phones keep the stacked layout. Page stays A4
+            // portrait width either way.
+            const isDesktop = window.innerWidth >= 1024;
+
             element.classList.add('pdf-portrait-mode');
+            if (isDesktop) element.classList.add('pdf-desktop-mode');
             const actionColumns = document.querySelectorAll('.action-column');
             actionColumns.forEach(col => col.style.display = 'none');
             if (pdfBtn) pdfBtn.disabled = true;
 
             showLoading(true);
 
-            // let the layout settle before we snapshot it
-            await new Promise(resolve => setTimeout(resolve, 60));
+            // let the layout settle + fonts finish loading before we snapshot it
+            // (slower mobile networks can still be fetching the Sinhala webfont)
+            try {
+                if (document.fonts && document.fonts.ready) {
+                    await Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 1500))]);
+                }
+            } catch (e) { /* ignore font readiness issues */ }
+            await new Promise(resolve => setTimeout(resolve, 80));
 
             try {
                 const canvas = await html2canvas(element, {
                     scale: 2,
                     useCORS: true,
                     logging: false,
-                    windowWidth: 794 // A4 portrait width in px @ 96dpi
+                    windowWidth: 794, // A4 portrait width in px @ 96dpi
+                    onclone: (clonedDoc) => {
+                        try { normalizePdfColors(clonedDoc.body); } catch (e) { /* ignore */ }
+                    }
                 });
 
                 const imgData = canvas.toDataURL('image/jpeg', 0.98);
@@ -506,9 +577,14 @@
                 pdf.save(`ADM_Portrait_Report_${selectedMonth}.pdf`);
             } catch (err) {
                 console.error("PDF error: ", err);
-                alert("PDF සකස් කිරීම අසාර්ථකයි.");
+                const detail = (err && err.message) ? err.message : String(err);
+                if (/security|tainted|cors/i.test(detail)) {
+                    alert("PDF සකස් කිරීම අසාර්ථකයි (image/font එකක් load වෙන්න බැරි වුණා). Internet connection එක check කරලා, VPN/ad-blocker අක්‍රීය කරලා ආයේ try කරන්න.\n\nDetail: " + detail);
+                } else {
+                    alert("PDF සකස් කිරීම අසාර්ථකයි.\n\nDetail: " + detail);
+                }
             } finally {
-                element.classList.remove('pdf-portrait-mode');
+                element.classList.remove('pdf-portrait-mode', 'pdf-desktop-mode');
                 actionColumns.forEach(col => col.style.display = '');
                 if (pdfBtn) pdfBtn.disabled = false;
                 showLoading(false);
